@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WS TOP UP</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101525;color:white;font-family:Arial,sans-serif}
+header{background:#171f35;padding:22px;text-align:center}
+header h1{color:#00e5ff;margin:0}
+header p{color:#ccc}
+.container{padding:18px;max-width:650px;margin:auto}
+h2{color:#00e5ff}
+.game{background:#202b45;padding:18px;border-radius:14px;margin:15px 0}
+.pack{background:#303d59;padding:14px;margin:10px 0;border-radius:10px}
+button{background:#00d9ff;border:0;padding:12px 20px;border-radius:8px;font-weight:bold;cursor:pointer}
+input{width:100%;padding:14px;margin:9px 0;border:0;border-radius:8px}
+footer{text-align:center;padding:25px;color:#aaa}
+</style>
+</head>
+<body>
+<header>
+<h1>WS TOP UP</h1>
+<p>Fast & Secure Game Diamond Top Up</p>
+</header>
+<div class="container">
+<h2>🎮 Select Your Game</h2>
+<div class="game">
+<h3>🔥 Free Fire</h3>
+<p>Diamond Top Up Packages</p>
+<div class="pack">💎 100 Diamonds - ₹85</div>
+<div class="pack">💎 310 Diamonds - ₹240</div>
+<div class="pack">💎 520 Diamonds - ₹390</div>
+<div class="pack">💎 1060 Diamonds - ₹780</div>
+</div>
+<div class="game">
+<h3>🎮 BGMI</h3>
+<p>UC Top Up - Coming Soon</p>
+</div>
+<h2>📋 Order Details</h2>
+<form onsubmit="sendOrder(event)">
+<input id="uid" placeholder="Enter Player UID" required>
+<input id="game" placeholder="Game Name" required>
+<input id="pack" placeholder="Diamond Package" required>
+<button type="submit">Place Order</button>
+</form>
+</div>
+<footer>© 2026 WS TOP UP | All Rights Reserved</footer>
+<script>
+function sendOrder(e){
+e.preventDefault();
+let u=document.getElementById('uid').value;
+let g=document.getElementById('game').value;
+let p=document.getElementById('pack').value;
+alert("Order details saved on screen:\nUID: "+u+"\nGame: "+g+"\nPackage: "+p+"\nPlease contact admin for payment.");
+}
+</script>
+</body>
+</html>
