@@ -73,7 +73,7 @@ a {
   color: var(--muted);
 }
 
-/* HERO BANNER */
+/* HERO */
 
 .hero {
   max-width: 1100px;
@@ -83,8 +83,7 @@ a {
   text-align: center;
   border: 1px solid #29496c;
   border-radius: 18px;
-  background:
-    radial-gradient(ellipse at top, #19456a, #111b31 70%);
+  background: radial-gradient(ellipse at top, #19456a, #111b31 70%);
 }
 
 .hero h1 {
@@ -124,6 +123,7 @@ a {
   justify-content: space-between;
   align-items: center;
   margin: 28px 0 14px;
+  gap: 8px;
 }
 
 .heading h2 {
@@ -137,7 +137,7 @@ a {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -149,7 +149,7 @@ a {
   border: 1px solid var(--line);
   border-radius: 13px;
   overflow: hidden;
-  min-height: 230px;
+  min-width: 0;
   transition: 0.3s;
 }
 
@@ -158,12 +158,17 @@ a {
   transform: translateY(-3px);
 }
 
+/* IMAGE CENTER FIX */
+
 .art {
-  height: 140px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, #244568, #111a2d);
+  width: 100%;
+  height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
   overflow: hidden;
+  background: linear-gradient(135deg, #244568, #111a2d);
 }
 
 .art.light {
@@ -178,15 +183,19 @@ a {
   background: linear-gradient(135deg, #a82af2, #ec38d6);
 }
 
-/* INDIVIDUAL PRODUCT IMAGES */
-
 .art img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 8px;
   display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  margin: auto;
+  flex-shrink: 0;
 }
+
+/* PRODUCT INFORMATION */
 
 .info {
   padding: 11px;
@@ -194,6 +203,7 @@ a {
 
 .info strong {
   font-size: 14px;
+  line-height: 1.4;
 }
 
 .stars {
@@ -274,14 +284,14 @@ footer {
 
 /* MOBILE RESPONSIVE */
 
-@media(max-width:650px) {
+@media(max-width: 650px) {
   .grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 9px;
   }
 
   .art {
-    height: 120px;
+    height: 150px;
   }
 
   .hero {
@@ -307,9 +317,13 @@ footer {
   }
 }
 
-@media(max-width:350px) {
+@media(max-width: 380px) {
   .grid {
     grid-template-columns: 1fr;
+  }
+
+  .art {
+    height: 170px;
   }
 }
 </style>
@@ -352,7 +366,6 @@ footer {
   <div class="grid">
 
     <!-- IMO -->
-
     <a class="card" href="product.html?item=imo">
       <div class="art light">
         <img src="imo.png" alt="IMO Diamond">
@@ -365,7 +378,6 @@ footer {
     </a>
 
     <!-- BIGO -->
-
     <a class="card" href="product.html?item=bigo">
       <div class="art light">
         <img src="bigo.png" alt="Bigo Live Diamonds">
@@ -378,7 +390,6 @@ footer {
     </a>
 
     <!-- POPPO -->
-
     <a class="card" href="product.html?item=poppo">
       <div class="art pink">
         <img src="poppo.png" alt="Poppo Live Coins">
@@ -391,7 +402,6 @@ footer {
     </a>
 
     <!-- CHAMET -->
-
     <a class="card" href="product.html?item=chamet">
       <div class="art pink">
         <img src="chamet.png" alt="Chamet">
@@ -404,7 +414,6 @@ footer {
     </a>
 
     <!-- TELEGRAM -->
-
     <a class="card" href="product.html?item=telegram">
       <div class="art blue">
         <img src="telegram.png" alt="Telegram Stars and Premium">
@@ -417,7 +426,6 @@ footer {
     </a>
 
     <!-- TRUECALLER -->
-
     <a class="card" href="product.html?item=truecaller">
       <div class="art light">
         <img src="truecaller.png" alt="Truecaller Premium">
@@ -430,7 +438,6 @@ footer {
     </a>
 
     <!-- STARMAKER -->
-
     <a class="card" href="product.html?item=starmaker">
       <div class="art">
         <img src="starmaker.png" alt="StarMaker Coins">
@@ -443,7 +450,6 @@ footer {
     </a>
 
     <!-- LIKEE -->
-
     <a class="card" href="product.html?item=likee">
       <div class="art">
         <img src="likee.png" alt="Likee Diamonds">
@@ -456,7 +462,6 @@ footer {
     </a>
 
     <!-- TANGO -->
-
     <a class="card" href="product.html?item=tango">
       <div class="art pink">
         <img src="tango.png" alt="Tango Live">
@@ -469,7 +474,6 @@ footer {
     </a>
 
     <!-- YOHO -->
-
     <a class="card" href="product.html?item=yoho">
       <div class="art">
         <img src="yoho.png" alt="YOHO Coins">
@@ -482,7 +486,6 @@ footer {
     </a>
 
     <!-- FREE FIRE -->
-
     <a class="card" href="product.html?item=freefire">
       <div class="art">
         <img src="freefire.png" alt="Free Fire Diamonds">
@@ -495,7 +498,6 @@ footer {
     </a>
 
     <!-- BGMI -->
-
     <a class="card" href="product.html?item=bgmi">
       <div class="art">
         <img src="bgmi.png" alt="BGMI UC">
