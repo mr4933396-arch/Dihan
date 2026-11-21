@@ -1,15 +1,486 @@
+
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07111f"><meta name="description" content="WS TOP UP — global digital top-ups for games and social apps."><title>WS TOP UP | Global Digital Top-Up Store</title><style>
-:root{--bg:#07111f;--panel:#101f33;--panel2:#142740;--line:#263e5c;--cyan:#45d8ff;--gold:#ffc15a;--muted:#9eb0c6;--white:#f5f8ff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#183c5a 0,transparent 46%),var(--bg);color:var(--white);font:15px Inter,system-ui,Arial,sans-serif}a{color:inherit;text-decoration:none}.top{position:sticky;top:0;z-index:5;background:#091626ed;border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}.nav{max-width:1160px;margin:auto;min-height:70px;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:15px}.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.4px;font-size:19px}.brand img{width:44px;height:44px;object-fit:contain;border-radius:10px}.brand span{color:var(--cyan)}.navright{display:flex;align-items:center;gap:10px}.select{background:#142740;color:white;border:1px solid #365371;border-radius:9px;padding:9px 10px}.login{border:1px solid #365371;border-radius:9px;padding:9px 13px;font-weight:700}.hero{max-width:1160px;margin:25px auto 18px;padding:44px 22px;text-align:center;border:1px solid #2b5476;border-radius:22px;background:linear-gradient(120deg,#102b43e8,#101c32f2),radial-gradient(circle at 80% 20%,#116e9a,transparent 45%);box-shadow:0 20px 70px #0005}.eyebrow{color:var(--gold);font-weight:800;font-size:11px;letter-spacing:2px}.hero h1{font-size:clamp(28px,5vw,48px);line-height:1.08;margin:12px 0}.hero h1 span{color:var(--cyan)}.hero p{color:#c0d0e1;max-width:650px;margin:0 auto 22px;line-height:1.6}.cta{display:inline-block;background:linear-gradient(90deg,var(--cyan),#4a8fff);color:#061321;padding:13px 22px;border-radius:10px;font-weight:900}.trust{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;margin-top:20px}.trust span,.tag{font-size:11px;color:#c7d6e8;border:1px solid #38516d;background:#0c1b2d;padding:7px 10px;border-radius:30px}.wrap{max-width:1160px;margin:auto;padding:0 18px 40px}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:24px 0 14px;flex-wrap:wrap}.toolbar h2{font-size:19px;margin:0}.filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.search{background:#102238;border:1px solid #304966;color:white;border-radius:9px;padding:10px 12px;min-width:190px}.categories{display:flex;gap:8px;overflow:auto;padding:2px 0 14px}.chip{white-space:nowrap;background:#12243a;border:1px solid #2b4562;color:#d7e5f5;border-radius:30px;padding:8px 13px;font-size:12px;cursor:pointer}.chip.active{background:#16496a;border-color:var(--cyan);color:white}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}.card{background:linear-gradient(145deg,#142840,#0d1a2c);border:1px solid var(--line);border-radius:15px;overflow:hidden;transition:.18s}.card:hover{transform:translateY(-3px);border-color:var(--cyan)}.art{height:115px;display:grid;place-items:center;font-size:50px;background:radial-gradient(circle at 50% 35%,#245476,#12243a 72%)}.info{padding:13px}.info strong{font-size:14px}.info small{display:block;color:var(--muted);font-size:11px;margin-top:7px}.stars{color:var(--gold);font-size:11px;margin-top:7px}.label{display:inline-block;color:#9de8ff;background:#10324a;border:1px solid #1f5877;border-radius:20px;padding:4px 7px;font-size:9px;margin-bottom:8px}.section{margin-top:32px}.features{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.feature{padding:16px;border:1px solid var(--line);background:#102139;border-radius:13px}.feature b{display:block;margin:8px 0 5px}.feature p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}.support{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.support a{padding:11px 15px;border:1px solid #31516e;border-radius:9px;background:#10243a;font-weight:700;font-size:13px}footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-align:center;padding:24px 15px;font-size:12px;line-height:1.8}@media(max-width:850px){.grid{grid-template-columns:repeat(3,1fr)}.features{grid-template-columns:repeat(2,1fr)}}@media(max-width:580px){.nav{padding:9px 12px}.brand{font-size:16px}.brand img{width:38px;height:38px}.login{display:none}.hero{margin:14px 10px;padding:30px 15px}.wrap{padding:0 11px 30px}.grid{grid-template-columns:repeat(2,1fr);gap:9px}.art{height:100px;font-size:42px}.info{padding:10px}.search{min-width:0;width:100%}.toolbar{align-items:stretch}.filters{width:100%}.features{gap:8px}.feature{padding:12px}}@media(max-width:350px){.grid{grid-template-columns:1fr}}
-</style></head><body>
-<header class="top"><nav class="nav"><a class="brand" href="index.html"><img src="logo.png" alt="WS TOP UP logo"><span>WS TOP UP</span></a><div class="navright"><select id="currency" class="select" aria-label="Choose currency"><option value="INR">INR ₹</option><option value="BDT">BDT ৳</option></select><a class="login" href="#support">Support</a></div></nav></header>
-<section class="hero"><div class="eyebrow">GLOBAL DIGITAL TOP-UP STORE</div><h1>LEVEL UP WITH <span>WS TOP UP</span></h1><p>Explore game top-ups, social app coins, gift cards and digital services. Choose your product, send an order request and our team will confirm it manually.</p><a class="cta" href="#products">EXPLORE PRODUCTS ↓</a><div class="trust"><span>🌍 Global Customers</span><span>🛡️ Manual Order Verification</span><span>💬 Human Support</span></div></section>
-<main class="wrap" id="products"><div class="toolbar"><h2>Browse Products</h2><div class="filters"><input id="search" class="search" placeholder="Search games or services…" aria-label="Search products"></div></div><div class="categories" id="categories"><button class="chip active" data-cat="all">All Products</button><button class="chip" data-cat="games">Games Top Up</button><button class="chip" data-cat="social">Social Apps</button><button class="chip" data-cat="gift">Gift Cards</button><button class="chip" data-cat="subs">Subscriptions</button></div><div class="grid" id="grid"></div>
-<section class="section"><div class="toolbar"><h2>Why choose WS TOP UP?</h2><span class="tag">SERVICE WITH CARE</span></div><div class="features"><div class="feature">🌐<b>Global-ready</b><p>Products can be organised by country and supported region.</p></div><div class="feature">🔎<b>Manual verification</b><p>Every order is checked by our team before delivery.</p></div><div class="feature">🔐<b>Safer ordering</b><p>We never ask for passwords, OTPs or login codes.</p></div><div class="feature">💬<b>Direct support</b><p>Contact our team for order updates and assistance.</p></div></div></section>
-<section class="section" id="support"><h2>Customer Support</h2><p style="color:var(--muted)">Need help before ordering? Contact WS TOP UP.</p><div class="support"><a href="https://wa.me/917814003979" target="_blank" rel="noopener">💬 WhatsApp Support</a><a href="https://t.me/WSTopUpOfficial" target="_blank" rel="noopener">✈️ Telegram Support</a></div></section></main>
-<footer>© 2026 WS TOP UP · Global Digital Top-Up Store<br>Prices and availability are confirmed by the administrator before payment and delivery.</footer>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07111f">
+<meta name="description" content="WS TOP UP — global digital top-ups for games and social apps.">
+<title>WS TOP UP | Global Digital Top-Up Store</title>
+
+<style>
+:root{
+--bg:#07111f;
+--panel:#101f33;
+--panel2:#142740;
+--line:#263e5c;
+--cyan:#45d8ff;
+--gold:#ffc15a;
+--muted:#9eb0c6;
+--white:#f5f8ff
+}
+*{box-sizing:border-box}
+body{
+margin:0;
+background:radial-gradient(ellipse at 50% -15%,#183c5a 0,transparent 46%),var(--bg);
+color:var(--white);
+font:15px Inter,system-ui,Arial,sans-serif
+}
+a{color:inherit;text-decoration:none}
+
+.top{
+position:sticky;top:0;z-index:5;
+background:#091626ed;
+border-bottom:1px solid var(--line);
+backdrop-filter:blur(12px)
+}
+.nav{
+max-width:1160px;margin:auto;min-height:70px;
+padding:10px 18px;display:flex;
+align-items:center;justify-content:space-between;gap:15px
+}
+.brand{
+display:flex;align-items:center;gap:10px;
+font-weight:900;letter-spacing:.4px;font-size:19px
+}
+.brand img{
+width:44px;height:44px;object-fit:contain;border-radius:10px
+}
+.brand span{color:var(--cyan)}
+.navright{display:flex;align-items:center;gap:10px}
+.select{
+background:#142740;color:white;
+border:1px solid #365371;border-radius:9px;padding:9px 10px
+}
+.login{
+border:1px solid #365371;border-radius:9px;
+padding:9px 13px;font-weight:700
+}
+
+.hero{
+max-width:1160px;margin:25px auto 18px;
+padding:44px 22px;text-align:center;
+border:1px solid #2b5476;border-radius:22px;
+background:linear-gradient(120deg,#102b43e8,#101c32f2);
+box-shadow:0 20px 70px #0005
+}
+.eyebrow{
+color:var(--gold);font-weight:800;
+font-size:11px;letter-spacing:2px
+}
+.hero h1{
+font-size:clamp(28px,5vw,48px);
+line-height:1.08;margin:12px 0
+}
+.hero h1 span{color:var(--cyan)}
+.hero p{
+color:#c0d0e1;max-width:650px;
+margin:0 auto 22px;line-height:1.6
+}
+.cta{
+display:inline-block;
+background:linear-gradient(90deg,var(--cyan),#4a8fff);
+color:#061321;padding:13px 22px;
+border-radius:10px;font-weight:900
+}
+.trust{
+display:flex;justify-content:center;flex-wrap:wrap;
+gap:9px;margin-top:20px
+}
+.trust span,.tag{
+font-size:11px;color:#c7d6e8;
+border:1px solid #38516d;background:#0c1b2d;
+padding:7px 10px;border-radius:30px
+}
+
+.wrap{
+max-width:1160px;margin:auto;padding:0 18px 40px
+}
+.toolbar{
+display:flex;justify-content:space-between;
+align-items:center;gap:12px;
+margin:24px 0 14px;flex-wrap:wrap
+}
+.toolbar h2{font-size:19px;margin:0}
+.filters{
+display:flex;gap:8px;align-items:center;flex-wrap:wrap
+}
+.search{
+background:#102238;border:1px solid #304966;
+color:white;border-radius:9px;
+padding:10px 12px;min-width:190px
+}
+.categories{
+display:flex;gap:8px;overflow:auto;padding:2px 0 14px
+}
+.chip{
+white-space:nowrap;background:#12243a;
+border:1px solid #2b4562;color:#d7e5f5;
+border-radius:30px;padding:8px 13px;
+font-size:12px;cursor:pointer
+}
+.chip.active{
+background:#16496a;border-color:var(--cyan);color:white
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:13px
+}
+.card{
+background:linear-gradient(145deg,#142840,#0d1a2c);
+border:1px solid var(--line);
+border-radius:15px;overflow:hidden;
+transition:.18s
+}
+.card:hover{
+transform:translateY(-3px);
+border-color:var(--cyan)
+}
+
+/* PACKAGE IMAGE DESIGN */
+.art{
+height:125px;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:12px;
+overflow:hidden;
+background:radial-gradient(circle at 50% 35%,#245476,#12243a 72%)
+}
+.art img{
+display:block;
+width:100%;
+height:100%;
+max-width:110px;
+max-height:105px;
+object-fit:contain;
+object-position:center;
+margin:auto;
+transition:transform .25s ease
+}
+.card:hover .art img{
+transform:scale(1.06)
+}
+.art .emoji{
+font-size:48px;
+line-height:1
+}
+
+.info{padding:13px}
+.info strong{font-size:14px}
+.info small{
+display:block;color:var(--muted);
+font-size:11px;margin-top:7px
+}
+.stars{
+color:var(--gold);font-size:11px;margin-top:7px
+}
+.label{
+display:inline-block;color:#9de8ff;
+background:#10324a;border:1px solid #1f5877;
+border-radius:20px;padding:4px 7px;
+font-size:9px;margin-bottom:8px
+}
+
+.section{margin-top:32px}
+.features{
+display:grid;grid-template-columns:repeat(4,1fr);gap:12px
+}
+.feature{
+padding:16px;border:1px solid var(--line);
+background:#102139;border-radius:13px
+}
+.feature b{display:block;margin:8px 0 5px}
+.feature p{
+margin:0;color:var(--muted);
+font-size:12px;line-height:1.5
+}
+.support{
+display:flex;gap:10px;flex-wrap:wrap;margin-top:12px
+}
+.support a{
+padding:11px 15px;border:1px solid #31516e;
+border-radius:9px;background:#10243a;
+font-weight:700;font-size:13px
+}
+footer{
+border-top:1px solid var(--line);
+background:#081523;color:#8ea3bb;
+text-align:center;padding:24px 15px;
+font-size:12px;line-height:1.8
+}
+
+@media(max-width:850px){
+.grid{grid-template-columns:repeat(3,1fr)}
+.features{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:580px){
+.nav{padding:9px 12px}
+.brand{font-size:16px}
+.brand img{width:38px;height:38px}
+.login{display:none}
+.hero{margin:14px 10px;padding:30px 15px}
+.wrap{padding:0 11px 30px}
+.grid{grid-template-columns:repeat(2,1fr);gap:9px}
+.art{height:110px;padding:10px}
+.art img{max-width:95px;max-height:90px}
+.art .emoji{font-size:42px}
+.info{padding:10px}
+.search{min-width:0;width:100%}
+.toolbar{align-items:stretch}
+.filters{width:100%}
+.features{gap:8px}
+.feature{padding:12px}
+}
+@media(max-width:350px){
+.grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header class="top">
+<nav class="nav">
+<a class="brand" href="index.html">
+<img src="logo.png" alt="WS TOP UP logo">
+<span>WS TOP UP</span>
+</a>
+<div class="navright">
+<select id="currency" class="select" aria-label="Choose currency">
+<option value="INR">INR ₹</option>
+<option value="BDT">BDT ৳</option>
+</select>
+<a class="login" href="#support">Support</a>
+</div>
+</nav>
+</header>
+
+<section class="hero">
+<div class="eyebrow">GLOBAL DIGITAL TOP-UP STORE</div>
+<h1>LEVEL UP WITH <span>WS TOP UP</span></h1>
+<p>Explore game top-ups, social app coins, gift cards and digital services. Choose your product, send an order request and our team will confirm it manually.</p>
+<a class="cta" href="#products">EXPLORE PRODUCTS ↓</a>
+<div class="trust">
+<span>🌍 Global Customers</span>
+<span>🛡️ Manual Order Verification</span>
+<span>💬 Human Support</span>
+</div>
+</section>
+
+<main class="wrap" id="products">
+
+<div class="toolbar">
+<h2>Browse Products</h2>
+<div class="filters">
+<input id="search" class="search" placeholder="Search games or services…" aria-label="Search products">
+</div>
+</div>
+
+<div class="categories" id="categories">
+<button class="chip active" data-cat="all">All Products</button>
+<button class="chip" data-cat="games">Games Top Up</button>
+<button class="chip" data-cat="social">Social Apps</button>
+<button class="chip" data-cat="gift">Gift Cards</button>
+<button class="chip" data-cat="subs">Subscriptions</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<section class="section">
+<div class="toolbar">
+<h2>Why choose WS TOP UP?</h2>
+<span class="tag">SERVICE WITH CARE</span>
+</div>
+
+<div class="features">
+<div class="feature">🌐<b>Global-ready</b>
+<p>Products can be organised by country and supported region.</p></div>
+
+<div class="feature">🔎<b>Manual verification</b>
+<p>Every order is checked by our team before delivery.</p></div>
+
+<div class="feature">🔐<b>Safer ordering</b>
+<p>We never ask for passwords, OTPs or login codes.</p></div>
+
+<div class="feature">💬<b>Direct support</b>
+<p>Contact our team for order updates and assistance.</p></div>
+</div>
+</section>
+
+<section class="section" id="support">
+<h2>Customer Support</h2>
+<p style="color:var(--muted)">Need help before ordering? Contact WS TOP UP.</p>
+<div class="support">
+<a href="https://wa.me/917814003979" target="_blank" rel="noopener">💬 WhatsApp Support</a>
+<a href="https://t.me/WSTopUpOfficial" target="_blank" rel="noopener">✈️ Telegram Support</a>
+</div>
+</section>
+
+</main>
+
+<footer>
+© 2026 WS TOP UP · Global Digital Top-Up Store<br>
+Prices and availability are confirmed by the administrator before payment and delivery.
+</footer>
+
 <script>
+
+/* PACKAGE INFORMATION AND IMAGE FILES */
+
 const items=[
-['imo','IMO Diamond','💬','social','Social app top-up'],['bigo','Bigo Live Diamonds','🐼','social','Social app top-up'],['poppo','Poppo Live Coins','🟣','social','Social app top-up'],['chamet','Chamet','👻','social','Social app top-up'],['telegram','Telegram Stars & Premium','✈️','subs','Digital subscription'],['truecaller','Truecaller Premium','📱','subs','Subscription'],['starmaker','StarMaker Coins','🎤','social','Social app top-up'],['likee','Likee Diamonds','💛','social','Social app top-up'],['tango','Tango Live','💗','social','Social app top-up'],['yoho','YOHO Coins','🟢','social','Social app top-up'],['freefire','Free Fire Diamonds','🔥','games','Game top-up'],['bgmi','BGMI UC','🎮','games','Coming soon'],['pubg','PUBG Mobile UC','🎯','games','Game top-up'],['mlbb','Mobile Legends Diamonds','⚔️','games','Game top-up'],['itunes','iTunes Gift Card','🎁','gift','Gift card'],['googleplay','Google Play Gift Card','▶️','gift','Gift card'],['steam','Steam Wallet','🕹️','gift','Gift card'],['netflix','Netflix Subscription','🎬','subs','Subscription']
-];let cat='all';const grid=document.getElementById('grid');function draw(){const q=document.getElementById('search').value.toLowerCase();grid.innerHTML='';items.filter(x=>(cat==='all'||x[3]===cat)&&(x[1].toLowerCase().includes(q))).forEach(x=>{const a=document.createElement('a');a.className='card';a.href='product.html?item='+x[0];a.innerHTML=`<div class="art">${x[2]}</div><div class="info"><span class="label">${x[4]}</span><br><strong>${x[1]}</strong><div class="stars">★ WS TOP UP</div><small>View details & order →</small></div>`;grid.appendChild(a)})}document.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.chip').forEach(z=>z.classList.remove('active'));b.classList.add('active');cat=b.dataset.cat;draw()}));document.getElementById('search').addEventListener('input',draw);const currency=document.getElementById('currency');currency.value=localStorage.getItem('ws_currency')||'INR';currency.addEventListener('change',()=>{localStorage.setItem('ws_currency',currency.value)});draw();
-</script></body></html>
+
+['imo','IMO Diamond','./imo.png','social','Social app top-up','💬'],
+
+['bigo','Bigo Live Diamonds','./bigo.png','social','Social app top-up','🐼'],
+
+['poppo','Poppo Live Coins','./poppo.png','social','Social app top-up','🟣'],
+
+['chamet','Chamet','./chamet.png','social','Social app top-up','👻'],
+
+['telegram','Telegram Stars & Premium','./telegram.png','subs','Digital subscription','✈️'],
+
+['truecaller','Truecaller Premium','./truecaller.png','subs','Subscription','📱'],
+
+['starmaker','StarMaker Coins','./starmaker.png','social','Social app top-up','🎤'],
+
+['likee','Likee Diamonds','./likee.png','social','Social app top-up','💛'],
+
+['tango','Tango Live','./tango.png','social','Social app top-up','💗'],
+
+['yoho','YOHO Coins','./yoho.png','social','Social app top-up','🟢'],
+
+['freefire','Free Fire Diamonds','./freefire.png','games','Game top-up','🔥'],
+
+['bgmi','BGMI UC','./bgmi.png','games','Coming soon','🎮'],
+
+['pubg','PUBG Mobile UC','🎯','games','Game top-up','🎯'],
+
+['mlbb','Mobile Legends Diamonds','⚔️','games','Game top-up','⚔️'],
+
+['itunes','iTunes Gift Card','🎁','gift','Gift card','🎁'],
+
+['googleplay','Google Play Gift Card','▶️','gift','Gift card','▶️'],
+
+['steam','Steam Wallet','🕹️','gift','Gift card','🕹️'],
+
+['netflix','Netflix Subscription','🎬','subs','Subscription','🎬']
+
+];
+
+let cat='all';
+
+const grid=document.getElementById('grid');
+
+/* PACKAGE IMAGE RENDERING */
+
+function draw(){
+
+const q=document.getElementById('search').value.toLowerCase();
+
+grid.innerHTML='';
+
+items.filter(x=>
+(cat==='all'||x[3]===cat)&&
+x[1].toLowerCase().includes(q)
+).forEach(x=>{
+
+const a=document.createElement('a');
+
+a.className='card';
+
+a.href='product.html?item='+x[0];
+
+let imageHTML;
+
+if(x[2].endsWith('.png')){
+
+imageHTML=`
+<img
+src="${x[2]}"
+alt="${x[1]}"
+loading="lazy"
+onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+>
+<span class="emoji" style="display:none">${x[5]}</span>
+`;
+
+}else{
+
+imageHTML=`<span class="emoji">${x[2]}</span>`;
+
+}
+
+a.innerHTML=`
+
+<div class="art">
+${imageHTML}
+</div>
+
+<div class="info">
+
+<span class="label">${x[4]}</span>
+<br>
+
+<strong>${x[1]}</strong>
+
+<div class="stars">★ WS TOP UP</div>
+
+<small>View details & order →</small>
+
+</div>
+
+`;
+
+grid.appendChild(a);
+
+});
+
+}
+
+/* CATEGORY FILTER */
+
+document.querySelectorAll('.chip').forEach(b=>{
+
+b.addEventListener('click',()=>{
+
+document.querySelectorAll('.chip').forEach(z=>
+z.classList.remove('active')
+);
+
+b.classList.add('active');
+
+cat=b.dataset.cat;
+
+draw();
+
+});
+
+});
+
+/* SEARCH */
+
+document.getElementById('search').addEventListener('input',draw);
+
+/* CURRENCY SELECTION */
+
+const currency=document.getElementById('currency');
+
+currency.value=localStorage.getItem('ws_currency')||'INR';
+
+currency.addEventListener('change',()=>{
+
+localStorage.setItem('ws_currency',currency.value);
+
+});
+
+/* INITIAL DISPLAY */
+
+draw();
+
+</script>
+
+</body>
+</html>
