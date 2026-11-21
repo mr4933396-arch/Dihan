@@ -1,5 +1,499 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07111f"><title>Product | WS TOP UP</title><style>
-:root{--bg:#07111f;--panel:#102139;--line:#2b4562;--cyan:#45d8ff;--gold:#ffc15a;--muted:#9eb0c6}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#183c5a,transparent 48%),var(--bg);color:#f5f8ff;font:15px Inter,system-ui,Arial,sans-serif}a{color:inherit;text-decoration:none}header{position:sticky;top:0;background:#091626ed;border-bottom:1px solid var(--line);z-index:3}.nav{max-width:1100px;margin:auto;min-height:66px;padding:9px 16px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:9px;font-weight:900;color:var(--cyan);font-size:19px}.brand img{width:40px;height:40px;object-fit:contain}.right{display:flex;align-items:center;gap:12px}.back{font-size:12px;color:var(--gold);font-weight:800}.select{background:#142740;color:white;border:1px solid #365371;border-radius:8px;padding:8px}.wrap{max-width:1100px;margin:22px auto;padding:0 16px 35px}.banner{display:flex;gap:15px;align-items:center;padding:18px;border:1px solid #2b5476;border-radius:17px;background:linear-gradient(120deg,#12334e,#14243a)}.icon{width:65px;height:65px;display:grid;place-items:center;border-radius:15px;background:#214765;font-size:38px}.banner h1{margin:0 0 6px;font-size:21px}.banner p{margin:0;color:var(--gold);font-size:11px;font-weight:800}.pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.pill{font-size:10px;border:1px solid #3c5976;background:#10243a;border-radius:30px;padding:5px 8px;color:#d3e3f2}.cols{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-top:18px}.box{border:1px solid var(--line);background:#102139;border-radius:14px;padding:16px}.step{font-size:15px;margin:0 0 13px}.packages{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.pack{background:#142943;border:1px solid #38516d;color:white;border-radius:10px;padding:13px;text-align:left;cursor:pointer}.pack strong{display:block;font-size:13px}.pack span{display:block;color:var(--gold);font-weight:800;margin-top:7px;font-size:13px}.pack.selected{border:2px solid var(--cyan);background:#1a3c55}.field{margin-top:13px}.field label{display:block;color:#c6d5e5;font-size:12px;margin-bottom:7px}.field input,.field select{width:100%;padding:12px;border:1px solid #45617e;background:#091a2c;color:white;border-radius:9px}.total{display:flex;justify-content:space-between;margin:16px 0;font-weight:900}.order{width:100%;padding:14px;border:0;border-radius:9px;background:linear-gradient(90deg,var(--cyan),#4a8fff);font-weight:900;color:#061321;cursor:pointer}.order:disabled{opacity:.4;cursor:not-allowed}.notice{font-size:11px;color:#ffcf85;line-height:1.6}.content{margin-top:17px;border:1px solid var(--line);background:#102139;border-radius:14px;padding:17px;color:#d4e0ee;line-height:1.65}.content h2{color:white;font-size:17px}.support{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}.support a{background:#142943;border:1px solid #38516d;padding:10px 13px;border-radius:9px;font-size:12px;font-weight:800}footer{text-align:center;padding:22px;background:#081523;color:#8ea3bb;font-size:12px}@media(max-width:720px){.cols{grid-template-columns:1fr}.wrap{padding:0 11px 28px}.banner{padding:14px}.banner h1{font-size:18px}}@media(max-width:360px){.packages{grid-template-columns:1fr}}
-</style></head><body><header><nav class="nav"><a class="brand" href="index.html"><img src="logo.png" alt="">WS TOP UP</a><div class="right"><select id="currency" class="select" aria-label="Currency"><option value="INR">INR ₹</option><option value="BDT">BDT ৳</option></select><a class="back" href="index.html">← PRODUCTS</a></div></nav></header><main class="wrap"><section class="banner"><div class="icon" id="icon">💎</div><div><h1 id="name">Product</h1><p>GLOBAL ORDER REQUEST · MANUAL DELIVERY</p><div class="pills"><span class="pill">🌍 Global-ready</span><span class="pill">🛡️ Admin verified</span><span class="pill">💬 Human support</span></div></div></section><div class="cols"><section class="box"><h2 class="step">1. Select a package</h2><div class="packages" id="packages"></div></section><section class="box"><h2 class="step">2. Enter account details</h2><div class="field"><label id="idlabel" for="uid">Game / App ID *</label><input id="uid" placeholder="Enter your account ID"></div><div class="field"><label for="country">Your country *</label><select id="country"><option value="">Select country</option><option>India</option><option>Bangladesh</option><option>United States</option><option>United Arab Emirates</option><option>Saudi Arabia</option><option>Other</option></select></div><div class="total"><span>Price</span><span id="total">Price on request</span></div><button class="order" id="order" disabled>CONTINUE TO WHATSAPP →</button><p class="notice">This sends an order request to WS TOP UP support. Your order is not confirmed until an administrator checks availability, price and payment. Never share your password, OTP or login code.</p></section></div><section class="content"><h2 id="descTitle">About this product</h2><p id="desc">Choose a package and provide the correct account ID. Our team will confirm the final price and delivery details manually.</p><b>How it works</b><ol><li>Select your preferred package.</li><li>Enter your correct account ID and country.</li><li>Send the request to WhatsApp.</li><li>Wait for the administrator to confirm price and payment instructions.</li><li>After payment verification, the administrator completes delivery.</li></ol><div class="support"><a href="https://wa.me/917814003979">💬 WhatsApp Support</a><a href="https://t.me/WSTopUpOfficial">✈️ Telegram Support</a></div></section></main><footer>© 2026 WS TOP UP · Manual order processing</footer><script>
-const products={imo:['IMO Diamond','💬','IMO Number / ID',[['10 Diamonds',29],['25 Diamonds',59],['50 Diamonds',99],['100 Diamonds',179],['200 Diamonds',349],['500 Diamonds',799]]],bigo:['Bigo Live Diamonds','🐼','Bigo ID',[['5 Diamonds',19],['10 Diamonds',29],['20 Diamonds',49],['50 Diamonds',119],['100 Diamonds',229],['200 Diamonds',449],['500 Diamonds',1099]]],poppo:['Poppo Live Coins','🟣','Poppo ID',[['Small Coins',49],['Medium Coins',99],['Large Coins',199]]],chamet:['Chamet','👻','Chamet ID',[['Starter Pack',49],['Basic Pack',99],['Plus Pack',199]]],telegram:['Telegram Stars & Premium','✈️','Telegram Username',[['50 Stars',99],['100 Stars',189],['250 Stars',449],['Premium 3 Months',499]]],truecaller:['Truecaller Premium','📱','Mobile Number',[['1 Month',99],['3 Months',249],['12 Months',699]]],starmaker:['StarMaker Coins','🎤','StarMaker UID',[['65 Coins',99],['325 Coins',489],['1100 Coins',1669]]],likee:['Likee Diamonds','💛','Likee ID',[['Small Pack',49],['Medium Pack',99],['Large Pack',199]]],tango:['Tango Live','💗','Tango ID',[['Starter Coins',99],['Value Coins',199],['Popular Coins',499]]],yoho:['YOHO Coins','🟢','YOHO ID',[['Small Pack',49],['Medium Pack',99],['Large Pack',199]]],freefire:['Free Fire Diamonds','🔥','Player UID',[['100 Diamonds',89],['310 Diamonds',249],['520 Diamonds',399],['1060 Diamonds',799]]],bgmi:['BGMI UC','🎮','Player ID',[]],pubg:['PUBG Mobile UC','🎯','Player ID',[]],mlbb:['Mobile Legends Diamonds','⚔️','Player ID',[]],itunes:['iTunes Gift Card','🎁','Email (never password)',[]],googleplay:['Google Play Gift Card','▶️','Email (never password)',[]],steam:['Steam Wallet','🕹️','Email (never password)',[]],netflix:['Netflix Subscription','🎬','Email (never password)',[]]};const key=new URLSearchParams(location.search).get('item')||'imo';const p=products[key]||products.imo;let selected=null;document.getElementById('name').textContent=p[0];document.getElementById('icon').textContent=p[1];document.getElementById('idlabel').textContent=p[2]+' *';document.getElementById('descTitle').textContent=p[0]+' — WS TOP UP';document.getElementById('desc').textContent='Order '+p[0]+' through WS TOP UP. Select a package and enter your correct details. Availability and final price are confirmed manually by our support team.';const currency=document.getElementById('currency');currency.value=localStorage.getItem('ws_currency')||'INR';currency.addEventListener('change',()=>{localStorage.setItem('ws_currency',currency.value);updatePrice()});const box=document.getElementById('packages');if(!p[3].length){box.innerHTML='<p style="color:#ffd18d">Package list will be added after supplier and regional availability checks. Contact support for a quote.</p>'}else p[3].forEach((x,i)=>{const b=document.createElement('button');b.className='pack';b.innerHTML=`<strong>${x[0]}</strong><span>₹${x[1].toLocaleString('en-IN')} <small style="color:#9eb0c6;font-weight:400">(demo price)</small></span>`;b.onclick=()=>{selected=x;document.querySelectorAll('.pack').forEach(z=>z.classList.remove('selected'));b.classList.add('selected');updatePrice();validate()};box.appendChild(b)});function updatePrice(){document.getElementById('total').textContent=!selected?'Price on request':currency.value==='INR'?'₹'+selected[1].toLocaleString('en-IN')+' (demo)':'BDT price on request'}function validate(){document.getElementById('order').disabled=!(selected&&document.getElementById('uid').value.trim()&&document.getElementById('country').value)}document.getElementById('uid').addEventListener('input',validate);document.getElementById('country').addEventListener('change',validate);document.getElementById('order').addEventListener('click',()=>{if(!selected)return;const cur=currency.value;const price=cur==='INR'?'INR ₹'+selected[1]+' (demo price; reconfirm)':'BDT price requested';const msg=`WS TOP UP — NEW MANUAL ORDER REQUEST%0AProduct: ${encodeURIComponent(p[0])}%0APackage: ${encodeURIComponent(selected[0])}%0APrice: ${encodeURIComponent(price)}%0AAccount: ${encodeURIComponent(document.getElementById('uid').value.trim())}%0ACountry: ${encodeURIComponent(document.getElementById('country').value)}%0ACurrency preference: ${cur}%0APlease confirm availability, final price and payment instructions.`;window.open('https://wa.me/917814003979?text='+msg,'_blank','noopener')});
-</script></body></html>
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07111f">
+<title>Product | WS TOP UP</title>
+
+<style>
+:root{
+--bg:#07111f;
+--panel:#102139;
+--line:#2b4562;
+--cyan:#45d8ff;
+--gold:#ffc15a;
+--muted:#9eb0c6;
+}
+*{box-sizing:border-box}
+body{
+margin:0;
+background:radial-gradient(ellipse at 50% -20%,#183c5a,transparent 48%),var(--bg);
+color:#f5f8ff;
+font:15px Inter,system-ui,Arial,sans-serif
+}
+a{color:inherit;text-decoration:none}
+header{
+position:sticky;top:0;background:#091626ed;
+border-bottom:1px solid var(--line);z-index:3
+}
+.nav{
+max-width:1100px;margin:auto;min-height:66px;padding:9px 16px;
+display:flex;align-items:center;justify-content:space-between
+}
+.brand{
+display:flex;align-items:center;gap:9px;font-weight:900;
+color:var(--cyan);font-size:19px
+}
+.brand img{width:40px;height:40px;object-fit:contain}
+.right{display:flex;align-items:center;gap:12px}
+.back{font-size:12px;color:var(--gold);font-weight:800}
+.select{
+background:#142740;color:white;border:1px solid #365371;
+border-radius:8px;padding:8px
+}
+.wrap{max-width:1100px;margin:22px auto;padding:0 16px 35px}
+.banner{
+display:flex;gap:15px;align-items:center;padding:18px;
+border:1px solid #2b5476;border-radius:17px;
+background:linear-gradient(120deg,#12334e,#14243a)
+}
+.icon{
+width:65px;height:65px;display:grid;place-items:center;
+border-radius:15px;background:#214765;font-size:38px
+}
+.banner h1{margin:0 0 6px;font-size:21px}
+.banner p{margin:0;color:var(--gold);font-size:11px;font-weight:800}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.pill{
+font-size:10px;border:1px solid #3c5976;background:#10243a;
+border-radius:30px;padding:5px 8px;color:#d3e3f2
+}
+.cols{
+display:grid;grid-template-columns:1.1fr .9fr;
+gap:16px;margin-top:18px
+}
+.box{
+border:1px solid var(--line);background:#102139;
+border-radius:14px;padding:16px
+}
+.step{font-size:16px;margin:0 0 14px}
+.packages{
+display:grid;grid-template-columns:repeat(2,1fr);gap:10px
+}
+.pack{
+background:linear-gradient(145deg,#192a43,#111e32);
+border:1px solid #344762;color:white;border-radius:12px;
+padding:13px;text-align:left;cursor:pointer;
+min-width:0;transition:.2s
+}
+.pack strong{
+display:block;font-size:14px;white-space:nowrap;
+overflow:hidden;text-overflow:ellipsis
+}
+.pack .price{
+display:block;color:#ff9d00;font-weight:900;
+font-size:16px;margin-top:7px
+}
+.pack .usd{
+display:block;color:#00c99a;font-size:11px;
+margin-top:4px;font-weight:700
+}
+.pack .stock{
+display:block;color:#00d69a;font-size:10px;margin-top:5px
+}
+.pack.selected{
+border:2px solid var(--cyan);
+background:#1a3c55;
+box-shadow:0 0 12px #45d8ff35
+}
+.field{margin-top:13px}
+.field label{
+display:block;color:#c6d5e5;font-size:12px;margin-bottom:7px
+}
+.field input,.field select{
+width:100%;padding:12px;border:1px solid #45617e;
+background:#091a2c;color:white;border-radius:9px
+}
+.total{
+display:flex;justify-content:space-between;gap:10px;
+margin:16px 0;font-weight:900
+}
+.order{
+width:100%;padding:14px;border:0;border-radius:9px;
+background:linear-gradient(90deg,var(--cyan),#4a8fff);
+font-weight:900;color:#061321;cursor:pointer
+}
+.order:disabled{opacity:.4;cursor:not-allowed}
+.notice{font-size:11px;color:#ffcf85;line-height:1.6}
+.content{
+margin-top:17px;border:1px solid var(--line);
+background:#102139;border-radius:14px;padding:17px;
+color:#d4e0ee;line-height:1.65
+}
+.content h2{color:white;font-size:17px}
+.support{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}
+.support a{
+background:#142943;border:1px solid #38516d;
+padding:10px 13px;border-radius:9px;
+font-size:12px;font-weight:800
+}
+footer{
+text-align:center;padding:22px;background:#081523;
+color:#8ea3bb;font-size:12px
+}
+@media(max-width:720px){
+.cols{grid-template-columns:1fr}
+.wrap{padding:0 11px 28px}
+.banner{padding:14px}
+.banner h1{font-size:18px}
+}
+@media(max-width:360px){
+.packages{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<nav class="nav">
+<a class="brand" href="index.html">
+<img src="logo.png" alt="WS TOP UP">WS TOP UP
+</a>
+<div class="right">
+<select id="currency" class="select">
+<option value="INR">INR ₹</option>
+<option value="USD">USD $</option>
+</select>
+<a class="back" href="index.html">← PRODUCTS</a>
+</div>
+</nav>
+</header>
+
+<main class="wrap">
+
+<section class="banner">
+<div class="icon" id="icon">💎</div>
+<div>
+<h1 id="name">Product</h1>
+<p>GLOBAL ORDER REQUEST · MANUAL DELIVERY</p>
+<div class="pills">
+<span class="pill">🌍 Global-ready</span>
+<span class="pill">🛡️ Admin verified</span>
+<span class="pill">💬 Human support</span>
+</div>
+</div>
+</section>
+
+<div class="cols">
+
+<section class="box">
+<h2 class="step">1. Select a package</h2>
+<div class="packages" id="packages"></div>
+</section>
+
+<section class="box">
+<h2 class="step">2. Enter account details</h2>
+
+<div class="field">
+<label id="idlabel" for="uid">Game / App ID *</label>
+<input id="uid" placeholder="Enter your account ID">
+</div>
+
+<div class="field">
+<label for="country">Your country *</label>
+<select id="country">
+<option value="">Select country</option>
+<option>India</option>
+<option>Bangladesh</option>
+<option>United States</option>
+<option>United Arab Emirates</option>
+<option>Saudi Arabia</option>
+<option>Other</option>
+</select>
+</div>
+
+<div class="total">
+<span>Selected Price</span>
+<span id="total">Select package</span>
+</div>
+
+<button class="order" id="order" disabled>
+CONTINUE TO WHATSAPP →
+</button>
+
+<p class="notice">
+Your order is not confirmed until an administrator
+checks availability, price and payment. Never share
+your password, OTP or login code.
+</p>
+</section>
+</div>
+
+<section class="content">
+<h2 id="descTitle">About this product</h2>
+<p id="desc">
+Choose a package and provide the correct account ID.
+Our team will confirm your order manually.
+</p>
+
+<b>How it works</b>
+<ol>
+<li>Select your preferred package.</li>
+<li>Enter your correct account ID and country.</li>
+<li>Send the request to WhatsApp.</li>
+<li>Wait for the administrator to confirm payment.</li>
+<li>After payment verification, delivery is completed.</li>
+</ol>
+
+<div class="support">
+<a href="https://wa.me/917814003979">💬 WhatsApp Support</a>
+<a href="https://t.me/WSTopUpOfficial">✈️ Telegram Support</a>
+</div>
+</section>
+
+</main>
+
+<footer>
+© 2026 WS TOP UP · Manual order processing
+</footer>
+
+<script>
+
+const products={
+
+imo:[
+'IMO Diamond',
+'💬',
+'IMO Number / ID',
+[
+['10 Diamonds',18.61,0.20],
+['15 Diamonds',28.29,0.30],
+['25 Diamonds',44.67,0.48],
+['50 Diamonds',85.62,0.91],
+['100 Diamonds',171.24,1.82],
+['160 Diamonds',275.48,2.93],
+['200 Diamonds',342.48,3.65],
+['210 Diamonds',361.10,3.84],
+['420 Diamonds',718.47,7.65],
+['500 Diamonds',856.21,9.12],
+['840 Diamonds',1436.94,15.30],
+['1000 Diamonds',1712.41,18.23],
+['1680 Diamonds',2877.60,30.64],
+['2000 Diamonds',3424.83,36.46],
+['2100 Diamonds',3596.07,38.29],
+['4200 Diamonds',7195.86,76.61],
+['5000 Diamonds',8562.07,91.16],
+['8400 Diamonds',14391.73,153.22],
+['10000 Diamonds',17124.15,182.31],
+['16800 Diamonds',28776.01,306.36],
+['20000 Diamonds',34248.29,364.62],
+['21000 Diamonds',35979.32,383.05]
+]
+],
+
+bigo:['Bigo Live Diamonds','🐼','Bigo ID',[
+['5 Diamonds',19],['10 Diamonds',29],
+['20 Diamonds',49],['50 Diamonds',119],
+['100 Diamonds',229],['200 Diamonds',449],
+['500 Diamonds',1099]
+]],
+
+poppo:['Poppo Live Coins','🟣','Poppo ID',[
+['Small Coins',49],['Medium Coins',99],['Large Coins',199]
+]],
+
+chamet:['Chamet','👻','Chamet ID',[
+['Starter Pack',49],['Basic Pack',99],['Plus Pack',199]
+]],
+
+telegram:['Telegram Stars & Premium','✈️','Telegram Username',[
+['50 Stars',99],['100 Stars',189],
+['250 Stars',449],['Premium 3 Months',499]
+]],
+
+truecaller:['Truecaller Premium','📱','Mobile Number',[
+['1 Month',99],['3 Months',249],['12 Months',699]
+]],
+
+starmaker:['StarMaker Coins','🎤','StarMaker UID',[
+['65 Coins',99],['325 Coins',489],['1100 Coins',1669]
+]],
+
+likee:['Likee Diamonds','💛','Likee ID',[
+['Small Pack',49],['Medium Pack',99],['Large Pack',199]
+]],
+
+tango:['Tango Live','💗','Tango ID',[
+['Starter Coins',99],['Value Coins',199],['Popular Coins',499]
+]],
+
+yoho:['YOHO Coins','🟢','YOHO ID',[
+['Small Pack',49],['Medium Pack',99],['Large Pack',199]
+]],
+
+freefire:['Free Fire Diamonds','🔥','Player UID',[
+['100 Diamonds',89],['310 Diamonds',249],
+['520 Diamonds',399],['1060 Diamonds',799]
+]],
+
+bgmi:['BGMI UC','🎮','Player ID',[]],
+pubg:['PUBG Mobile UC','🎯','Player ID',[]],
+mlbb:['Mobile Legends Diamonds','⚔️','Player ID',[]],
+itunes:['iTunes Gift Card','🎁','Email',[]],
+googleplay:['Google Play Gift Card','▶️','Email',[]],
+steam:['Steam Wallet','🕹️','Email',[]],
+netflix:['Netflix Subscription','🎬','Email',[]]
+
+};
+
+const key=new URLSearchParams(location.search).get('item')||'imo';
+const p=products[key]||products.imo;
+
+let selected=null;
+
+const currency=document.getElementById('currency');
+const box=document.getElementById('packages');
+
+document.getElementById('name').textContent=p[0];
+document.getElementById('icon').textContent=p[1];
+document.getElementById('idlabel').textContent=p[2]+' *';
+
+document.getElementById('descTitle').textContent=p[0]+' — WS TOP UP';
+
+document.getElementById('desc').textContent=
+'Order '+p[0]+' through WS TOP UP. Select a package and enter your correct details. Availability and final price are confirmed manually by our support team.';
+
+currency.value=localStorage.getItem('ws_currency')||'INR';
+
+function money(value,cur){
+if(cur==='USD'){
+return '$'+Number(value).toFixed(2);
+}
+return '₹'+Number(value).toLocaleString('en-IN',{
+minimumFractionDigits:2,
+maximumFractionDigits:2
+});
+}
+
+function renderPackages(){
+
+box.innerHTML='';
+
+if(!p[3].length){
+box.innerHTML='<p style="color:#ffd18d">Package list coming soon. Contact support for a quote.</p>';
+return;
+}
+
+p[3].forEach((x,i)=>{
+
+const inr=x[1];
+const usd=x.length>2?x[2]:inr/93.93;
+
+const b=document.createElement('button');
+b.type='button';
+b.className='pack';
+
+b.innerHTML=`
+<strong>${x[0]}</strong>
+<span class="price">${money(currency.value==='INR'?inr:usd,currency.value)}</span>
+<span class="usd">${money(currency.value==='INR'?usd:inr,currency.value==='INR'?'USD':'INR')} approx.</span>
+<span class="stock">● In Stock</span>
+`;
+
+b.onclick=()=>{
+selected={
+name:x[0],
+inr:inr,
+usd:usd
+};
+
+document.querySelectorAll('.pack').forEach(z=>{
+z.classList.remove('selected');
+});
+
+b.classList.add('selected');
+
+updatePrice();
+validate();
+};
+
+box.appendChild(b);
+
+});
+
+}
+
+function updatePrice(){
+
+const total=document.getElementById('total');
+
+if(!selected){
+total.textContent='Select package';
+return;
+}
+
+const main=currency.value==='INR'
+?money(selected.inr,'INR')
+:money(selected.usd,'USD');
+
+const other=currency.value==='INR'
+?money(selected.usd,'USD')
+:money(selected.inr,'INR');
+
+total.innerHTML=main+
+'<br><small style="color:#00c99a;font-size:11px">'+
+other+' approx.</small>';
+
+}
+
+currency.addEventListener('change',()=>{
+localStorage.setItem('ws_currency',currency.value);
+renderPackages();
+updatePrice();
+});
+
+function validate(){
+
+document.getElementById('order').disabled=!(
+selected &&
+document.getElementById('uid').value.trim() &&
+document.getElementById('country').value
+);
+
+}
+
+document.getElementById('uid').addEventListener('input',validate);
+document.getElementById('country').addEventListener('change',validate);
+
+document.getElementById('order').addEventListener('click',()=>{
+
+if(!selected)return;
+
+const cur=currency.value;
+
+const price=cur==='INR'
+?money(selected.inr,'INR')
+:money(selected.usd,'USD');
+
+const other=cur==='INR'
+?money(selected.usd,'USD')
+:money(selected.inr,'INR');
+
+const account=document.getElementById('uid').value.trim();
+const country=document.getElementById('country').value;
+
+const message=
+`WS TOP UP - NEW ORDER REQUEST
+Product: ${p[0]}
+Package: ${selected.name}
+Price: ${price}
+Other currency: ${other} approx.
+Account ID: ${account}
+Country: ${country}
+Currency: ${cur}
+Please confirm availability, final price and payment instructions.`;
+
+const url='https://wa.me/917814003979?text='+encodeURIComponent(message);
+
+window.open(url,'_blank','noopener');
+
+});
+
+renderPackages();
+
+</script>
+</body>
+</html>
