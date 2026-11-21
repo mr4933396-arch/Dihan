@@ -1,26 +1,27 @@
-WS TOP UP — PHASE 1 GLOBAL STOREFRONT
+WS TOP UP - ONLY NEW PRODUCTS ADD-ON
 
-Files:
-- index.html: global home page, category filters, search, currency preference selector
-- product.html: product page, account details, country selection and WhatsApp manual order request
-- logo.png: WS TOP UP logo
+This pack intentionally excludes all products already present in the existing WS TOP UP catalogue:
+IMO, Bigo, Poppo, Chamet, Telegram, Truecaller, StarMaker, Likee, Tango, YOHO, Free Fire, BGMI, PUBG Mobile, Mobile Legends, iTunes, Google Play, Steam Wallet and Netflix.
 
-HOW TO UPDATE THE EXISTING GITHUB WEBSITE
-1. Download and extract this ZIP.
-2. Open the GitHub repository currently connected to your Render website.
-3. Upload index.html, product.html and logo.png to the repository ROOT (same folder).
-4. Replace the old files and commit the changes. Render should redeploy if auto-deploy is enabled.
-5. Open the live website and test product pages and WhatsApp order requests.
+Included in new-products.html only:
+FC Mobile BD, Genshin Impact US, Super Sus, Blood Strike, Honor of Kings, Razer Gold India, ChatGPT Plus, Canva Pro, eFootball, Clash of Clans, YouTube Premium, TikTok Coins, Spotify.
 
-IMPORTANT LIMITATIONS — THIS IS THE FIRST FRONTEND PHASE, NOT THE COMPLETE MARKETPLACE.
-- Existing INR package values are DEMO values and must be replaced with your real selling prices before accepting orders.
-- BDT prices are deliberately shown as price-on-request; no exchange rate or BDT price has been invented.
-- Orders are sent to WhatsApp for manual handling. There is no secure order database, customer login, admin dashboard, payment gateway, wallet, reseller account, or automatic delivery in this static version.
-- Do not enter passwords, OTPs, login codes, or payment card details in order forms.
+HOW TO ADD:
+1. Upload only new-products.html to the root of your GitHub repository.
+2. Do NOT replace your existing index.html or product.html.
+3. Add a link/button in your current homepage that points to ./new-products.html.
+4. Commit and wait for Render deployment.
 
-NEXT BACKEND PHASE
-A proper global marketplace needs a backend and persistent database for customer accounts, product/price management, admin login, order records and status updates. Payment collection should be connected only after choosing a supported provider and configuring its credentials securely on the server. Do not put secret keys in HTML or GitHub.
+PRICES:
+- Published Vertex Bazaar BDT package prices were included where visible in the researched product pages.
+- INR is a rough conversion using 1 BDT = 0.7436 INR; update INR_RATE inside this file when needed.
+- YouTube Premium, TikTok Coins and Spotify are shown as Price on request because no reliable current package price was visible.
+- Stock and prices may change; verify before taking payment.
+- These are reference prices, not your final retail prices.
 
-Support contacts configured from the current project:
-WhatsApp: +91 7814003979
-Telegram: @WSTopUpOfficial
+SAFETY / LIMITATIONS:
+- This add-on only creates a product catalog and manual WhatsApp order request.
+- It does not automate payment or top-up delivery.
+- The order form does not request passwords or OTPs. For products where the supplier asks for login credentials, confirm a safe supported fulfillment method first.
+- WhatsApp number in file is 917814003979; change if necessary.
+- Product graphics use emoji placeholders.
