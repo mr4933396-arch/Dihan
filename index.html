@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,30 +6,24 @@
 <meta name="theme-color" content="#07111f">
 <meta name="description" content="WS TOP UP - Global Digital Top-Up Store">
 <title>WS TOP UP | Global Digital Top-Up Store</title>
-
 <style>
-:root{
---bg:#07111f;--panel:#101f33;--panel2:#142740;--line:#263e5c;
---cyan:#45d8ff;--gold:#ffc15a;--muted:#9eb0c6;--white:#f5f8ff;
-}
+:root{--bg:#07111f;--panel:#101f33;--panel2:#142740;--line:#263e5c;--cyan:#45d8ff;--gold:#ffc15a;--muted:#9eb0c6;--white:#f5f8ff}
 *{box-sizing:border-box}
 body{margin:0;background:radial-gradient(ellipse at 50% -15%,#183c5a 0,transparent 46%),var(--bg);color:var(--white);font:15px Inter,system-ui,Arial,sans-serif}
 a{color:inherit;text-decoration:none}
 .top{position:sticky;top:0;z-index:5;background:#091626ed;border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
 .nav{max-width:1160px;margin:auto;min-height:70px;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:15px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:19px}
-.brand img{width:44px;height:44px;object-fit:contain;border-radius:10px}
+.brand img{width:48px;height:48px;object-fit:contain;border-radius:10px}
 .brand span{color:var(--cyan)}
 .navright{display:flex;align-items:center;gap:10px}
 .select{background:#142740;color:white;border:1px solid #365371;border-radius:9px;padding:9px 10px}
 .login{border:1px solid #365371;border-radius:9px;padding:9px 13px;font-weight:700}
-.hero{max-width:1160px;margin:25px auto 18px;padding:44px 22px;text-align:center;border:1px solid #2b5476;border-radius:22px;background:linear-gradient(120deg,#102b43e8,#101c32f2);box-shadow:0 20px 70px #0005}
-.eyebrow{color:var(--gold);font-weight:800;font-size:11px;letter-spacing:2px}
-.hero h1{font-size:clamp(28px,5vw,48px);line-height:1.08;margin:12px 0}
-.hero h1 span{color:var(--cyan)}
-.hero p{color:#c0d0e1;max-width:650px;margin:0 auto 22px;line-height:1.6}
+.hero{max-width:1160px;margin:22px auto 18px;padding:0 18px;text-align:center}
+.hero-banner{display:block;width:100%;height:auto;max-height:570px;object-fit:contain;border:1px solid #24527a;border-radius:18px;box-shadow:0 18px 55px #0008}
+.hero-actions{margin-top:14px}
 .cta{display:inline-block;background:linear-gradient(90deg,var(--cyan),#4a8fff);color:#061321;padding:13px 22px;border-radius:10px;font-weight:900;margin:5px}
-.trust{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;margin-top:20px}
+.trust{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;margin-top:13px}
 .trust span,.tag{font-size:11px;color:#c7d6e8;border:1px solid #38516d;background:#0c1b2d;padding:7px 10px;border-radius:30px}
 .wrap{max-width:1160px;margin:auto;padding:0 18px 40px}
 .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:24px 0 14px;flex-wrap:wrap}
@@ -44,8 +37,8 @@ a{color:inherit;text-decoration:none}
 .card{background:linear-gradient(145deg,#142840,#0d1a2c);border:1px solid var(--line);border-radius:15px;overflow:hidden;transition:transform .2s,border-color .2s;min-width:0;cursor:pointer}
 .card:hover{transform:translateY(-3px);border-color:var(--cyan)}
 .art{height:145px;width:100%;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:8px;background:radial-gradient(circle at 50% 40%,#28618a,#12243a 75%)}
-.art img{display:block;width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;object-position:center;transform:scale(1.22);transform-origin:center;transition:transform .3s ease}
-.card:hover .art img{transform:scale(1.32)}
+.art img{display:block;width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;object-position:center;transform:scale(1.12);transform-origin:center;transition:transform .3s ease}
+.card:hover .art img{transform:scale(1.2)}
 .art .emoji{font-size:52px;line-height:1;display:block;text-align:center}
 .info{padding:13px}
 .info strong{font-size:14px;line-height:1.4;display:inline-block}
@@ -60,8 +53,6 @@ a{color:inherit;text-decoration:none}
 .support{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 .support a{padding:11px 15px;border:1px solid #31516e;border-radius:9px;background:#10243a;font-weight:700;font-size:13px}
 footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-align:center;padding:24px 15px;font-size:12px;line-height:1.8}
-
-/* PRODUCT DETAIL */
 .detail{max-width:850px;margin:25px auto 35px;padding:0 15px}
 .back{display:inline-block;color:var(--cyan);margin:0 0 15px;cursor:pointer;background:none;border:0;font-size:14px}
 .detail-head{display:flex;align-items:center;gap:14px;margin-bottom:15px}
@@ -82,14 +73,13 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 .note{font-size:12px;color:#ffd58a;line-height:1.6}
 .hidden{display:none!important}
 .product-count{font-size:12px;color:var(--muted);margin:0 0 12px}
-
 @media(max-width:850px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.features{grid-template-columns:repeat(2,1fr)}.art{height:135px}}
 @media(max-width:580px){
-.nav{padding:9px 12px}.brand{font-size:16px}.brand img{width:38px;height:38px}.login{display:none}
-.hero{margin:14px 10px;padding:30px 15px}.wrap{padding:0 11px 30px}
+.nav{padding:9px 12px}.brand{font-size:16px}.brand img{width:40px;height:40px}.login{display:none}
+.hero{margin:12px auto 16px;padding:0 10px}.hero-banner{border-radius:12px}.wrap{padding:0 11px 30px}
 .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.art{height:125px;padding:6px}.art img{transform:scale(1.25)}
-.card:hover .art img{transform:scale(1.32)}
+.art{height:125px;padding:6px}.art img{transform:scale(1.12)}
+.card:hover .art img{transform:scale(1.2)}
 .art .emoji{font-size:44px}.info{padding:10px}.info strong{font-size:13px}
 .search{min-width:0;width:100%}.toolbar{align-items:stretch}.filters{width:100%}
 .features{gap:8px}.feature{padding:12px}
@@ -100,19 +90,16 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 @media(max-width:350px){.grid{grid-template-columns:1fr}.art{height:150px}}
 </style>
 </head>
-
 <body>
-
 <header class="top" id="top">
 <nav class="nav">
 <a class="brand" href="index.html">
-<img src="logo.png" alt="WS TOP UP logo">
+<img src="ws-top-up-logo.png" alt="WS TOP UP logo" onerror="this.onerror=null;this.src='logo.png'">
 <span>WS TOP UP</span>
 </a>
 <div class="navright">
 <select id="currency" class="select" aria-label="Choose currency">
-<option value="INR">INR ₹</option>
-<option value="BDT">BDT ৳</option>
+<option value="INR">INR ₹</option><option value="BDT">BDT ৳</option>
 </select>
 <a class="login" href="#support">Support</a>
 </div>
@@ -120,25 +107,18 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 </header>
 
 <section class="hero" id="hero">
-<div class="eyebrow">GLOBAL DIGITAL TOP-UP STORE</div>
-<h1>LEVEL UP WITH <span>WS TOP UP</span></h1>
-<p>Explore game top-ups, social app coins, gift cards and digital services. Choose your product, send an order request and our team will confirm it manually.</p>
-<a class="cta" href="#products">EXPLORE PRODUCTS ↓</a>
+<img class="hero-banner" src="ws-top-up-banner.png" alt="WS TOP UP gaming top-up banner">
+<div class="hero-actions"><a class="cta" href="#products">EXPLORE PRODUCTS ↓</a></div>
 <div class="trust">
-<span>🌍 Global Customers</span>
-<span>🛡️ Manual Order Verification</span>
-<span>💬 Human Support</span>
+<span>🌍 Global Customers</span><span>🛡️ Manual Order Verification</span><span>💬 Human Support</span>
 </div>
 </section>
 
 <main class="wrap" id="catalogView">
 <div class="toolbar">
-<h2>Browse Products</h2>
-<div class="filters">
-<input id="search" class="search" placeholder="Search games or services…" aria-label="Search products">
+<h2 id="products">Browse Products</h2>
+<div class="filters"><input id="search" class="search" placeholder="Search games or services…" aria-label="Search products"></div>
 </div>
-</div>
-
 <div class="categories" id="categories">
 <button class="chip active" data-cat="all">All Products</button>
 <button class="chip" data-cat="games">Games Top Up</button>
@@ -146,15 +126,11 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 <button class="chip" data-cat="gift">Gift Cards</button>
 <button class="chip" data-cat="subs">Subscriptions</button>
 </div>
-
 <div class="product-count" id="productCount"></div>
 <div class="grid" id="grid"></div>
 
 <section class="section">
-<div class="toolbar">
-<h2>Why choose WS TOP UP?</h2>
-<span class="tag">SERVICE WITH CARE</span>
-</div>
+<div class="toolbar"><h2>Why choose WS TOP UP?</h2><span class="tag">SERVICE WITH CARE</span></div>
 <div class="features">
 <div class="feature">🌐<b>Global-ready</b><p>Products can be organised by country and supported region.</p></div>
 <div class="feature">🔎<b>Manual verification</b><p>Every order is checked by our team before delivery.</p></div>
@@ -162,7 +138,6 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 <div class="feature">💬<b>Direct support</b><p>Contact our team for order updates and assistance.</p></div>
 </div>
 </section>
-
 <section class="section" id="support">
 <h2>Customer Support</h2>
 <p style="color:var(--muted)">Need help before ordering? Contact WS TOP UP.</p>
@@ -177,17 +152,11 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 <button class="back" id="back">← BACK TO ALL PRODUCTS</button>
 <div id="detailContent"></div>
 </section>
-
-<footer>
-© 2026 WS TOP UP · Global Digital Top-Up Store
-<br>
-Prices and availability are confirmed by the administrator before payment and delivery.
-</footer>
+<footer>© 2026 WS TOP UP · Global Digital Top-Up Store<br>Prices and availability are confirmed by the administrator before payment and delivery.</footer>
 
 <script>
 const WHATSAPP="917814003979";
 const INR_RATE=0.7436;
-
 const oldItems=[
 ['imo','IMO Diamond','./imo.png','social','Social app top-up','💬'],
 ['bigo','Bigo Live Diamonds','./bigo.png','social','Social app top-up','🐼'],
@@ -210,157 +179,76 @@ const oldItems=[
 ];
 
 const newItems=[
-{
-id:"fc-mobile",name:"FC Mobile (BD)",cat:"games",label:"Games Top Up",icon:"⚽",fields:["Player ID"],
-packages:[["40 Points",40],["100 Points",125],["520 Points",575],["1070 Points",1175],["2200 Points",2350],["5750 Points",5900],["12000 Points",11800],["39 Silver",40],["99 Silver",125],["499 Silver",575],["999 Silver",1175],["1999 Silver",2350],["4999 Silver",5900],["9999 Silver",11800]]
-},
-{
-id:"genshin",name:"Genshin Impact (US)",cat:"games",label:"Games Top Up",icon:"✨",fields:["User ID / UID","Server"],
-packages:[["Blessing of the Welkin Moon",681.6],["60 Genesis Crystals",134.6],["330 Chronal Nexus",681.6],["1090 Chronal Nexus",2045.2],["60 Chronal Nexus",134.6],["2240 Chronal Nexus",4093.2],["3880 Chronal Nexus",6822.9],["8080 Chronal Nexus",13647.3],["330 Genesis Crystals",681.6],["1090 Genesis Crystals",2045.2],["2240 Genesis Crystals",4093.2],["3880 Genesis Crystals",6822.9],["8080 Genesis Crystals",13647.3]],
-note:"US region product. Confirm the customer's server and region before ordering."
-},
-{
-id:"super-sus",name:"Super Sus Goldstar",cat:"games",label:"Games Top Up",icon:"🕹️",fields:["UID"],
-packages:[["128 Goldstar",93],["395 Goldstar",278],["670 Goldstar",462],["1360 Goldstar",924],["2760 Goldstar",1848],["7000 Goldstar",4620],["Weekly Card",112],["Monthly Card",1120],["Super Pass",572],["Super VIP Card",1271],["Super Pass Bundle",1048],["1+1 Gift Pack",330]]
-},
-{
-id:"blood-strike",name:"Blood Strike",cat:"games",label:"Games Top Up",icon:"🎮",fields:["UID"],
-packages:[["51 Golds",55],["105 Golds",109],["320 Golds",331],["540 Golds",554],["1100 Golds",1109],["2260 Golds",2220],["5800 Golds",5558],["099deal",110],["7DS Featured Valor Voucher",115],["Seven Deadly Sins Upgrade Point Chest",229],["Season Pass",115],["Strike Pass Elite",445],["Strike Pass Premium",1003],["Ultra Skin Lucky Chest",55],["Level Up Pass",222],["Lucky Bag Week",110]]
-},
-{
-id:"honor-kings",name:"Honor of Kings (HOK)",cat:"games",label:"Games Top Up",icon:"👑",fields:["Player ID"],
-packages:[["16 Token",25],["80 Token",120],["240 Token",360],["400 Token",599],["560 Token",839],["830 Token",1200],["1245 Token",1800],["2508 Token",3601],["4180 Token",6002],["8360 Token",12005],["Weekly Card",137],["Weekly Card Plus",400]]
-},
-{
-id:"razer-gold",name:"Razer Gold India",cat:"gift",label:"Gift Cards",icon:"🐉",fields:["Customer Email (for order updates)"],
-packages:[["50 INR",78],["100 INR",155],["250 INR",386],["500 INR",772],["2000 INR",3085]],
-note:"India-region code. Confirm region compatibility before sale."
-},
-{
-id:"chatgpt-plus",name:"ChatGPT Plus Subscription",cat:"subs",label:"Subscriptions",icon:"🤖",fields:["Account Email (never password)"],
-packages:[["1 Month",225],["3 Month",650]],
-note:"Subscription terms and account eligibility apply. Never request passwords or OTPs."
-},
-{
-id:"canva-pro",name:"Canva Pro",cat:"subs",label:"Subscriptions",icon:"🎨",fields:["Account Email (never password)"],
-packages:[["1 Year",49],["2 Year",99],["Lifetime",199]],
-note:"Confirm the exact delivery method and terms before selling. Never request passwords or OTPs."
-},
-{
-id:"efootball",name:"eFootball Top Up",cat:"games",label:"Login Top Up",icon:"⚽",fields:["Device","KONAMI ID / Email"],
-packages:[["Luis Suarez +50 Coins",130],["Iker Casillas",315],["10 Draws Of Player",1035],["130 Coins",150],["300 Coins",340],["550 Coins",610],["750 Coins",825],["1040 Coins",1115],["2130 Coins",2285],["3250 Coins",3430],["5700 Coins",5590],["12800 Coins",11945]],
-note:"Confirm a safe, supported delivery method with the supplier. Never share passwords or OTPs."
-},
-{
-id:"clash-of-clans",name:"Clash of Clans",cat:"games",label:"Login Top Up",icon:"🏰",fields:["Supercell Player Tag / ID"],
-packages:[["Event Pass",525],["Gold Pass",645],["80 Gems",65],["500 Gems",325],["1200 Gems",645],["2500 Gems",1290],["6500 Gems",3225],["$0.99 Purchase",130],["$1.49 Purchase",190],["$1.99 Purchase",250],["$2.49 Purchase",325],["$2.99 Purchase",390],["$4.49 Purchase",580],["$4.99 Purchase",645],["$5.99 Purchase",775],["$6.49 Purchase",840],["$9.99 Purchase",1290]]
-},
-{
-id:"youtube-premium",name:"YouTube Premium",cat:"subs",label:"Subscriptions",icon:"▶️",fields:["Account Email (never password)"],
-packages:[["1 Month",21615],["3 Month",64845],["6 Month",115280],["12 Month",180125]]
-},
-{
-id:"tiktok-coins",name:"TikTok Coins",cat:"games",label:"Login Top Up",icon:"🎵",fields:["TikTok Username / User ID"],
-packages:[["85 Coins",21615],["100 Coins",25218],["140 Coins",36025],["210 Coins",53317],["280 Coins",72050],["350 Coins",89342],["420 Coins",106634],["500 Coins",126808],["700 Coins",177964],["1050 Coins",266585],["1400 Coins",355927],["2800 Coins",711854],["3500 Coins",890538],["4200 Coins",1066340],["7000 Coins",1779635],["70 Coins",18013]]
-},
-{
-id:"spotify",name:"Spotify Premium",cat:"subs",label:"Subscriptions",icon:"🎧",fields:["Account Email (never password)"],
-packages:[["1 Month",17292],["3 Month",46833]]
-}
+{id:"fc-mobile",name:"FC Mobile (BD)",cat:"games",label:"Games Top Up",icon:"⚽",fields:["Player ID"],packages:[["40 Points",40],["100 Points",125],["520 Points",575],["1070 Points",1175],["2200 Points",2350],["5750 Points",5900],["12000 Points",11800],["39 Silver",40],["99 Silver",125],["499 Silver",575],["999 Silver",1175],["1999 Silver",2350],["4999 Silver",5900],["9999 Silver",11800]]},
+{id:"genshin",name:"Genshin Impact (US)",cat:"games",label:"Games Top Up",icon:"✨",fields:["User ID / UID","Server"],packages:[["Blessing of the Welkin Moon",681.6],["60 Genesis Crystals",134.6],["330 Chronal Nexus",681.6],["1090 Chronal Nexus",2045.2],["60 Chronal Nexus",134.6],["2240 Chronal Nexus",4093.2],["3880 Chronal Nexus",6822.9],["8080 Chronal Nexus",13647.3],["330 Genesis Crystals",681.6],["1090 Genesis Crystals",2045.2],["2240 Genesis Crystals",4093.2],["3880 Genesis Crystals",6822.9],["8080 Genesis Crystals",13647.3]],note:"US region product. Confirm the customer's server and region before ordering."},
+{id:"super-sus",name:"Super Sus Goldstar",cat:"games",label:"Games Top Up",icon:"🕹️",fields:["UID"],packages:[["128 Goldstar",93],["395 Goldstar",278],["670 Goldstar",462],["1360 Goldstar",924],["2760 Goldstar",1848],["7000 Goldstar",4620],["Weekly Card",112],["Monthly Card",1120],["Super Pass",572],["Super VIP Card",1271],["Super Pass Bundle",1048],["1+1 Gift Pack",330]]},
+{id:"blood-strike",name:"Blood Strike",cat:"games",label:"Games Top Up",icon:"🎮",fields:["UID"],packages:[["51 Golds",55],["105 Golds",109],["320 Golds",331],["540 Golds",554],["1100 Golds",1109],["2260 Golds",2220],["5800 Golds",5558],["099deal",110],["7DS Featured Valor Voucher",115],["Seven Deadly Sins Upgrade Point Chest",229],["Season Pass",115],["Strike Pass Elite",445],["Strike Pass Premium",1003],["Ultra Skin Lucky Chest",55],["Level Up Pass",222],["Lucky Bag Week",110]]},
+{id:"honor-kings",name:"Honor of Kings (HOK)",cat:"games",label:"Games Top Up",icon:"👑",fields:["Player ID"],packages:[["16 Token",25],["80 Token",120],["240 Token",360],["400 Token",599],["560 Token",839],["830 Token",1200],["1245 Token",1800],["2508 Token",3601],["4180 Token",6002],["8360 Token",12005],["Weekly Card",137],["Weekly Card Plus",400]]},
+{id:"razer-gold",name:"Razer Gold India",cat:"gift",label:"Gift Cards",icon:"🐉",fields:["Customer Email (for order updates)"],packages:[["50 INR",78],["100 INR",155],["250 INR",386],["500 INR",772],["2000 INR",3085]],note:"India-region code. Confirm region compatibility before sale."},
+{id:"chatgpt-plus",name:"ChatGPT Plus Subscription",cat:"subs",label:"Subscriptions",icon:"🤖",fields:["Account Email (never password)"],packages:[["1 Month",225],["3 Month",650]],note:"Subscription terms and account eligibility apply. Never request passwords or OTPs."},
+{id:"canva-pro",name:"Canva Pro",cat:"subs",label:"Subscriptions",icon:"🎨",fields:["Account Email (never password)"],packages:[["1 Year",49],["2 Year",99],["Lifetime",199]],note:"Confirm the exact delivery method and terms before selling. Never request passwords or OTPs."},
+{id:"efootball",name:"eFootball Top Up",cat:"games",label:"Login Top Up",icon:"⚽",fields:["Device","KONAMI ID / Email"],packages:[["Luis Suarez +50 Coins",130],["Iker Casillas",315],["10 Draws Of Player",1035],["130 Coins",150],["300 Coins",340],["550 Coins",610],["750 Coins",825],["1040 Coins",1115],["2130 Coins",2285],["3250 Coins",3430],["5700 Coins",5590],["12800 Coins",11945]],note:"Confirm a safe, supported delivery method with the supplier. Never share passwords or OTPs."},
+{id:"clash-of-clans",name:"Clash of Clans",cat:"games",label:"Login Top Up",icon:"🏰",fields:["Supercell Player Tag / ID"],packages:[["Event Pass",525],["Gold Pass",645],["80 Gems",65],["500 Gems",325],["1200 Gems",645],["2500 Gems",1290],["6500 Gems",3225],["$0.99 Purchase",130],["$1.49 Purchase",190],["$1.99 Purchase",250],["$2.49 Purchase",325],["$2.99 Purchase",390],["$4.49 Purchase",580],["$4.99 Purchase",645],["$5.99 Purchase",775],["$6.49 Purchase",840],["$9.99 Purchase",1290]]},
+{id:"youtube-premium",name:"YouTube Premium",cat:"subs",label:"Subscriptions",icon:"▶️",fields:["Account Email (never password)"],packages:[["1 Month",21615],["3 Month",64845],["6 Month",115280],["12 Month",180125]]},
+{id:"tiktok-coins",name:"TikTok Coins",cat:"games",label:"Login Top Up",icon:"🎵",fields:["TikTok Username / User ID"],packages:[["85 Coins",21615],["100 Coins",25218],["140 Coins",36025],["210 Coins",53317],["280 Coins",72050],["350 Coins",89342],["420 Coins",106634],["500 Coins",126808],["700 Coins",177964],["1050 Coins",266585],["1400 Coins",355927],["2800 Coins",711854],["3500 Coins",890538],["4200 Coins",1066340],["7000 Coins",1779635],["70 Coins",18013]]},
+{id:"spotify",name:"Spotify Premium",cat:"subs",label:"Subscriptions",icon:"🎧",fields:["Account Email (never password)"],packages:[["1 Month",17292],["3 Month",46833]]}
 ];
 
-let cat="all";
-let selected=-1;
-let current=null;
+let cat="all",selected=-1,current=null;
 let currency=localStorage.getItem("ws_currency")||"INR";
-
 const grid=document.getElementById("grid");
 const catalogView=document.getElementById("catalogView");
 const detailView=document.getElementById("detailView");
-
 document.getElementById("currency").value=currency;
 
 function money(n){
-if(currency==="BDT"){
-return "৳"+Number(n).toLocaleString("en-IN",{maximumFractionDigits:1});
-}
+if(currency==="BDT")return "৳"+Number(n).toLocaleString("en-IN",{maximumFractionDigits:1});
 return "₹"+(Number(n)*INR_RATE).toLocaleString("en-IN",{maximumFractionDigits:2});
 }
 
 function draw(){
 const q=document.getElementById("search").value.toLowerCase().trim();
 grid.innerHTML="";
-
-let oldList=oldItems.filter(x=>
-(cat==="all"||x[3]===cat)&&x[1].toLowerCase().includes(q)
-);
-
-let newList=newItems.filter(x=>
-(cat==="all"||x.cat===cat)&&
-(x.name+" "+x.label).toLowerCase().includes(q)
-);
-
-document.getElementById("productCount").textContent=
-(oldList.length+newList.length)+" products available";
+const oldList=oldItems.filter(x=>(cat==="all"||x[3]===cat)&&x[1].toLowerCase().includes(q));
+const newList=newItems.filter(x=>(cat==="all"||x.cat===cat)&&(x.name+" "+x.label).toLowerCase().includes(q));
+document.getElementById("productCount").textContent=(oldList.length+newList.length)+" products available";
 
 oldList.forEach(x=>{
 const a=document.createElement("a");
 a.className="card";
 a.href="product.html?item="+encodeURIComponent(x[0]);
-
 let imageHTML;
 if(x[2].endsWith(".png")){
-imageHTML=`
-<img src="${x[2]}" alt="${x[1]}" loading="lazy"
-onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
-<span class="emoji" style="display:none">${x[5]}</span>`;
+imageHTML=`<img src="${x[2]}" alt="${x[1]}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><span class="emoji" style="display:none">${x[5]}</span>`;
 }else{
 imageHTML=`<span class="emoji">${x[2]}</span>`;
 }
-
-a.innerHTML=`
-<div class="art">${imageHTML}</div>
-<div class="info">
-<span class="label">${x[4]}</span><br>
-<strong>${x[1]}</strong>
-<div class="stars">★ WS TOP UP</div>
-<small>View details & order →</small>
-</div>`;
+a.innerHTML=`<div class="art">${imageHTML}</div><div class="info"><span class="label">${x[4]}</span><br><strong>${x[1]}</strong><div class="stars">★ WS TOP UP</div><small>View details & order →</small></div>`;
 grid.appendChild(a);
 });
 
 newList.forEach(p=>{
 const a=document.createElement("article");
 a.className="card";
-a.innerHTML=`
-<div class="art"><span class="emoji">${p.icon}</span></div>
-<div class="info">
-<span class="label">${p.label}</span><br>
-<strong>${p.name}</strong>
-<div class="stars">★ WS TOP UP</div>
-<small>${p.packages.length} packages · Available</small>
-<small>View packages & order →</small>
-</div>`;
+a.innerHTML=`<div class="art"><span class="emoji">${p.icon}</span></div><div class="info"><span class="label">${p.label}</span><br><strong>${p.name}</strong><div class="stars">★ WS TOP UP</div><small>${p.packages.length} packages · Available</small><small>View packages & order →</small></div>`;
 a.addEventListener("click",()=>openProduct(p.id));
 grid.appendChild(a);
 });
 }
 
-document.querySelectorAll(".chip").forEach(b=>{
-b.addEventListener("click",()=>{
+document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
 document.querySelectorAll(".chip").forEach(z=>z.classList.remove("active"));
 b.classList.add("active");
 cat=b.dataset.cat;
 draw();
-});
-});
+}));
 
 document.getElementById("search").addEventListener("input",draw);
-
 document.getElementById("currency").addEventListener("change",e=>{
 currency=e.target.value;
 localStorage.setItem("ws_currency",currency);
 if(current)renderDetail();
+draw();
 });
 
 function openProduct(id){
@@ -375,116 +263,12 @@ window.scrollTo(0,0);
 }
 
 function renderDetail(){
-const p=current;
-const price=p.packages[selected];
-
+const p=current,price=p.packages[selected];
 document.getElementById("detailContent").innerHTML=`
-<div class="detail-head">
-<div class="detail-icon">${p.icon}</div>
-<div>
-<small style="color:var(--cyan)">${p.label}</small>
-<h1>${p.name}</h1>
-</div>
-</div>
-
-<div class="detail-panel">
-<h2>1. Select Package</h2>
-<div class="packages">
-${p.packages.map((x,i)=>`
-<button class="pkg ${i===selected?"selected":""}" data-pkg="${i}">
-<strong>${x[0]}</strong>
-<span>${money(x[1])}</span>
-</button>
-`).join("")}
-</div>
-</div>
-
-<div class="detail-panel">
-<h2>2. Account Information</h2>
-<div class="fields">
-${p.fields.map((f,i)=>`
-<label>${f} *
-<input id="account${i}" type="text" placeholder="Enter ${f}">
-</label>
-`).join("")}
-<label>Country *
-<select id="country">
-<option value="">Select country</option>
-<option value="India">India</option>
-<option value="Bangladesh">Bangladesh</option>
-<option value="Other">Other</option>
-</select>
-</label>
-</div>
-
-<div class="summary">
-<div>
-<small style="color:var(--muted)">Selected Price</small><br>
-<strong id="selectedPrice">${price?money(price[1]):"Select a package"}</strong>
-</div>
-<button class="order-btn" id="order">ORDER ON WHATSAPP</button>
-</div>
-<p class="note">Please confirm the final price and availability with support before payment. Never share passwords or OTPs.</p>
-</div>
-
-${p.note?`<div class="detail-panel"><p class="note">${p.note}</p></div>`:""}
-`;
-
-document.querySelectorAll("[data-pkg]").forEach(b=>{
-b.addEventListener("click",()=>{
-selected=Number(b.dataset.pkg);
-renderDetail();
-});
-});
-
-document.getElementById("order").addEventListener("click",()=>{
-if(selected<0){
-alert("Please select a package first.");
-return;
-}
-
-const vals=p.fields.map((f,i)=>[
-f,document.getElementById("account"+i).value.trim()
-]);
-
-if(vals.some(v=>!v[1])){
-alert("Please fill all required account information.");
-return;
-}
-
-const country=document.getElementById("country").value;
-if(!country){
-alert("Please select your country.");
-return;
-}
-
-const pack=p.packages[selected];
-const message=
-"WS TOP UP ORDER\n"+
-"Product: "+p.name+"\n"+
-"Package: "+pack[0]+"\n"+
-"Price: "+money(pack[1])+"\n"+
-vals.map(v=>v[0]+": "+v[1]).join("\n")+"\n"+
-"Country: "+country+"\n"+
-"Please confirm my order and availability.";
-
-window.open(
-"https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(message),
-"_blank"
-);
-});
-}
-
-document.getElementById("back").addEventListener("click",()=>{
-detailView.classList.add("hidden");
-catalogView.classList.remove("hidden");
-document.getElementById("hero").classList.remove("hidden");
-current=null;
-window.scrollTo(0,0);
-});
-
-draw();
-</script>
-
-</body>
-</html>
+<div class="detail-head"><div class="detail-icon">${p.icon}</div><div><small style="color:var(--cyan)">${p.label}</small><h1>${p.name}</h1></div></div>
+<div class="detail-panel"><h2>1. Select Package</h2><div class="packages">
+${p.packages.map((x,i)=>`<button class="pkg ${i===selected?"selected":""}" data-pkg="${i}"><strong>${x[0]}</strong><span>${money(x[1])}</span></button>`).join("")}
+</div></div>
+<div class="detail-panel"><h2>2. Account Information</h2><div class="fields">
+${p.fields.map((f,i)=>`<label>${f} *<input id="account${i}" type="text" placeholder="Enter ${f}"></label>`).join("")}
+<label>Country *<select id="country"><option value="">Select country</option><option value="India">India</option><option value="Bangladesh">Bangladesh<
