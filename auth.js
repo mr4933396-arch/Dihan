@@ -16,7 +16,7 @@ const message = (text, isError = false) => {
 };
 
 if (!clientReady) {
-  message("প্রথমে auth/assets/config.js ফাইলে Supabase URL ও key বসাও।", true);
+  message("Supabase config.js ফাইলে URL ও public key ঠিক আছে কি না পরীক্ষা করো।", true);
 }
 
 const page = document.body.dataset.page;
