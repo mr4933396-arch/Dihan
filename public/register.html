@@ -1,6 +1,30 @@
 <!doctype html>
-<html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Register | WS TOP UP</title><link rel="stylesheet" href="./style.css"></head>
-<body data-page="register"><main class="auth-wrap"><div class="brand"><a href="./index.html">WS <span>TOP UP</span></a></div><section class="card"><h1>নতুন অ্যাকাউন্ট</h1><p class="sub">শুধু মোবাইল নম্বর দিয়ে OTP যাচাই করে অ্যাকাউন্ট তৈরি করো।</p>
-<form id="phone-form"><label for="phone">মোবাইল নম্বর</label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="10 digit mobile number" required><button type="submit">OTP পাঠাও</button></form>
-<form id="otp-form" hidden><p class="sub">এই নম্বরে OTP পাঠানো হয়েছে: <strong id="otp-phone"></strong></p><label for="otp">৬ সংখ্যার SMS OTP</label><input id="otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required><button type="submit">OTP যাচাই করে লগইন করো</button><button id="change-phone" type="button" class="secondary">নম্বর পরিবর্তন</button></form>
-<div id="message" class="message" role="status"></div><div class="links"><a href="./login.html">আগে অ্যাকাউন্ট আছে? OTP দিয়ে লগইন করো</a></div></section></main><script type="module" src="./auth.js"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Register | WS TOP UP</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body data-page="register">
+  <main class="auth-wrap">
+    <div class="brand"><a href="./index.html">WS <span>TOP UP</span></a></div>
+    <section class="card">
+      <h1>Create New Account / নতুন অ্যাকাউন্ট</h1>
+      <p class="sub">Register using your mobile number and password. মোবাইল নম্বর ও পাসওয়ার্ড দিয়ে রেজিস্ট্রেশন করো।</p>
+      <form id="register-form">
+        <label for="phone">Mobile Number / মোবাইল নম্বর</label>
+        <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Enter 10-digit mobile number" required>
+        <label for="password">Create Password / পাসওয়ার্ড তৈরি করো</label>
+        <input id="password" type="password" autocomplete="new-password" minlength="6" placeholder="At least 6 characters" required>
+        <label for="confirm-password">Confirm Password / পাসওয়ার্ড আবার দাও</label>
+        <input id="confirm-password" type="password" autocomplete="new-password" minlength="6" placeholder="Re-enter password" required>
+        <button type="submit">Register / রেজিস্ট্রেশন</button>
+      </form>
+      <div id="message" class="message" role="status"></div>
+      <div class="links"><a href="./login.html">Already have an account? Login / আগে অ্যাকাউন্ট আছে? লগইন করো</a></div>
+    </section>
+  </main>
+  <script type="module" src="./auth.js"></script>
+</body>
+</html>
