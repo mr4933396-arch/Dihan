@@ -209,9 +209,8 @@ color:#8ea3bb;font-size:12px
 <span id="total">Select package</span>
 </div>
 
-<button class="order" id="order" disabled>
-CONTINUE TO WHATSAPP →
-</button>
+<button class="order" id="order" disabled>CREATE ORDER & CONTINUE TO PAYMENT →</button>
+<div id="paymentPanel" class="content" style="display:none;margin-top:14px"></div>
 
 <p class="notice">
 💖 <strong>আপনার পছন্দ, আমাদের অগ্রাধিকার!</strong><br>
@@ -458,38 +457,28 @@ document.getElementById('country').value
 document.getElementById('uid').addEventListener('input',validate);
 document.getElementById('country').addEventListener('change',validate);
 
-document.getElementById('order').addEventListener('click',()=>{
-
+document.getElementById('order').addEventListener('click',async()=>{
 if(!selected)return;
-
-const cur=currency.value;
-
-const price=cur==='INR'
-?money(selected.inr,'INR')
-:money(selected.usd,'USD');
-
-const other=cur==='INR'
-?money(selected.usd,'USD')
-:money(selected.inr,'INR');
-
+const button=document.getElementById('order');
 const account=document.getElementById('uid').value.trim();
 const country=document.getElementById('country').value;
-
-const message=
-`WS TOP UP - NEW ORDER REQUEST
-Product: ${p[0]}
-Package: ${selected.name}
-Price: ${price}
-Other currency: ${other} approx.
-Account ID: ${account}
-Country: ${country}
-Currency: ${cur}
-Please confirm availability, final price and payment instructions.`;
-
-const url='https://wa.me/917814003979?text='+encodeURIComponent(message);
-
-window.open(url,'_blank','noopener');
-
+button.disabled=true; button.textContent='CREATING ORDER...';
+try{
+ const response=await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+  product_key:key,product_name:p[0],package_name:selected.name,amount:selected.inr,
+  account_label:p[2],account_id:account+' | Country: '+country
+ })});
+ const order=await response.json();
+ if(!response.ok) throw new Error(order.error||'Order could not be saved');
+ const amount=(Number(order.amount_paise||Math.round(selected.inr*100))/100).toFixed(2);
+ const note='WS TOP UP Order '+order.id;
+ const params='pa=7479314460%40ybl&pn=WS%20TOP%20UP&am='+amount+'&cu=INR&tn='+encodeURIComponent(note);
+ const wa='https://wa.me/917814003979?text='+encodeURIComponent('I have placed WS TOP UP order #'+order.id+'. Product: '+p[0]+'. Package: '+selected.name+'. Amount: ₹'+amount+'. I will attach my payment screenshot. Please verify my payment.');
+ const panel=document.getElementById('paymentPanel');
+ panel.style.display='block';
+ panel.innerHTML='<h2>Order created successfully</h2><p><b>Order ID: #'+order.id+'</b></p><p>Pay ₹'+amount+' to UPI ID <b>7479314460@ybl</b>.</p><p><a class="support" href="phonepe://pay?'+params+'">PhonePe</a> &nbsp; <a class="support" href="tez://upi/pay?'+params+'">Google Pay</a> &nbsp; <a class="support" href="paytmmp://pay?'+params+'">Paytm</a> &nbsp; <a class="support" href="upi://pay?'+params+'">Other UPI app</a></p><p><a href="order.html?ref='+order.public_token+'">Track this order</a></p><p><a href="'+wa+'" target="_blank" rel="noopener">Send payment screenshot on WhatsApp</a></p><p class="notice">Payment is checked manually. Your order remains unpaid until the administrator verifies it.</p>';
+ button.textContent='ORDER CREATED';
+}catch(error){alert(error.message||'Please try again');button.disabled=false;button.textContent='CREATE ORDER & CONTINUE TO PAYMENT →';}
 });
 
 renderPackages();
