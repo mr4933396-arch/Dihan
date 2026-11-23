@@ -251,6 +251,15 @@ Our team will confirm your order manually.
 
 <script>
 
+async function readJsonResponse(response){
+ const raw=await response.text();
+ let data={};
+ if(raw){try{data=JSON.parse(raw);}catch(_){throw new Error("Server returned an invalid response (HTTP "+response.status+"). Please try again later.");}}
+ if(!response.ok) throw new Error(data.error || "Request failed (HTTP "+response.status+").");
+ if(!raw) throw new Error("Server returned an empty response (HTTP "+response.status+"). Please try again later.");
+ return data;
+}
+
 const products={
 
 imo:[
@@ -468,8 +477,7 @@ try{
   product_key:key,product_name:p[0],package_name:selected.name,amount:selected.inr,
   account_label:p[2],account_id:account+' | Country: '+country
  })});
- const order=await response.json();
- if(!response.ok) throw new Error(order.error||'Order could not be saved');
+ const order=await readJsonResponse(response);
  const amount=(Number(order.amount_paise||Math.round(selected.inr*100))/100).toFixed(2);
  const note='WS TOP UP Order '+order.id;
  const params='pa=7479314460%40ybl&pn=WS%20TOP%20UP&am='+amount+'&cu=INR&tn='+encodeURIComponent(note);

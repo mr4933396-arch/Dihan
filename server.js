@@ -99,21 +99,36 @@ app.post("/api/orders", rateLimit({windowMs:60*1000,max:10}), async (req,res)=>{
   const amount=Number(b.amount);
   if(!Number.isFinite(amount)||amount<1||amount>1000000) return res.status(400).json({error:"Invalid amount"});
   if(String(b.account_id).length>100 || String(b.package_name).length>100) return res.status(400).json({error:"Input too long"});
-  const publicToken=crypto.randomBytes(18).toString("hex");
-  const r=await pool.query(`INSERT INTO orders(product_key,product_name,package_name,amount_paise,account_label,account_id,customer_name,customer_phone,public_token)
-    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id,order_status,payment_status,created_at,public_token`,
-    [String(b.product_key).slice(0,50),String(b.product_name).slice(0,120),String(b.package_name).slice(0,100),Math.round(amount*100),String(b.account_label).slice(0,80),String(b.account_id).slice(0,100),String(b.customer_name||"").slice(0,100),String(b.customer_phone||"").slice(0,30),publicToken]);
-  res.status(201).json(r.rows[0]);
+  try {
+    const publicToken=crypto.randomBytes(18).toString("hex");
+    const r=await pool.query(`INSERT INTO orders(product_key,product_name,package_name,amount_paise,account_label,account_id,customer_name,customer_phone,public_token)
+      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id,order_status,payment_status,created_at,public_token`,
+      [String(b.product_key).slice(0,50),String(b.product_name).slice(0,120),String(b.package_name).slice(0,100),Math.round(amount*100),String(b.account_label).slice(0,80),String(b.account_id).slice(0,100),String(b.customer_name||"").slice(0,100),String(b.customer_phone||"").slice(0,30),publicToken]);
+    return res.status(201).json(r.rows[0]);
+  } catch (error) {
+    console.error("Public order creation failed:", error);
+    return res.status(500).json({error:"Order could not be saved. The server or database needs attention. Please try again later."});
+  }
 });
 
 // Public status lookup uses an unguessable reference and never exposes account details.
 app.get("/api/orders/:token", async (req,res)=>{
   if(!/^[a-f0-9]{36}$/.test(req.params.token)) return res.status(404).json({error:"Order not found"});
-  const r=await pool.query("SELECT id,product_name,package_name,amount_paise,payment_status,order_status,created_at FROM orders WHERE public_token=$1",[req.params.token]);
-  if(!r.rowCount) return res.status(404).json({error:"Order not found"});
-  res.json(r.rows[0]);
+  try {
+    const r=await pool.query("SELECT id,product_name,package_name,amount_paise,payment_status,order_status,created_at FROM orders WHERE public_token=$1",[req.params.token]);
+    if(!r.rowCount) return res.status(404).json({error:"Order not found"});
+    return res.json(r.rows[0]);
+  } catch (error) {
+    console.error("Public order lookup failed:", error);
+    return res.status(500).json({error:"Could not load order status right now."});
+  }
 });
 
 app.get("/admin", (req,res)=>res.sendFile(path.join(__dirname,"public","admin.html")));
 app.get("/health", (req,res)=>res.json({ok:true}));
-init().then(()=>app.listen(PORT,()=>console.log("WS TOP UP server listening on",PORT))).catch(e=>{console.error(e);process.exit(1)});
+app.use("/api", (err, req, res, next) => {
+  console.error("API request failed:", err);
+  if (res.headersSent) return next(err);
+  res.status(err.status || 500).json({error:"The server could not complete this request. Please try again later."});
+});
+init().then(()=>app.listen(PORT,()=>console.log("WS TOP UP server listening on",PORT))).catch(e=>{console.error("Database initialization failed:",e);process.exit(1)});

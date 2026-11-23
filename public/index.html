@@ -155,6 +155,15 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 <script>
 const WHATSAPP="917814003979";
 const UPI_ID="7479314460@ybl";
+async function readJsonResponse(response){
+ const raw=await response.text();
+ let data={};
+ if(raw){try{data=JSON.parse(raw);}catch(_){throw new Error("Server returned an invalid response (HTTP "+response.status+"). Please try again later.");}}
+ if(!response.ok) throw new Error(data.error || "Request failed (HTTP "+response.status+").");
+ if(!raw) throw new Error("Server returned an empty response (HTTP "+response.status+"). Please try again later.");
+ return data;
+}
+
 const INR_RATE=0.7436;
 const oldItems=[
 ['imo','IMO Diamond','./imo.png','social','Social app top-up','💬'],
@@ -297,7 +306,7 @@ document.getElementById("orderBtn").addEventListener("click",async()=>{
    product_key:p.id,product_name:p.name,package_name:p.packages[selected][0],amount:inrAmount,
    account_label:p.fields.join(", "),account_id:values.map(x=>x.label+": "+x.value).join(" | ")+" | Country: "+country
   })});
-  const order=await response.json(); if(!response.ok) throw new Error(order.error||"Order could not be saved");
+  const order=await readJsonResponse(response);
   const amount=(Number(order.amount_paise||Math.round(inrAmount*100))/100).toFixed(2);
   const note="WS TOP UP Order "+order.id;
   const params="pa="+encodeURIComponent(UPI_ID)+"&pn=WS%20TOP%20UP&am="+amount+"&cu=INR&tn="+encodeURIComponent(note);
