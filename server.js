@@ -23,6 +23,14 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, "public")));
 
+// Serve only top-level image assets used by the storefront. Do not expose repository source files.
+app.get(/^\\/[A-Za-z0-9._-]+\\.(?:png|jpe?g|webp|gif)$/i, (req, res, next) => {
+  const filename = path.basename(req.path);
+  res.sendFile(path.join(__dirname, filename), (error) => {
+    if (error && !res.headersSent) next();
+  });
+});
+
 async function init() {
   await pool.query(`CREATE TABLE IF NOT EXISTS orders (
     id BIGSERIAL PRIMARY KEY,
