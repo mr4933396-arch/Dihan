@@ -7,6 +7,7 @@ const { Pool } = require("pg");
 const bcrypt = require("bcryptjs");
 const rateLimit = require("express-rate-limit");
 const path = require("path");
+const crypto = require("crypto");
 
 const app = express();
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.DATABASE_URL?.includes("render.com") ? { rejectUnauthorized: false } : undefined });
@@ -22,6 +23,7 @@ app.use(session({
   cookie: { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 8*60*60*1000 }
 }));
 app.use(express.static(path.join(__dirname, "public")));
+app.get("/product.html", (req,res) => res.sendFile(path.join(__dirname,"product.html")));
 
 // Serve only top-level image assets used by the storefront. Do not expose repository source files.
 app.get(/^\/[A-Za-z0-9._-]+\.(?:png|jpe?g|webp|gif)$/i, (req, res, next) => {
@@ -47,6 +49,8 @@ async function init() {
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
   )`);
+  await pool.query("ALTER TABLE orders ADD COLUMN IF NOT EXISTS public_token TEXT");
+  await pool.query("CREATE UNIQUE INDEX IF NOT EXISTS orders_public_token_unique ON orders(public_token) WHERE public_token IS NOT NULL");
 }
 function auth(req,res,next){ if(req.session?.admin) return next(); return res.status(401).json({error:"Please login"}); }
 const loginLimiter = rateLimit({windowMs:15*60*1000,max:8,standardHeaders:true,legacyHeaders:false});
@@ -93,12 +97,21 @@ app.post("/api/orders", rateLimit({windowMs:60*1000,max:10}), async (req,res)=>{
   const required=["product_key","product_name","package_name","amount","account_label","account_id"];
   if(required.some(k=>b[k]===undefined || String(b[k]).trim()==="")) return res.status(400).json({error:"Missing order information"});
   const amount=Number(b.amount);
-  if(!Number.isSafeInteger(amount)||amount<1||amount>10000000) return res.status(400).json({error:"Invalid amount"});
+  if(!Number.isFinite(amount)||amount<1||amount>1000000) return res.status(400).json({error:"Invalid amount"});
   if(String(b.account_id).length>100 || String(b.package_name).length>100) return res.status(400).json({error:"Input too long"});
-  const r=await pool.query(`INSERT INTO orders(product_key,product_name,package_name,amount_paise,account_label,account_id,customer_name,customer_phone)
-    VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id,order_status,payment_status,created_at`,
-    [String(b.product_key).slice(0,50),String(b.product_name).slice(0,120),String(b.package_name).slice(0,100),Math.round(amount*100),String(b.account_label).slice(0,80),String(b.account_id).slice(0,100),String(b.customer_name||"").slice(0,100),String(b.customer_phone||"").slice(0,30)]);
+  const publicToken=crypto.randomBytes(18).toString("hex");
+  const r=await pool.query(`INSERT INTO orders(product_key,product_name,package_name,amount_paise,account_label,account_id,customer_name,customer_phone,public_token)
+    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id,order_status,payment_status,created_at,public_token`,
+    [String(b.product_key).slice(0,50),String(b.product_name).slice(0,120),String(b.package_name).slice(0,100),Math.round(amount*100),String(b.account_label).slice(0,80),String(b.account_id).slice(0,100),String(b.customer_name||"").slice(0,100),String(b.customer_phone||"").slice(0,30),publicToken]);
   res.status(201).json(r.rows[0]);
+});
+
+// Public status lookup uses an unguessable reference and never exposes account details.
+app.get("/api/orders/:token", async (req,res)=>{
+  if(!/^[a-f0-9]{36}$/.test(req.params.token)) return res.status(404).json({error:"Order not found"});
+  const r=await pool.query("SELECT id,product_name,package_name,amount_paise,payment_status,order_status,created_at FROM orders WHERE public_token=$1",[req.params.token]);
+  if(!r.rowCount) return res.status(404).json({error:"Order not found"});
+  res.json(r.rows[0]);
 });
 
 app.get("/admin", (req,res)=>res.sendFile(path.join(__dirname,"public","admin.html")));
