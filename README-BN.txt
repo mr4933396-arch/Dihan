@@ -1,41 +1,44 @@
-WS TOP UP — Login & Registration starter (GitHub Pages + Supabase)
+WS TOP UP — Customer Login & Registration
 
-ফাইলগুলো তোমার বর্তমান GitHub repository-তে যোগ করো। পুরোনো index.html মুছবে না।
-এই প্যাকেজে auth/login.html, auth/register.html, auth/dashboard.html এবং auth/reset.html আছে।
+এই branch-এ কাস্টমারদের জন্য Login, Registration, Email Verification, Password Reset এবং Customer Dashboard-এর ফাইল আছে। Admin Dashboard এই কাজের অংশ নয় এবং সেটি পরিবর্তন করা হয়নি।
 
-ধাপ ১ — Supabase
-1. https://supabase.com এ project তৈরি করো।
-2. Project Settings → API থেকে Project URL এবং publishable/anon key কপি করো।
-3. auth/assets/config.js ফাইলে SUPABASE_URL ও SUPABASE_ANON_KEY বসাও।
-   এখানে কখনো service_role/secret key বসাবে না।
-4. Supabase → SQL Editor-এ supabase-schema.sql ফাইলের SQL চালাও।
+## ১) Supabase Database প্রস্তুত করো
+1. https://supabase.com/dashboard খুলে WS TOP UP-এর project নির্বাচন করো।
+2. বাম পাশের SQL Editor খুলে New query চাপো।
+3. GitHub-এর এই branch-এর `supabase-schema.sql` ফাইলের সম্পূর্ণ SQL কপি করে SQL Editor-এ পেস্ট করো।
+4. Run চাপো। সফল হলে `public.profiles` table এবং signup trigger তৈরি হবে।
 
-ধাপ ২ — Email settings
-Supabase → Authentication → URL Configuration:
-- Site URL: তোমার GitHub Pages URL (যেমন https://USERNAME.github.io/REPOSITORY/)
-- Redirect URLs-এ যোগ করো:
-  https://USERNAME.github.io/REPOSITORY/auth/dashboard.html
-  https://USERNAME.github.io/REPOSITORY/auth/reset.html
+## ২) Email Login চালু রাখো
+1. Supabase → Authentication → Providers → Email খুলে Email provider Enabled আছে কি না দেখো।
+2. Email confirmation চালু রাখলে নতুন গ্রাহককে ইমেইলের verification link চাপতে হবে।
+3. Authentication → URL Configuration-এ Site URL হিসেবে তোমার আসল live website URL দাও।
+4. Redirect URLs-এ live website-এর নিচের দুইটি পূর্ণ URL যোগ করো:
+   - `https://তোমার-ওয়েবসাইট/login.html`
+   - `https://তোমার-ওয়েবসাইট/dashboard.html`
+   - `https://তোমার-ওয়েবসাইট/reset.html`
+   (উপরের নমুনায় তোমার ওয়েবসাইটের আসল domain বসাবে।)
 
-Supabase → Authentication → Providers → Email চালু রাখো।
-Email confirmation চালু থাকলে রেজিস্ট্রেশনের পর ইমেইল verify করতে হবে।
-Password reset redirect-ও reset.html পেজে যাবে।
+## ৩) Website ফাইল
+সব authentication ফাইল repository root-এ:
+- `login.html`
+- `register.html`
+- `dashboard.html`
+- `reset.html`
+- `auth.js`
+- `style.css`
+- `config.js`
 
-ধাপ ৩ — GitHub Pages
-1. এই ZIP extract করে ফাইলগুলো তোমার repository-তে upload/commit করো।
-2. GitHub repository → Settings → Pages-এ Pages চালু আছে কি না দেখো।
-3. তোমার সাইটে এই লিংকগুলো যোগ করো:
-   Login: /REPOSITORY/auth/login.html
-   Register: /REPOSITORY/auth/register.html
-   (নিজের repository name অনুযায়ী path ঠিক করো। Custom domain/root হলে /auth/... ব্যবহার করো।)
+Store-এর navigation-এ Login / Register লিংক আছে।
 
-ধাপ ৪ — পরীক্ষা
-- Register করে email verification সম্পন্ন করো।
-- Login করে dashboard দেখো।
-- Logout এবং Forgot password পরীক্ষা করো।
+## ৪) পরীক্ষা
+1. Store থেকে Login / Register খুলে নতুন ইমেইল দিয়ে account তৈরি করো।
+2. Supabase Email confirmation চালু থাকলে inbox-এ আসা verification link চাপো।
+3. Login করে Customer Dashboard খুলছে কি না দেখো।
+4. Logout এবং Forgot Password পরীক্ষা করো।
 
-নোট
-- এটি frontend authentication starter; তোমার আগের ওয়েবসাইটের অর্ডার সিস্টেমে নিজে থেকে যুক্ত হবে না।
-- Dashboard-এ profile data দেখায়। Order history যুক্ত করতে হলে orders table এবং নিরাপদ RLS policy দরকার।
-- Publishable/anon key browser-এ থাকা স্বাভাবিক, কিন্তু database-এর প্রতিটি private table-এ RLS policy অবশ্যই চালু রাখতে হবে।
-- GitHub Pages static hosting; server-side secret বা admin service_role key কখনো browser code-এ রেখো না।
+নিরাপত্তা:
+- `config.js`-এ শুধু Supabase Project URL ও publishable/anon public key থাকবে।
+- কখনো service_role বা secret key browser-এর ফাইলে বসাবে না।
+- profiles table-এ Row Level Security চালু; গ্রাহক কেবল নিজের profile দেখতে/আপডেট করতে পারবে।
+- Admin Dashboard, existing product catalogue, product images, package options ও prices এই কাজের আওতার বাইরে।
+- এটি Customer Authentication; order history/payment system এখনো এতে যুক্ত হয়নি।
