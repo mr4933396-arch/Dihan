@@ -108,7 +108,7 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 <img class="hero-banner" src="ws-top-up-banner.png" alt="WS TOP UP gaming top-up banner">
 <div class="hero-actions"><a class="cta" href="#products">EXPLORE PRODUCTS ↓</a></div>
 <div class="trust">
-<span>🌍 Global Customers</span><span>🛡️ Secure Payment Checkout</span><span>💬 Human Support</span>
+<span>🌍 Global Customers</span><span>🛡️ Manual Order Verification</span><span>💬 Human Support</span>
 </div>
 </section>
 
@@ -150,7 +150,7 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 <button class="back" id="back">← BACK TO ALL PRODUCTS</button>
 <div id="detailContent"></div>
 </section>
-<footer>© 2026 WS TOP UP · Global Digital Top-Up Store<br>Payments are verified automatically; product delivery is handled by our team.</footer>
+<footer>© 2026 WS TOP UP · Global Digital Top-Up Store<br>Prices and availability are confirmed by the administrator before payment and delivery.</footer>
 
 <script>
 const WHATSAPP="917814003979";
@@ -271,7 +271,7 @@ ${p.packages.map((x,i)=>`<button class="pkg ${i===selected?"selected":""}" data-
 ${p.fields.map((f,i)=>`<label>${f} *<input id="account${i}" type="text" placeholder="Enter ${f}"></label>`).join("")}
 <label>Country *<select id="country"><option value="">Select country</option><option value="India">India</option><option value="Bangladesh">Bangladesh</option><option value="Other">Other</option></select></label>
 </div>
-<div class="summary"><div><small style="color:var(--muted)">Selected package</small><div id="selectedName">Please select a package</div><strong id="selectedPrice" style="color:var(--gold)">—</strong><small id="selectedInrPrice" style="display:block;color:var(--muted);margin-top:5px">INR payment amount: —</small></div><button class="order-btn" id="orderBtn" type="button">CREATE ORDER & CONTINUE TO PAYMENT</button></div><div id="paymentPanel" class="detail-panel hidden" style="margin-top:12px"></div>
+<div class="summary"><div><small style="color:var(--muted)">Selected package</small><div id="selectedName">Please select a package</div><strong id="selectedPrice" style="color:var(--gold)">—</strong><small id="selectedInrPrice" style="display:block;color:var(--muted);margin-top:5px">INR UPI amount: —</small></div><button class="order-btn" id="orderBtn" type="button">CREATE ORDER & CONTINUE TO PAYMENT</button></div><div id="paymentPanel" class="detail-panel hidden" style="margin-top:12px"></div>
 ${p.note?`<p class="note">${p.note}</p>`:""}
 <p class="note">Please check your details before ordering. Never share passwords, OTPs or login codes.</p>
 </div>`;
@@ -283,7 +283,7 @@ renderDetail();
 if(price){
  document.getElementById("selectedName").textContent=price[0];
  document.getElementById("selectedPrice").textContent=money(price[1],currency);
- document.getElementById("selectedInrPrice").textContent="INR payment amount: "+money(price[1],"INR")+" · Pay securely through FamGateway";
+ document.getElementById("selectedInrPrice").textContent="INR reference: "+money(price[1],"INR")+" · Final payment confirmed by admin";
 }
 document.getElementById("orderBtn").addEventListener("click",async()=>{
  if(selected<0){alert("Please select a package first.");return;}
@@ -306,15 +306,13 @@ document.getElementById("orderBtn").addEventListener("click",async()=>{
     account_id:values.map(x=>x.value).join(" | ")+" | Country: "+country
    })
   });
-  const raw=await response.text();
-  let order={};
-  if(raw){try{order=JSON.parse(raw);}catch(_){throw new Error("Server returned an invalid response. Please try again later.");}}
+  const order=await response.json();
   if(!response.ok)throw new Error(order.error||"Order could not be created.");
-  if(!raw)throw new Error("Server returned an empty response. Please try again later.");
   const amount=(Number(order.amount_paise||Math.round(p.packages[selected][1]*100))/100).toFixed(2);
-  if(!order.checkout_url||!order.public_token)throw new Error("Secure FamGateway checkout link was not returned. Please contact support before paying.");
+  const params=new URLSearchParams({pa:"7479314460@ybl",pn:"WS TOP UP",am:amount,cu:"INR",tn:"WS TOP UP Order "+order.id}).toString();
+  const wa="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent("I placed WS TOP UP order #"+order.id+". Product: "+p.name+". Package: "+p.packages[selected][0]+". UPI amount: ₹"+amount+". I will attach my payment screenshot. Please verify my payment.");
   panel.classList.remove("hidden");
-  panel.innerHTML="<h3>Order created successfully</h3><p><b>Order ID: #"+order.id+"</b></p><p>Selected package: <b>"+p.packages[selected][0]+"</b></p><p>Display price: <b>"+money(p.packages[selected][1],currency)+" ("+currency+")</b></p><p>Payment amount: <b>₹"+amount+" INR</b></p><p><a class='order-btn' style='display:block;text-align:center' href='"+order.checkout_url+"' target='_blank' rel='noopener noreferrer'>PAY SECURELY ON FAMGATEWAY →</a></p><p><a href='order.html?ref="+order.public_token+"'>Track payment status</a></p><p class='note'>Complete payment on the secure FamGateway checkout page. Payment status is verified automatically. Product delivery is handled by our team. Do not send money to an old UPI ID or send a payment screenshot.</p>";
+  panel.innerHTML="<h3>Order created successfully</h3><p><b>Order ID: #"+order.id+"</b></p><p>Selected display price: <b>"+money(p.packages[selected][1],currency)+" ("+currency+")</b></p><p>Actual UPI payment: <b>₹"+amount+" INR</b></p><p>USD/BDT are display conversions. UPI collects INR only.</p><p><a class='order-btn' href='phonepe://pay?"+params+"'>PhonePe</a> <a class='order-btn' href='tez://upi/pay?"+params+"'>Google Pay</a> <a class='order-btn' href='paytmmp://pay?"+params+"'>Paytm</a> <a class='order-btn' href='upi://pay?"+params+"'>Other UPI</a></p><p><a href='order.html?ref="+order.public_token+"'>Track this order</a></p><p><a href='"+wa+"' target='_blank' rel='noopener'>Send payment screenshot on WhatsApp</a></p><p class='note'>Payment is checked manually. The order stays unpaid until the administrator verifies it.</p>";
   button.textContent="ORDER CREATED";
  }catch(error){
   alert(error.message||"Please try again.");
