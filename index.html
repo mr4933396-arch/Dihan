@@ -43,7 +43,7 @@ a{color:inherit;text-decoration:none}
 .categories{display:flex;gap:8px;overflow:auto;padding:2px 0 14px}
 .chip{white-space:nowrap;background:#12243a;border:1px solid #2b4562;color:#d7e5f5;border-radius:30px;padding:8px 13px;font-size:12px;cursor:pointer}
 .chip.active{background:#16496a;border-color:var(--cyan);color:white}
-.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.grid{display:block}.catalog-section{margin:24px 0 30px}.catalog-section h3{font-size:19px;letter-spacing:.04em;color:var(--cyan);border-bottom:1px solid var(--line);padding:0 0 10px;margin:0 0 13px}.section-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
 .card{background:linear-gradient(145deg,#142840,#0d1a2c);border:1px solid var(--line);border-radius:15px;overflow:hidden;transition:transform .2s,border-color .2s;min-width:0;cursor:pointer}
 .card:hover{transform:translateY(-3px);border-color:var(--cyan)}
 .art{height:156px;width:100%;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:10px;background:radial-gradient(circle at 50% 40%,#28618a,#12243a 75%)}
@@ -83,10 +83,10 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 .note{font-size:12px;color:#ffd58a;line-height:1.6}
 .hidden{display:none!important}
 .product-count{font-size:12px;color:var(--muted);margin:0 0 12px}
-@media(max-width:850px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.features{grid-template-columns:repeat(2,1fr)}.art{height:135px}}
+@media(max-width:850px){.section-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.features{grid-template-columns:repeat(2,1fr)}.art{height:135px}}
 @media(max-width:580px){
 .nav{padding:9px 12px}.brand{font-size:16px}.brand img{width:56px;height:56px;object-fit:contain;object-position:center;flex:0 0 56px;border-radius:14px;padding:0;background:transparent;border:0;display:block}.hero{margin:12px auto 16px;padding:0 10px}.hero-banner{border-radius:12px}.wrap{padding:0 11px 30px}
-.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.section-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
 .art{height:125px;padding:6px}.art img{transform:scale(1.12)}
 .card:hover .art img{transform:scale(1.2)}
 .art .emoji{font-size:44px}.info{padding:10px}.info strong{font-size:13px}
@@ -96,7 +96,7 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 .fields{grid-template-columns:1fr}.detail-head h1{font-size:20px}
 .summary{align-items:stretch;flex-direction:column}.order-btn{width:100%}
 }
-@media(max-width:350px){.grid{grid-template-columns:1fr}.art{height:150px}}
+@media(max-width:350px){.section-grid{grid-template-columns:1fr}.art{height:150px}}
 </style>
 </head>
 <body>
@@ -117,7 +117,7 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 
 <section class="hero" id="hero">
 <img class="hero-banner" src="ws-top-up-banner.png" alt="WS TOP UP gaming top-up banner">
-<div class="hero-actions"><a class="cta" href="#products">EXPLORE PRODUCTS ↓</a><a class="cta" href="vertex.html">EXPLORE 650+ NEW PRODUCTS →</a></div>
+<div class="hero-actions"><a class="cta" href="#products">EXPLORE PRODUCTS ↓</a></div>
 <div class="trust">
 <span>🌍 Global Customers</span><span>🛡️ Manual Order Verification</span><span>💬 Human Support</span>
 </div>
@@ -203,48 +203,69 @@ const newItems=[
 {id:"spotify",image:"./spotify.png",name:"Spotify Premium",cat:"subs",label:"Subscriptions",icon:"🎧",fields:["Account Email (never password)"],packages:[["1 Month",17292],["3 Month",46833]]}
 ];
 
-let cat="all",selected=-1,current=null;
+let cat="all",selected=-1,current=null,vertexCurrent=null,vertexProducts=[],vertexLoading=false,vertexFinished=false;
 let currency=localStorage.getItem("ws_currency")||"INR";
 const grid=document.getElementById("grid");
 const catalogView=document.getElementById("catalogView");
 const detailView=document.getElementById("detailView");
+const VERTEX_API="https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/vertex-catalog";
+const ORDERS_API="https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/ws-orders";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoanpxeXR4cXVzaHh2amx2a2xzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNDY4NDksImV4cCI6MjExMDgyMjg0OX0.6HOxZqQhvzbcq5zzEiLZchfp3t15sJ8qAsOxI-gjhEI";
+const VERTEX_GROUPS=["top_up","digital_gift_card"];
 document.getElementById("currency").value=currency;
 
 function money(n,cur=currency){
-const symbols={INR:"₹",USD:"$",BDT:"৳"};
-return symbols[cur]+(Number(n)*FX[cur]).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
+ const symbols={INR:"₹",USD:"$",BDT:"৳"};
+ return symbols[cur]+(Number(n)*FX[cur]).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
 }
-
+function safeText(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function normCatalogName(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();}
+const existingVertexNames=new Set(["imo","imo diamond","imo instant use","bigo live diamonds","bigo live","poppo live coins","poppo live","chamet","telegram stars premium","telegram stars and premium","truecaller premium","starmaker coins","starmaker","likee diamonds","likee","tango live","tango","yoho coins","yoho","free fire diamonds","free fire","bgmi uc","bgmi","pubg mobile uc","pubg mobile","pubg","mobile legends diamonds","mobile legends","mlbb","itunes gift card","itunes","google play gift card","google play","steam wallet","steam","netflix subscription","netflix","fc mobile bd","fc mobile","genshin impact us","genshin impact","super sus goldstar","super sus","blood strike","honor of kings","razer gold india","chatgpt plus subscription","canva pro","efootball top up","efootball","clash of clans","youtube premium","tiktok coins","spotify premium"]);
+function classifyVertexProduct(p){
+ const catNames=[p.category?.name,...(p.categories||[]).map(x=>x?.name)].filter(Boolean).join(" ").toLowerCase();
+ const all=catNames+" "+String(p.name||"").toLowerCase();
+ if(/subscription|premium|netflix|spotify|youtube|chatgpt|canva|membership/.test(all))return "subs";
+ if(/gift.?card|steam wallet|google play|itunes|razer gold|digital gift/.test(all)||p.__group==="digital_gift_card")return "gift";
+ if(/social media|social app|instagram|facebook|telegram|whatsapp|imo|bigo|poppo|chamet|likee|tango|yoho|starmaker|snapchat|tiktok coins/.test(all))return "social";
+ return "games";
+}
+function makeOldCard(x){
+ const a=document.createElement("a");a.className="card";a.href="product.html?item="+encodeURIComponent(x[0]);
+ let imageHTML;
+ if(x[2].endsWith(".png"))imageHTML='<img src="'+x[2]+'" alt="'+safeText(x[1])+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">'+x[5]+'</span>';
+ else imageHTML='<span class="emoji">'+x[2]+'</span>';
+ a.innerHTML='<div class="art">'+imageHTML+'</div><div class="info"><span class="label">'+safeText(x[4])+'</span><br><strong>'+safeText(x[1])+'</strong><div class="stars">★ WS TOP UP</div><small>View details & order →</small></div>';
+ return a;
+}
+function makeNewCard(p){
+ const a=document.createElement("article");a.className="card";
+ a.innerHTML='<div class="art"><img src="'+safeText(p.image)+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">'+safeText(p.icon)+'</span></div><div class="info"><span class="label">'+safeText(p.label)+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+p.packages.length+' packages · Available</small><small>View packages & order →</small></div>';
+ a.addEventListener("click",()=>openProduct(p.id));return a;
+}
+function makeVertexCard(p){
+ const a=document.createElement("article");a.className="card";
+ const category=p.category?.name||(p.categories||[])[0]?.name||"Reseller product";
+ a.innerHTML='<div class="art"><img src="'+safeText(p.image||"")+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.style.display=\'none\';"></div><div class="info"><span class="label">'+safeText(category)+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+Number(p.package_count||0)+' packages · '+(p.in_stock?"In Stock":"Check availability")+'</small><small>View packages & order →</small></div>';
+ a.addEventListener("click",()=>openVertexProduct(p.id));return a;
+}
 function draw(){
-const q=document.getElementById("search").value.toLowerCase().trim();
-grid.innerHTML="";
-const oldList=oldItems.filter(x=>(cat==="all"||x[3]===cat)&&x[1].toLowerCase().includes(q));
-const newList=newItems.filter(x=>(cat==="all"||x.cat===cat)&&(x.name+" "+x.label).toLowerCase().includes(q));
-document.getElementById("productCount").textContent=(oldList.length+newList.length)+" products available";
-
-oldList.forEach(x=>{
-const a=document.createElement("a");
-a.className="card";
-a.href="product.html?item="+encodeURIComponent(x[0]);
-let imageHTML;
-if(x[2].endsWith(".png")){
-imageHTML=`<img src="${x[2]}" alt="${x[1]}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><span class="emoji" style="display:none">${x[5]}</span>`;
-}else{
-imageHTML=`<span class="emoji">${x[2]}</span>`;
+ const q=document.getElementById("search").value.toLowerCase().trim();grid.innerHTML="";
+ const entries=[];
+ oldItems.filter(x=>(cat==="all"||x[3]===cat)&&x[1].toLowerCase().includes(q)).forEach(x=>entries.push({cat:x[3],kind:"old",item:x}));
+ newItems.filter(x=>(cat==="all"||x.cat===cat)&&(x.name+" "+x.label).toLowerCase().includes(q)).forEach(x=>entries.push({cat:x.cat,kind:"new",item:x}));
+ vertexProducts.filter(p=>(cat==="all"||classifyVertexProduct(p)===cat)&&(p.name+" "+(p.category?.name||"")+" "+(p.categories||[]).map(x=>x.name).join(" ")).toLowerCase().includes(q)).forEach(p=>entries.push({cat:classifyVertexProduct(p),kind:"vertex",item:p}));
+ const order=["social","games","gift","subs"],labels={social:"SOCIAL MEDIA",games:"GAMING",gift:"GIFT CARDS",subs:"SUBSCRIPTIONS"},counts={social:0,games:0,gift:0,subs:0};
+ entries.forEach(x=>counts[x.cat]=(counts[x.cat]||0)+1);
+ for(const group of order){if(!counts[group])continue;const section=document.createElement("section");section.className="catalog-section";const heading=document.createElement("h3");heading.textContent=labels[group];section.appendChild(heading);const cards=document.createElement("div");cards.className="section-grid";entries.filter(x=>x.cat===group).forEach(x=>cards.appendChild(x.kind==="old"?makeOldCard(x.item):x.kind==="new"?makeNewCard(x.item):makeVertexCard(x.item)));section.appendChild(cards);grid.appendChild(section);}
+ document.getElementById("productCount").textContent=entries.length+" products shown"+(vertexLoading?" · Loading remaining reseller products…":vertexFinished?" · All reseller products loaded":"");
 }
-a.innerHTML=`<div class="art">${imageHTML}</div><div class="info"><span class="label">${x[4]}</span><br><strong>${x[1]}</strong><div class="stars">★ WS TOP UP</div><small>View details & order →</small></div>`;
-grid.appendChild(a);
-});
-
-newList.forEach(p=>{
-const a=document.createElement("article");
-a.className="card";
-a.innerHTML=`<div class="art"><img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><span class="emoji" style="display:none">${p.icon}</span></div><div class="info"><span class="label">${p.label}</span><br><strong>${p.name}</strong><div class="stars">★ WS TOP UP</div><small>${p.packages.length} packages · Available</small><small>View packages & order →</small></div>`;
-a.addEventListener("click",()=>openProduct(p.id));
-grid.appendChild(a);
-});
+async function loadVertexCatalog(){
+ if(vertexLoading||vertexFinished)return;vertexLoading=true;draw();
+ try{for(const group of VERTEX_GROUPS){let page=1;while(page<=1000){const res=await fetch(VERTEX_API+"?action=products&group="+encodeURIComponent(group)+"&page="+page,{cache:"no-store"});const data=await res.json();if(!res.ok||!data.ok)throw new Error(data.error||"Catalog load failed");const meta=data.data||{},rows=Array.isArray(meta.products)?meta.products:[];for(const p of rows){const normalized=normCatalogName(p.name);if(!existingVertexNames.has(normalized)&&!vertexProducts.some(x=>String(x.id)===String(p.id))){p.__group=group;vertexProducts.push(p);}}draw();const currentPage=Number(meta.current_page||meta.page||page),lastPage=Number(meta.last_page||meta.total_pages||0),perPage=Number(meta.per_page||meta.limit||0),totalItems=Number(meta.total||0);if(!rows.length||(lastPage>0&&currentPage>=lastPage)||(perPage>0&&totalItems>0&&currentPage*perPage>=totalItems)||(perPage>0&&rows.length<perPage))break;page=currentPage+1;}}vertexFinished=true;}
+ catch(error){console.error("Vertex catalog load failed",error);document.getElementById("productCount").textContent=vertexProducts.length+" reseller products loaded · Some catalog pages could not be loaded. Refresh to retry.";}
+ finally{vertexLoading=false;draw();}
 }
-
+function saleINR(v){const cost=Number(v.reseller_price_usdt??v.reseller_price);if(!Number.isFinite(cost)||cost<=0)return null;const price=Math.ceil(cost*134*1.15);return Number.isFinite(price)&&price>0?price:null;}
 document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
 document.querySelectorAll(".chip").forEach(z=>z.classList.remove("active"));
 b.classList.add("active");
@@ -257,9 +278,22 @@ document.getElementById("currency").addEventListener("change",e=>{
 currency=e.target.value;
 localStorage.setItem("ws_currency",currency);
 if(current)renderDetail();
+if(vertexCurrent)renderVertexDetail();
 draw();
 });
 
+function openVertexProduct(id){
+ vertexCurrent=null;current=null;catalogView.classList.add("hidden");document.getElementById("hero").classList.add("hidden");detailView.classList.remove("hidden");document.getElementById("detailContent").innerHTML='<p class="note">প্যাকেজ ও দাম লোড হচ্ছে…</p>';window.scrollTo(0,0);
+ fetch(VERTEX_API+"?action=product&id="+encodeURIComponent(id),{cache:"no-store"}).then(async response=>{const data=await response.json();if(!response.ok||!data.ok)throw new Error(data.error||"Product details unavailable");return data.data.product;}).then(product=>{vertexCurrent=product;renderVertexDetail();}).catch(error=>{document.getElementById("detailContent").innerHTML='<div class="detail-panel">এই প্রোডাক্টের তথ্য এখন পাওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।</div>';});
+}
+function renderVertexDetail(){
+ const p=vertexCurrent;if(!p)return;const variations=Array.isArray(p.variations)?p.variations:[],fields=Array.isArray(p.checkout_fields)?p.checkout_fields:[];let chosen=null;
+ document.getElementById("detailContent").innerHTML='<div class="detail-head"><div class="detail-icon"><img src="'+safeText(p.image||"")+'" alt="'+safeText(p.name)+'" onerror="this.style.display=\'none\';this.parentElement.textContent=\'🎮\'"></div><div><small style="color:var(--cyan)">RESELLER CATALOG</small><h1>'+safeText(p.name)+'</h1></div></div>'+'<div class="detail-panel"><h2>1. প্যাকেজ নির্বাচন করুন</h2><div class="packages" id="vertexPackages"></div><p class="note">রিসেলার খরচ × পণ্যের নিজস্ব USDT রেট × ১.১৫ = ১৫% লাভসহ বিক্রির দাম।</p></div>'+'<div class="detail-panel"><h2>2. প্রয়োজনীয় তথ্য দিন</h2><div id="vertexFields" class="fields"></div><button class="order-btn" id="vertexOrderBtn" type="button" disabled>আগে প্যাকেজ নির্বাচন করুন</button><p class="note" id="vertexOrderMessage"></p></div>';
+ const packageBox=document.getElementById("vertexPackages");
+ variations.forEach(v=>{const price=saleINR(v),stock=Number(v.stock_quantity??v.stock??0),b=document.createElement("button");b.type="button";b.className="pkg";b.innerHTML='<strong>'+safeText(v.label||v.name||"Package")+'</strong><span>'+(price===null?"দাম পাওয়া যায়নি":money(price))+'</span><small style="color:var(--muted)">Stock: '+(v.stock_quantity??v.stock??"Check at order")+'</small>';b.disabled=price===null||v.in_stock===false||(v.stock_quantity!==undefined&&stock<=0);b.addEventListener("click",()=>{chosen=v;packageBox.querySelectorAll(".pkg").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");buildVertexFields();const btn=document.getElementById("vertexOrderBtn");btn.disabled=false;btn.textContent="পেমেন্ট করে অর্ডার করুন · "+money(price);});packageBox.appendChild(b);});
+ function buildVertexFields(){const holder=document.getElementById("vertexFields");holder.innerHTML="";if(!fields.length){const p=document.createElement("p");p.className="note";p.textContent="এই প্যাকেজে অতিরিক্ত তথ্য প্রয়োজন নেই।";holder.appendChild(p);}fields.forEach((f,i)=>{const key=String(f.key||f.name||f.slug||("field_"+i)),label=String(f.label||f.name||f.title||key),wrap=document.createElement("label"),title=document.createElement("span");title.textContent=label+(f.required===false?"":" *");wrap.appendChild(title);const kind=String(f.type||f.input_type||"text").toLowerCase(),choices=Array.isArray(f.options)?f.options:Array.isArray(f.choices)?f.choices:[];let input;if(["select","dropdown","choice"].includes(kind)&&choices.length){input=document.createElement("select");const first=document.createElement("option");first.value="";first.textContent=String(f.placeholder||("Select "+label));input.appendChild(first);choices.forEach(option=>{const item=document.createElement("option");if(option&&typeof option==="object"){item.value=String(option.value??option.id??option.name??option.label??"");item.textContent=String(option.label??option.name??option.value??option.id??"");}else{item.value=String(option);item.textContent=String(option);}input.appendChild(item);});}else{input=document.createElement("input");input.type=kind==="email"?"email":kind==="number"?"number":"text";input.placeholder=String(f.placeholder||("Enter "+label));}input.dataset.key=key;input.dataset.required=f.required===false?"false":"true";wrap.appendChild(input);holder.appendChild(wrap);});const countryWrap=document.createElement("label"),countryTitle=document.createElement("span"),country=document.createElement("select");countryTitle.textContent="Country / দেশ *";countryWrap.appendChild(countryTitle);country.id="vertexCountry";country.innerHTML='<option value="">দেশ নির্বাচন করুন</option><option value="India">India</option><option value="Bangladesh">Bangladesh</option><option value="Other">Other</option>';countryWrap.appendChild(country);holder.appendChild(countryWrap);}
+ document.getElementById("vertexOrderBtn").addEventListener("click",async()=>{if(!chosen)return;const holder=document.getElementById("vertexFields"),inputs=[...holder.querySelectorAll("input,select")],values={},missing=inputs.find(x=>x.dataset.required==="true"&&!x.value.trim()),country=document.getElementById("vertexCountry").value,msg=document.getElementById("vertexOrderMessage"),button=document.getElementById("vertexOrderBtn");if(missing){msg.textContent="সব প্রয়োজনীয় তথ্য পূরণ করুন।";missing.focus();return;}if(!country){msg.textContent="দেশ নির্বাচন করুন।";document.getElementById("vertexCountry").focus();return;}inputs.forEach(x=>{if(x.dataset.key&&x.value.trim())values[x.dataset.key]=x.value.trim();});button.disabled=true;button.textContent="অর্ডার তৈরি হচ্ছে…";msg.textContent="";try{const price=saleINR(chosen);if(price===null)throw new Error("এই প্যাকেজের নির্ভরযোগ্য দাম পাওয়া যায়নি।");const account=Object.values(values).join(" | ")||"No account details required";const response=await fetch(ORDERS_API,{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY},body:JSON.stringify({product_key:"vertex:"+String(p.id),product_name:p.name,package_name:String(chosen.label||chosen.name||"Package"),amount:price,account_label:Object.keys(values).join(" / ")||"No account details",account_id:account,country,vertex_product_id:String(p.id),vertex_variation_id:String(chosen.id),vertex_checkout_fields:values})});const order=await response.json();if(!response.ok||!order.checkout_url)throw new Error(order.error||"পেমেন্ট লিংক তৈরি করা যায়নি।");msg.textContent="অর্ডার তৈরি হয়েছে। পেমেন্ট পেজে নেওয়া হচ্ছে…";window.location.href=order.checkout_url;}catch(error){msg.textContent=error.message||"আবার চেষ্টা করুন।";button.disabled=false;button.textContent="পেমেন্ট করে অর্ডার করুন · "+money(saleINR(chosen));}});
+}
 function openProduct(id){
 current=newItems.find(p=>p.id===id);
 if(!current)return;
@@ -334,7 +368,7 @@ document.getElementById("orderBtn").addEventListener("click",async()=>{
 }
 
 document.getElementById("back").addEventListener("click",()=>{
- current=null;
+ current=null;vertexCurrent=null;
  detailView.classList.add("hidden");
  catalogView.classList.remove("hidden");
  document.getElementById("hero").classList.remove("hidden");
@@ -342,6 +376,7 @@ document.getElementById("back").addEventListener("click",()=>{
 });
 
 draw();
+loadVertexCatalog();
 </script>
 </body>
 </html>
