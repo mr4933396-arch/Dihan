@@ -2,13 +2,25 @@
 <html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07111f"><title>WS TOP UP | Dashboard</title>
 <style>
 :root{color-scheme:dark;--bg:#07111f;--panel:#102039;--line:#29415f;--muted:#9fb2c9;--txt:#f5f8ff;--blue:#55b9ff;--green:#48d5a1}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top,#183656,transparent 48%),var(--bg);color:var(--txt);font:14px system-ui,Arial}.wrap{max-width:1000px;margin:auto;padding:20px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px}.logo{font-weight:950;font-size:23px;color:var(--blue)}h1{font-size:19px;margin:4px 0}.muted,small{color:var(--muted);font-size:12px}.actions{display:flex;gap:8px}button{border:0;border-radius:10px;padding:12px 16px;font-weight:800;background:#2699ee;color:#061321}.secondary{background:#1b3450;color:#eaf5ff;border:1px solid var(--line)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.stat,.panel{background:linear-gradient(145deg,#142a44,#0e1c30);border:1px solid var(--line);border-radius:15px;padding:16px}.stat{min-height:95px}.stat span{color:var(--muted);font-size:12px}.stat b{display:block;font-size:24px;margin-top:8px}.money b{color:var(--green)}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.panel h2{font-size:15px;margin:0 0 12px}.bars{height:145px;display:flex;align-items:end;gap:8px}.barcol{flex:1;text-align:center;display:flex;height:100%;flex-direction:column;justify-content:end;gap:5px}.bar{width:100%;max-width:36px;margin:0 auto;background:linear-gradient(#55b9ff,#2876d2);border-radius:6px 6px 0 0;min-height:3px}.barcol em{font-style:normal;font-size:10px}.barcol small{font-size:10px}table{width:100%;border-collapse:collapse;min-width:340px}th,td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}th{color:var(--muted)}.right{text-align:right}.tablewrap{overflow:auto}.status{min-height:20px;margin:13px 0;color:var(--muted);font-size:12px}.error{color:#ffadb3}.foot{margin-top:14px;padding:13px;border:1px solid var(--line);border-radius:12px;color:var(--muted);font-size:12px;line-height:1.6}@media(max-width:620px){.wrap{padding:14px}.grid{grid-template-columns:repeat(2,1fr)}.stat{padding:13px}.stat b{font-size:21px}.twocol{grid-template-columns:1fr}.actions{width:100%}.actions button{flex:1}}
+
+.orders-panel{margin-top:14px}.admin-login{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.admin-login input{flex:1;min-width:190px;background:#091a2d;color:#fff;border:1px solid var(--line);border-radius:10px;padding:12px}.order-tools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.order-tools input{flex:1;min-width:180px;background:#091a2d;color:#fff;border:1px solid var(--line);border-radius:10px;padding:10px}.orders-table{min-width:850px}.orders-table td{vertical-align:top;max-width:220px;overflow-wrap:anywhere}.pill{display:inline-block;padding:4px 7px;border-radius:20px;background:#1b3450;color:#d9ecff;font-size:11px}.private-hidden{display:none!important}
 </style></head><body><main class="wrap">
 <header class="top"><div><div class="logo">WS TOP UP</div><h1>Dashboard · DIHAN</h1><div class="muted">অর্ডার ও বিক্রির সারসংক্ষেপ</div></div><div class="actions"><button id="refresh">Refresh ↻</button><button id="csv" class="secondary">রিপোর্ট ডাউনলোড ↓</button></div></header>
 <section class="grid">
 <div class="stat"><span>মোট অর্ডার</span><b id="total">—</b></div><div class="stat"><span>Pending</span><b id="pending">—</b></div><div class="stat"><span>Processing</span><b id="processing">—</b></div><div class="stat"><span>Completed</span><b id="completed">—</b></div><div class="stat"><span>Cancelled</span><b id="cancelled">—</b></div><div class="stat money"><span>মোট Paid Amount</span><b id="paid">—</b></div>
 <div class="stat"><span>আজকের অর্ডার</span><b id="todayOrders">—</b></div><div class="stat money"><span>আজকের বিক্রি</span><b id="todayPaid">—</b></div><div class="stat"><span>এই মাসের অর্ডার</span><b id="monthOrders">—</b></div><div class="stat money"><span>এই মাসের বিক্রি</span><b id="monthPaid">—</b></div><div class="stat"><span>Paid অর্ডার</span><b id="paidOrders">—</b></div></section>
 <div class="twocol"><section class="panel"><h2>গত ৭ দিনের অর্ডার</h2><div id="chart" class="bars">লোড হচ্ছে…</div></section><section class="panel"><h2>প্রোডাক্টভিত্তিক অর্ডার</h2><div class="tablewrap"><table><thead><tr><th>প্রোডাক্ট</th><th class="right">অর্ডার</th><th class="right">Paid বিক্রি</th></tr></thead><tbody id="products"><tr><td colspan="3">লোড হচ্ছে…</td></tr></tbody></table></div></section></div>
-<div id="status" class="status">ড্যাশবোর্ড লোড হচ্ছে…</div><div class="foot">এখানে শুধু সামগ্রিক হিসাব দেখানো হয়—গ্রাহকের নাম, ফোন, UID, অর্ডারের ব্যক্তিগত তথ্য বা পেমেন্ট রেফারেন্স নয়। এই পেজ থেকে অর্ডারের অবস্থা পরিবর্তন করা যায় না।</div>
+<section class="panel orders-panel">
+<h2>🔐 ব্যক্তিগত অর্ডার তালিকা</h2>
+<p class="muted">Admin Access Code দিয়ে খুলবে। এখানে প্রোডাক্ট, প্যাকেজ, UID, Country, Amount ও Payment Status দেখা যাবে।</p>
+<div class="admin-login"><input id="adminCode" type="password" autocomplete="off" placeholder="Admin Access Code লিখুন"><button id="unlockOrders">অর্ডার দেখুন</button></div>
+<div id="orderStatus" class="status">অর্ডার তালিকা দেখতে Access Code দিন।</div>
+<div id="orderArea" class="private-hidden">
+<div class="order-tools"><input id="orderSearch" placeholder="Order ID / Product / UID / Country খুঁজুন"><button id="orderCsv" class="secondary">অর্ডার CSV ↓</button></div>
+<div class="tablewrap"><table class="orders-table"><thead><tr><th>Order</th><th>Product</th><th>Package</th><th>UID / Account</th><th>Country</th><th>Amount</th><th>Payment</th><th>Order Status</th><th>Date</th></tr></thead><tbody id="ordersBody"><tr><td colspan="9">লোড হচ্ছে…</td></tr></tbody></table></div>
+</div>
+</section>
+<div id="status" class="status">ড্যাশবোর্ড লোড হচ্ছে…</div><div class="foot">সামগ্রিক বিক্রির হিসাব সবার জন্য। ব্যক্তিগত অর্ডার তালিকা দেখতে Admin Access Code লাগবে।</div>
 </main><script>
 const endpoint='https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/ws-public-dashboard', $=id=>document.getElementById(id);let data=null;
 const money=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format((Number(n)||0)/100);
@@ -18,5 +30,31 @@ const ds=d.daily||[],mx=Math.max(1,...ds.map(x=>x.orders));$('chart').innerHTML=
 $('products').innerHTML=(d.products||[]).map(p=>'<tr><td>'+esc(p.name)+'</td><td class="right">'+p.orders+'</td><td class="right">'+money(p.paidPaise)+'</td></tr>').join('')||'<tr><td colspan="3">কোনো অর্ডার নেই</td></tr>';
 $('status').textContent='সর্বশেষ আপডেট: '+new Date(d.updatedAt||Date.now()).toLocaleString('bn-IN')+(d.note?' · '+d.note:'')}
 async function load(){$('refresh').disabled=true;$('status').textContent='তথ্য আপডেট হচ্ছে…';$('status').classList.remove('error');try{const r=await fetch(endpoint,{headers:{Accept:'application/json'}}),d=await r.json();if(!r.ok)throw Error(d.error||'তথ্য লোড করা যায়নি');draw(d)}catch(e){$('status').textContent=e.message;$('status').classList.add('error')}finally{$('refresh').disabled=false}}
-$('refresh').onclick=load;$('csv').onclick=()=>{if(!data)return;const rows=[['WS TOP UP Dashboard'],['মোট অর্ডার',data.total],['Pending',data.pending],['Processing',data.processing],['Completed',data.completed],['Cancelled',data.cancelled],['মোট Paid INR',(data.paidTotalPaise/100).toFixed(2)],['আজকের অর্ডার',data.todayOrders],['আজকের Paid INR',(data.todayPaidPaise/100).toFixed(2)],[],['Product','Orders','Paid INR'],...(data.products||[]).map(p=>[p.name,p.orders,(p.paidPaise/100).toFixed(2)])];const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n'),a=document.createElement('a'),u=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.href=u;a.download='ws-top-up-report.csv';a.click();URL.revokeObjectURL(u)};load();
+$('refresh').onclick=load;$('csv').onclick=()=>{if(!data)return;const rows=[['WS TOP UP Dashboard'],['মোট অর্ডার',data.total],['Pending',data.pending],['Processing',data.processing],['Completed',data.completed],['Cancelled',data.cancelled],['মোট Paid INR',(data.paidTotalPaise/100).toFixed(2)],['আজকের অর্ডার',data.todayOrders],['আজকের Paid INR',(data.todayPaidPaise/100).toFixed(2)],[],['Product','Orders','Paid INR'],...(data.products||[]).map(p=>[p.name,p.orders,(p.paidPaise/100).toFixed(2)])];const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n'),a=document.createElement('a'),u=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.href=u;a.download='ws-top-up-report.csv';a.click();URL.revokeObjectURL(u)};
+const privateEndpoint='https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/ws-admin-orders';
+let privateOrders=[],adminCode='';
+const safe=s=>String(s??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function renderOrders(){
+ const q=$('orderSearch').value.trim().toLowerCase();
+ const rows=privateOrders.filter(o=>[o.id,o.product_name,o.package_name,o.account_id,o.country,o.payment_status,o.order_status].join(' ').toLowerCase().includes(q));
+ $('ordersBody').innerHTML=rows.map(o=>'<tr><td>#'+safe(o.id)+'</td><td>'+safe(o.product_name)+'</td><td>'+safe(o.package_name)+'</td><td><b>'+safe(o.account_label)+'</b><br>'+safe(o.account_id)+'</td><td>'+safe(o.country)+'</td><td>'+money(o.amount_paise)+'</td><td><span class="pill">'+safe(o.payment_status)+'</span></td><td><span class="pill">'+safe(o.order_status)+'</span></td><td>'+safe(new Date(o.created_at).toLocaleString('bn-IN'))+'</td></tr>').join('')||'<tr><td colspan="9">কোনো অর্ডার পাওয়া যায়নি</td></tr>';
+}
+async function unlockOrders(){
+ const code=$('adminCode').value.trim();
+ if(!code){$('orderStatus').textContent='Access Code লিখুন।';return}
+ $('unlockOrders').disabled=true;$('orderStatus').textContent='অর্ডার লোড হচ্ছে…';
+ try{
+  const r=await fetch(privateEndpoint,{headers:{'x-ws-admin-code':code,Accept:'application/json'}});
+  const d=await r.json();if(!r.ok)throw new Error(d.error||'অর্ডার লোড করা যায়নি');
+  adminCode=code;privateOrders=d.orders||[];$('orderArea').classList.remove('private-hidden');$('orderStatus').textContent='সর্বশেষ আপডেট: '+new Date(d.updatedAt).toLocaleString('bn-IN')+' · '+d.count+'টি অর্ডার';
+  renderOrders();$('adminCode').value='';
+ }catch(e){$('orderArea').classList.add('private-hidden');$('orderStatus').textContent=e.message}
+ finally{$('unlockOrders').disabled=false}
+}
+$('unlockOrders').onclick=unlockOrders;
+$('adminCode').addEventListener('keydown',e=>{if(e.key==='Enter')unlockOrders()});
+$('orderSearch').addEventListener('input',renderOrders);
+$('orderCsv').onclick=()=>{const rows=[['Order ID','Product','Package','Account Label','UID / Account','Country','Amount INR','Payment Status','Order Status','Created At'],...privateOrders.map(o=>[o.id,o.product_name,o.package_name,o.account_label,o.account_id,o.country,(Number(o.amount_paise||0)/100).toFixed(2),o.payment_status,o.order_status,o.created_at])];const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n'),a=document.createElement('a'),u=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.href=u;a.download='ws-top-up-orders.csv';a.click();URL.revokeObjectURL(u)};
+
+load();
 </script></body></html>
