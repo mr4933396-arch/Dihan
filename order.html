@@ -15,7 +15,18 @@
    const amount=(Number(d.amount_paise)/100).toFixed(2),date=new Date(d.created_at).toLocaleString();
    const payment=d.payment_status==="paid"?"Paid":"Unpaid — awaiting payment verification";
    const order=d.order_status==="completed"?"Completed":d.order_status==="pending"?"Pending — processing after payment verification":d.order_status;
-   el.innerHTML="<p><b>Order ID: #"+d.id+"</b></p><p>Product: "+safe(d.product_name)+"</p><p>Package: "+safe(d.package_name)+"</p><p>Amount: ₹"+amount+"</p><div class='status'>Payment: <b>"+safe(payment)+"</b></div><div class='status'>Order: <b>"+safe(order)+"</b></div><p class='muted'>Created: "+date+"</p><p class='muted'>Payment and delivery are confirmed by WS TOP UP after verification.</p>";
+   const isVertex=Boolean(d.vertex_order_id||d.vertex_order_status);
+   const rawSupplier=String(d.vertex_order_status||"").toLowerCase();
+   const supplierLabel=d.vertex_order_id
+    ? (["completed","complete","success","successful","delivered"].includes(rawSupplier)?"Delivered":["failed","cancelled","canceled","rejected"].includes(rawSupplier)?"Supplier reported a problem":"Supplier order accepted")
+    : rawSupplier==="submission_failed"?"Payment received — supplier submission needs support"
+    : rawSupplier==="submitting"?"Payment received — sending order to supplier"
+    : "Waiting for confirmed payment";
+   const supplierDetail=d.vertex_order_id?"Supplier reference: "+safe(d.vertex_order_id)
+    : rawSupplier==="submission_failed"?"Please contact WS TOP UP support. Your payment status is recorded; do not pay again."
+    : "Automatic delivery starts only after payment is verified.";
+   const supplierBox=isVertex?"<div class='status'>Vertex delivery: <b>"+safe(supplierLabel)+"</b><p class='muted'>"+supplierDetail+"</p></div>":"";
+   el.innerHTML="<p><b>Order ID: #"+d.id+"</b></p><p>Product: "+safe(d.product_name)+"</p><p>Package: "+safe(d.package_name)+"</p><p>Amount: ₹"+amount+"</p><div class='status'>Payment: <b>"+safe(payment)+"</b></div><div class='status'>Order: <b>"+safe(order)+"</b></div>"+supplierBox+"<p class='muted'>Created: "+date+"</p><p class='muted'>Payment and delivery are confirmed by WS TOP UP after verification.</p>";
    updated.textContent="Last checked: "+new Date().toLocaleTimeString();
   }catch(e){el.textContent=e.message||"Unable to load order.";}
   finally{refresh.disabled=false;refresh.textContent="Refresh status";}
