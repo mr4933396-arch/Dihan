@@ -3,7 +3,7 @@
 <style>
 body{margin:0;background:#07111f;color:#f5f8ff;font:15px system-ui,Arial}.wrap{max-width:560px;margin:28px auto;padding:16px}.card{background:#102139;border:1px solid #2b4562;border-radius:15px;padding:20px}h1{color:#45d8ff;font-size:23px}.muted{color:#9eb0c6;line-height:1.5}.status{padding:10px;border-radius:9px;background:#142740;margin:10px 0}a{color:#45d8ff}input{box-sizing:border-box;width:100%;padding:12px;border-radius:9px;border:1px solid #365371;background:#091a2d;color:white;margin:8px 0}button{padding:11px 15px;border:0;border-radius:9px;background:#2479d8;color:white;font-weight:700;cursor:pointer}button:disabled{opacity:.6}
 </style></head>
-<body><main class="wrap"><section class="card"><h1>WS TOP UP · Order Tracking</h1><p class="muted">Your order status, without customer login.</p>
+<body><main class="wrap"><section class="card"><h1>WS TOP UP · Order Tracking</h1><p class="muted">Your payment status updates automatically, without customer login.</p>
 <form id="trackForm"><label for="refInput">Order reference</label><input id="refInput" autocomplete="off" placeholder="Paste your order tracking reference" maxlength="36"><button id="trackBtn" type="submit">Track order</button></form>
 <div id="result" class="muted" aria-live="polite">Enter the tracking reference from your order confirmation to view its status.</div>
 <p><a href="index.html">← Back to store</a></p></section></main>
@@ -20,11 +20,11 @@ try{
 const r=await fetch("https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/ws-orders?ref="+encodeURIComponent(ref),{headers:{"apikey":key,"Authorization":"Bearer "+key}});
 const d=await r.json().catch(()=>({}));
 if(!r.ok)throw new Error(d.error||"Order not found. Check the reference and try again.");
-el.innerHTML="<p><b>Order ID: #"+safe(d.id)+"</b></p><p>Product: "+safe(d.product_name)+"</p><p>Package: "+safe(d.package_name)+"</p><p>Amount: ₹"+(Number(d.amount_paise)/100).toFixed(2)+"</p><div class='status'>Payment: <b>"+safe(d.payment_status)+"</b></div><div class='status'>Order: <b>"+safe(d.order_status)+"</b></div><p class='muted'>Created: "+safe(new Date(d.created_at).toLocaleString())+"</p><p class='muted'>Payment and delivery are confirmed manually by WS TOP UP.</p><p class='muted'>Status refreshes automatically every 20 seconds.</p>";
+el.innerHTML="<p><b>Order ID: #"+safe(d.id)+"</b></p><p>Product: "+safe(d.product_name)+"</p><p>Package: "+safe(d.package_name)+"</p><p>Amount: ₹"+(Number(d.amount_paise)/100).toFixed(2)+"</p><div class='status'>Payment: <b>"+safe(d.payment_status)+"</b></div><div class='status'>Gateway: <b>"+safe(d.famgateway_status||"pending")+"</b></div><div class='status'>Order: <b>"+safe(d.order_status)+"</b></div><p class='muted'>Created: "+safe(new Date(d.created_at).toLocaleString())+"</p><p class='muted'>Payment is verified automatically by FamGateway. Product delivery is handled by the WS TOP UP team.</p><p class='muted'>Status refreshes automatically every 10 seconds.</p>";
 }catch(e){el.textContent=e.message||"Unable to load order.";}
 finally{btn.disabled=false;btn.textContent="Refresh status";}
 }
-form.addEventListener("submit",e=>{e.preventDefault();const value=input.value.trim().toLowerCase();if(!/^[a-f0-9]{36}$/.test(value)){el.textContent="Invalid reference. Please paste the 36-character tracking reference from your order confirmation.";return;}ref=value;history.replaceState(null,"","?ref="+encodeURIComponent(ref));refresh();if(timer)clearInterval(timer);timer=setInterval(refresh,20000);});
+form.addEventListener("submit",e=>{e.preventDefault();const value=input.value.trim().toLowerCase();if(!/^[a-f0-9]{36}$/.test(value)){el.textContent="Invalid reference. Please paste the 36-character tracking reference from your order confirmation.";return;}ref=value;history.replaceState(null,"","?ref="+encodeURIComponent(ref));refresh();if(timer)clearInterval(timer);timer=setInterval(refresh,10000);});
 const initial=new URLSearchParams(location.search).get("ref");if(initial){input.value=initial;form.requestSubmit();}
 })();
 </script></body></html>
