@@ -228,6 +228,13 @@ const VERTEX_API="https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/vertex-c
 const ORDERS_API="https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/ws-orders";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoanpxeXR4cXVzaHh2amx2a2xzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNDY4NDksImV4cCI6MjExMDgyMjg0OX0.6HOxZqQhvzbcq5zzEiLZchfp3t15sJ8qAsOxI-gjhEI";
 const VERTEX_GROUPS=["top_up","digital_gift_card"];
+const VERTEX_CACHE_KEY="ws_top_up_vertex_catalog_v2";
+try{
+ const saved=JSON.parse(localStorage.getItem(VERTEX_CACHE_KEY)||"null");
+ if(saved&&Array.isArray(saved.products)&&saved.products.length&&Date.now()-Number(saved.savedAt||0)<7*24*60*60*1000){
+  vertexProducts=saved.products.filter(p=>p&&p.id&&p.name);
+ }
+}catch(cacheError){console.warn("Saved catalog cache unavailable",cacheError);}
 document.getElementById("currency").value=currency;
 
 function money(n,cur=currency){
@@ -292,11 +299,66 @@ function draw(){
  for(const group of order){if(!counts[group])continue;const section=document.createElement("section");section.className="catalog-section";const heading=document.createElement("h3");heading.textContent=labels[group];section.appendChild(heading);const cards=document.createElement("div");cards.className="section-grid";entries.filter(x=>x.cat===group).forEach(x=>cards.appendChild(x.kind==="old"?makeOldCard(x.item):x.kind==="new"?makeNewCard(x.item):makeVertexCard(x.item)));section.appendChild(cards);grid.appendChild(section);}
  document.getElementById("productCount").textContent=entries.length+" products shown"+(vertexLoading?" · Loading remaining reseller products…":vertexFinished?" · All reseller products loaded":"");
 }
+async function fetchCatalogPage(group,page){
+ const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),12000);
+ try{
+  let lastError;
+  for(let attempt=0;attempt<2;attempt++){
+   try{
+    const res=await fetch(VERTEX_API+"?action=products&group="+encodeURIComponent(group)+"&page="+page,{cache:"no-store",signal:controller.signal});
+    const data=await res.json();
+    if(!res.ok||!data.ok)throw new Error(data.error||"Catalog load failed");
+    return data.data||{};
+   }catch(error){lastError=error;if(attempt===0&&!controller.signal.aborted)await new Promise(resolve=>setTimeout(resolve,450));else throw error;}
+  }
+  throw lastError||new Error("Catalog request failed");
+ }finally{clearTimeout(timeout);}
+}
+function mergeCatalogRows(target,group,rows){
+ for(const p of rows){
+  const normalized=normCatalogName(p.name);
+  if(!existingVertexNames.has(normalized)&&!target.some(x=>String(x.id)===String(p.id))){
+   p.__group=group;target.push(p);
+  }
+ }
+}
 async function loadVertexCatalog(){
- if(vertexLoading||vertexFinished)return;vertexLoading=true;draw();
- try{for(const group of VERTEX_GROUPS){let page=1;while(page<=1000){const res=await fetch(VERTEX_API+"?action=products&group="+encodeURIComponent(group)+"&page="+page,{cache:"no-store"});const data=await res.json();if(!res.ok||!data.ok)throw new Error(data.error||"Catalog load failed");const meta=data.data||{},rows=Array.isArray(meta.products)?meta.products:[];for(const p of rows){const normalized=normCatalogName(p.name);if(!existingVertexNames.has(normalized)&&!vertexProducts.some(x=>String(x.id)===String(p.id))){p.__group=group;vertexProducts.push(p);}}draw();const currentPage=Number(meta.current_page||meta.page||page),lastPage=Number(meta.last_page||meta.total_pages||0),perPage=Number(meta.per_page||meta.limit||0),totalItems=Number(meta.total||0);if(!rows.length||(lastPage>0&&currentPage>=lastPage)||(perPage>0&&totalItems>0&&currentPage*perPage>=totalItems)||(perPage>0&&rows.length<perPage))break;page=currentPage+1;}}vertexFinished=true;}
- catch(error){console.error("Vertex catalog load failed",error);document.getElementById("productCount").textContent=vertexProducts.length+" reseller products loaded · Some catalog pages could not be loaded. Refresh to retry.";}
- finally{vertexLoading=false;draw();}
+ if(vertexLoading||vertexFinished)return;
+ vertexLoading=true;draw();
+ try{
+  // Fetch both reseller groups together instead of waiting for one group to finish.
+  const firstPages=await Promise.all(VERTEX_GROUPS.map(async group=>({group,meta:await fetchCatalogPage(group,1)})));
+  const allRows=[];
+  for(const item of firstPages){
+   const meta=item.meta,rows=Array.isArray(meta.products)?meta.products:[];
+   allRows.push({group:item.group,rows});
+   const currentPage=Number(meta.current_page||meta.page||1);
+   const lastPage=Number(meta.last_page||meta.total_pages||0);
+   const perPage=Number(meta.per_page||meta.limit||0);
+   const totalItems=Number(meta.total||0);
+   let pages=lastPage>0?lastPage:(perPage>0&&totalItems>0?Math.ceil(totalItems/perPage):1);
+   if(!rows.length)pages=1;
+   pages=Math.max(1,Math.min(100,pages));
+   if(currentPage<pages){
+    const remaining=Array.from({length:pages-currentPage},(_,i)=>currentPage+i+1);
+    const pageResults=await Promise.all(remaining.map(page=>fetchCatalogPage(item.group,page)));
+    pageResults.forEach(metaPage=>allRows.push({group:item.group,rows:Array.isArray(metaPage.products)?metaPage.products:[]}));
+   }
+  }
+  const fresh=[];
+  allRows.forEach(item=>mergeCatalogRows(fresh,item.group,item.rows));
+  if(fresh.length||!vertexProducts.length){
+   vertexProducts=fresh;
+   try{localStorage.setItem(VERTEX_CACHE_KEY,JSON.stringify({savedAt:Date.now(),products:vertexProducts}));}catch(storageError){console.warn("Catalog cache could not be saved",storageError);}
+  }
+  vertexFinished=true;
+ }catch(error){
+  console.error("Vertex catalog refresh failed; keeping cached catalog",error);
+  const status=document.getElementById("productCount");
+  status.textContent=vertexProducts.length+" reseller products available · Live refresh failed; showing saved catalog. Refresh to retry.";
+ }finally{
+  vertexLoading=false;draw();
+ }
 }
 function saleINR(v){const cost=Number(v.reseller_price_usdt??v.reseller_price);if(!Number.isFinite(cost)||cost<=0)return null;const price=Math.ceil(cost*134*1.15);return Number.isFinite(price)&&price>0?price:null;}
 document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
