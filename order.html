@@ -25,7 +25,8 @@
    const supplierDetail=d.vertex_order_id?"Supplier reference: "+safe(d.vertex_order_id)
     : rawSupplier==="submission_failed"?"Please contact WS TOP UP support. Your payment status is recorded; do not pay again."
     : "Automatic delivery starts only after payment is verified.";
-   const supplierBox=isVertex?"<div class='status'>Vertex delivery: <b>"+safe(supplierLabel)+"</b><p class='muted'>"+supplierDetail+"</p></div>":"";
+   const supplierError=d.vertex_error?"<p class='muted'>Support detail: "+safe(d.vertex_error)+"</p>":"";
+   const supplierBox=isVertex?"<div class='status'>Vertex delivery: <b>"+safe(supplierLabel)+"</b><p class='muted'>"+supplierDetail+"</p>"+supplierError+"</div>":"";
    el.innerHTML="<p><b>Order ID: #"+d.id+"</b></p><p>Product: "+safe(d.product_name)+"</p><p>Package: "+safe(d.package_name)+"</p><p>Amount: ₹"+amount+"</p><div class='status'>Payment: <b>"+safe(payment)+"</b></div><div class='status'>Order: <b>"+safe(order)+"</b></div>"+supplierBox+"<p class='muted'>Created: "+date+"</p><p class='muted'>Payment and delivery are confirmed by WS TOP UP after verification.</p>";
    updated.textContent="Last checked: "+new Date().toLocaleTimeString();
   }catch(e){el.textContent=e.message||"Unable to load order.";}
