@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" role="img" aria-labelledby="title desc">
+<title id="title">WS TOP UP</title><desc id="desc">WS TOP UP gaming and digital recharge emblem</desc>
+<defs>
+ <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#53e8ff"/><stop offset=".45" stop-color="#087de8"/><stop offset="1" stop-color="#07336e"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff28a"/><stop offset=".45" stop-color="#ffc928"/><stop offset="1" stop-color="#e58a00"/></linearGradient>
+ <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#142d51"/><stop offset="1" stop-color="#06152c"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur in="SourceAlpha" stdDeviation="7"/><feOffset dy="5"/><feComponentTransfer><feFuncA type="linear" slope=".5"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<g filter="url(#shadow)">
+ <path d="M380 15 557 102 548 218 380 287 212 218 203 102Z" fill="#06162e" stroke="url(#blue)" stroke-width="12"/>
+ <path d="M380 29 543 110 535 210 380 271 225 210 217 110Z" fill="url(#panel)" stroke="#35cfff" stroke-width="4"/>
+ <path d="M274 121c-14-25 1-46 26-46h160c25 0 40 21 26 46l-18 30H292Z" fill="#e9f8ff" stroke="#55dfff" stroke-width="5"/>
+ <path d="M306 102v34m-17-17h34" stroke="#092247" stroke-width="9" stroke-linecap="round"/>
+ <circle cx="443" cy="104" r="7" fill="#092247"/><circle cx="463" cy="124" r="7" fill="#092247"/><circle cx="423" cy="124" r="7" fill="#092247"/>
+ <text x="380" y="224" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="112" font-weight="900" letter-spacing="-8" fill="#fff" stroke="#087de8" stroke-width="3" paint-order="stroke">WS</text>
+ <path d="M470 161 557 61l-9 51 41-8-79 97-2-49Z" fill="url(#gold)" stroke="#ffe878" stroke-width="4"/>
+ <path d="M230 236 380 295 530 236" fill="none" stroke="#24cfff" stroke-width="8" stroke-linecap="round"/>
+ <path d="M70 268h620l-35 46H105Z" fill="url(#panel)" stroke="url(#blue)" stroke-width="8"/>
+ <path d="M89 270h582" stroke="url(#gold)" stroke-width="5"/>
+ <text x="380" y="303" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="55" font-weight="900" letter-spacing="1" fill="url(#gold)" stroke="#6f4200" stroke-width="1.5" paint-order="stroke">WS <tspan fill="#fff">TOP</tspan> UP</text>
+</g>
+<path d="M30 205h95M635 205h95" stroke="#12bfff" stroke-width="7" stroke-linecap="round"/>
+<path d="m42 190 28 15-28 15m648-30-28 15 28 15" fill="none" stroke="#ffc928" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
