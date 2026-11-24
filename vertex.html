@@ -23,7 +23,7 @@ h1{font-size:23px;margin:4px 0 7px}.sub{color:var(--muted);font-size:13px;margin
 <header class="top"><nav class="nav"><a class="brand" href="index.html">← WS TOP UP</a><select id="currency" aria-label="Currency"><option value="INR">INR ₹</option><option value="USD">USD $</option><option value="BDT">BDT ৳</option></select></nav></header>
 <main class="wrap">
 <section id="catalog">
-<h1>Vertex Bazaar Products</h1><p class="sub">৬৫০টি Top Up প্রোডাক্ট · রিসেলার দামের সঙ্গে ১৫% লাভ যোগ করা হয়েছে।</p>
+<h1>Vertex Bazaar Products</h1><p class="sub">Top Up ও Digital Gift Card—দুই ক্যাটাগরির প্রোডাক্ট। রিসেলার দামের সঙ্গে ১৫% লাভ যোগ করা হয়েছে। আগে থেকে WS TOP UP-এ থাকা প্রোডাক্টগুলো এখানে বাদ থাকবে।</p>
 <div class="toolbar"><input id="search" class="search" placeholder="প্রোডাক্ট খুঁজুন…" aria-label="Search products"><span id="count" class="muted">লোড হচ্ছে…</span></div>
 <div id="grid" class="grid"></div>
 <div class="actions"><button id="more" class="btn">আরও প্রোডাক্ট দেখুন</button></div>
@@ -37,7 +37,25 @@ h1{font-size:23px;margin:4px 0 7px}.sub{color:var(--muted);font-size:13px;margin
 <script>
 const API="https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/vertex-catalog";
 const USDT_INR=134, MARKUP=1.15, FX={INR:1,USD:0.010757,BDT:1.33876}, SYMBOL={INR:"₹",USD:"$",BDT:"৳"};
-let currency=localStorage.getItem("ws_currency")||"INR", page=0, total=650, products=[], filtered=[], busy=false, current=null;
+let currency=localStorage.getItem("ws_currency")||"INR", products=[], filtered=[], busy=false, current=null;
+const groups=["top_up","digital_gift_card"];
+const groupState={top_up:{page:0,total:null,done:false},digital_gift_card:{page:0,total:null,done:false}};
+const existingNames=new Set([
+ "imo","imo diamond","bigo live diamonds","bigo live","poppo live coins","poppo live","chamet",
+ "telegram stars premium","telegram stars & premium","truecaller premium","starmaker coins","starmaker",
+ "likee diamonds","likee","tango live","tango","yoho coins","yoho",
+ "free fire diamonds","free fire","bgmi uc","bgmi","pubg mobile uc","pubg mobile","pubg",
+ "mobile legends diamonds","mobile legends","mlbb",
+ "itunes gift card","itunes","google play gift card","google play","steam wallet","steam",
+ "netflix subscription","netflix",
+ "fc mobile bd","fc mobile (bd)","genshin impact us","genshin impact (us)",
+ "super sus goldstar","super sus","blood strike","honor of kings hok","honor of kings (hok)",
+ "razer gold india","chatgpt plus subscription","canva pro","efootball top up","efootball",
+ "clash of clans","youtube premium","tiktok coins","spotify premium"
+]);
+function normName(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();}
+function isAlreadyListed(p){return existingNames.has(normName(p.name));}
+function totalAvailable(){return groups.reduce((n,g)=>n+(groupState[g].total||0),0);}
 const $=id=>document.getElementById(id);
 $("currency").value=currency;
 function saleINR(v){const cost=Number(v.reseller_price_usdt??v.reseller_price);if(!Number.isFinite(cost)||cost<=0)return null;return Math.ceil(cost*USDT_INR*MARKUP);}
@@ -53,18 +71,38 @@ function draw(){
   card.innerHTML='<div class="art"><img loading="lazy" src="'+safe(p.image||"")+'" alt="'+safe(p.name)+'" onerror="this.style.display=\'none\'"></div><div class="info"><span class="label">'+safe(cat)+'</span><strong>'+safe(p.name)+'</strong><small>'+Number(p.package_count||0)+' প্যাকেজ · '+(p.in_stock?"In Stock":"Out of Stock")+'</small></div>';
   card.addEventListener("click",()=>openProduct(p.id));$("grid").appendChild(card);
  }
- $("count").textContent=products.length+" / "+total+" প্রোডাক্ট লোড হয়েছে";
- $("more").disabled=busy||products.length>=total;
+ const total=totalAvailable();
+ $("count").textContent=products.length+" / "+(total||"…")+" নতুন প্রোডাক্ট লোড হয়েছে";
+ $("more").disabled=busy||groups.every(g=>groupState[g].done);
 }
 async function loadNext(){
- if(busy||products.length>=total)return;busy=true;$("more").disabled=true;$("status").textContent="প্রোডাক্ট লোড হচ্ছে…";
+ if(busy||groups.every(g=>groupState[g].done))return;
+ busy=true;$("more").disabled=true;$("status").textContent="Top Up ও Gift Card প্রোডাক্ট লোড হচ্ছে…";
  try{
-  const next=page+1, res=await fetch(API+"?action=products&group=top_up&page="+next,{cache:"no-store"});
-  const data=await res.json();if(!res.ok||!data.ok)throw new Error(data.error||"Catalog load failed");
-  const rows=data.data?.products||[];if(!rows.length){total=products.length;}else{products.push(...rows);page=next;}
-  total=Number(data.data?.total||total);draw();$("status").textContent=products.length>=total?"সব প্রোডাক্ট লোড হয়েছে।":"";
- }catch(e){$("status").textContent="লোড করা যায়নি। আবার চেষ্টা করুন।";}
- finally{busy=false;$("more").disabled=products.length>=total;}
+  for(const group of groups){
+   const state=groupState[group];
+   if(state.done)continue;
+   const next=state.page+1;
+   const res=await fetch(API+"?action=products&group="+encodeURIComponent(group)+"&page="+next,{cache:"no-store"});
+   const data=await res.json();
+   if(!res.ok||!data.ok)throw new Error(data.error||"Catalog load failed");
+   const rows=data.data?.products||[];
+   state.page=next;
+   if(state.total===null)state.total=Number(data.data?.total||0);
+   for(const p of rows){
+    if(!isAlreadyListed(p)&&!products.some(x=>String(x.id)===String(p.id))){
+     p.__group=group;products.push(p);
+    }
+   }
+   if(!rows.length||rows.length===0|| (state.total>0&&state.page*Number(data.data?.per_page||rows.length)>=state.total) || (state.total===0&&rows.length===0)){
+    state.done=true;
+   }
+   if(state.total>0&&Number(data.data?.current_page||state.page)>=Number(data.data?.last_page||Math.ceil(state.total/Math.max(1,rows.length))))state.done=true;
+  }
+  draw();
+  $("status").textContent=groups.every(g=>groupState[g].done)?"সব ক্যাটাগরির প্রোডাক্ট লোড শেষ।":"আরও প্রোডাক্ট দেখতে নিচের বাটনে চাপ দিন।";
+ }catch(e){$("status").textContent="ক্যাটালগ লোড করা যায়নি। আবার চেষ্টা করুন।";}
+ finally{busy=false;$("more").disabled=groups.every(g=>groupState[g].done);}
 }
 async function openProduct(id){
  $("catalog").classList.add("hidden");$("detail").classList.remove("hidden");$("detailContent").innerHTML='<p class="muted">প্যাকেজ ও দাম লোড হচ্ছে…</p>';window.scrollTo(0,0);
