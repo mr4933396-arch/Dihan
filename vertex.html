@@ -94,13 +94,24 @@ function renderDetail(){
   if(!fields.length){holder.innerHTML='<p class="muted">এই প্যাকেজে অতিরিক্ত তথ্য প্রয়োজন নেই।</p>';return;}
   fields.forEach((f,i)=>{
    const key=String(f.key||f.name||f.slug||('field_'+i)),label=String(f.label||f.name||f.title||key);
-   const wrap=document.createElement('label');wrap.style.display='grid';wrap.style.gap='6px';wrap.style.margin='10px 0';wrap.textContent=label+(f.required===false?'':' *');
-   const input=document.createElement('input');input.type=f.type==='email'?'email':'text';input.placeholder=String(f.placeholder||('Enter '+label));input.dataset.key=key;input.dataset.required=f.required===false?'false':'true';input.id='vertexField'+i;
+   const wrap=document.createElement('label');wrap.style.display='grid';wrap.style.gap='6px';wrap.style.margin='10px 0';
+   const title=document.createElement('span');title.textContent=label+(f.required===false?'':' *');wrap.appendChild(title);
+   const kind=String(f.type||f.input_type||'text').toLowerCase();
+   const choices=Array.isArray(f.options)?f.options:(Array.isArray(f.choices)?f.choices:[]);
+   let input;
+   if(['select','dropdown','choice'].includes(kind)&&choices.length){
+    input=document.createElement('select');
+    const first=document.createElement('option');first.value='';first.textContent=String(f.placeholder||('Select '+label));input.appendChild(first);
+    choices.forEach(option=>{const item=document.createElement('option');if(option&&typeof option==='object'){item.value=String(option.value??option.id??option.name??option.label??'');item.textContent=String(option.label??option.name??option.value??option.id??'');}else{item.value=String(option);item.textContent=String(option);}input.appendChild(item);});
+   }else{
+    input=document.createElement('input');input.type=kind==='email'?'email':kind==='number'?'number':'text';input.placeholder=String(f.placeholder||('Enter '+label));
+   }
+   input.dataset.key=key;input.dataset.required=f.required===false?'false':'true';input.id='vertexField'+i;
    input.style.cssText='width:100%;background:#091a2d;color:white;border:1px solid var(--line);border-radius:9px;padding:11px';wrap.appendChild(input);holder.appendChild(wrap);
   });
  }
  $('buyVertex').addEventListener('click',async()=>{
-  if(!chosen)return;const inputs=[...$('customerFields').querySelectorAll('input')],values={},missing=inputs.find(x=>x.dataset.required==='true'&&!x.value.trim());
+  if(!chosen)return;const inputs=[...$('customerFields').querySelectorAll('input,select')],values={},missing=inputs.find(x=>x.dataset.required==='true'&&!x.value.trim());
   if(missing){$('orderMessage').textContent='সব প্রয়োজনীয় তথ্য পূরণ করুন।';missing.focus();return;}
   inputs.forEach(x=>{if(x.value.trim())values[x.dataset.key]=x.value.trim();});
   const button=$('buyVertex'),msg=$('orderMessage');button.disabled=true;button.textContent='অর্ডার তৈরি হচ্ছে…';msg.textContent='';
