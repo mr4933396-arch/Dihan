@@ -489,10 +489,11 @@ try{
  })});
  const order=await readJsonResponse(response);
  const amount=(Number(order.amount_paise||Math.round(selected.inr*100))/100).toFixed(2);
- if(!order.checkout_url || !order.public_token) throw new Error("Secure FamGateway checkout link was not returned. Please contact support before paying.");
+ const params=new URLSearchParams({pa:"7479314460@ybl",pn:"WS TOP UP",am:amount,cu:"INR",tn:"WS TOP UP Order "+order.id}).toString();
+ const wa="https://wa.me/917814003979?text="+encodeURIComponent("I placed WS TOP UP order #"+order.id+". Product: "+p[0]+". Package: "+selected.name+". UPI amount: ₹"+amount+". I will attach my payment screenshot. Please verify my payment.");
  const panel=document.getElementById('paymentPanel');
  panel.style.display='block';
- panel.innerHTML='<h2>Order created successfully</h2><p><b>Order ID: #'+order.id+'</b></p><p><b>Amount to pay:</b> ₹'+amount+' INR</p><p><a class="order" style="display:block;text-align:center" href="'+order.checkout_url+'" target="_blank" rel="noopener noreferrer">PAY SECURELY ON FAMGATEWAY →</a></p><p><a href="order.html?ref='+order.public_token+'">Track payment status</a></p><p class="notice">Complete payment on the secure FamGateway checkout page. Payment status is verified automatically. Product delivery is handled by our team. Do not send money to an old UPI ID or send a payment screenshot.</p>';
+ panel.innerHTML='<h2>Order created successfully</h2><p><b>Order ID: #'+order.id+'</b></p><p><b>Selected package:</b> '+selected.name+'</p><p><b>Display price:</b> '+money(selected.inr,currency.value)+' ('+currency.value+')</p><p><b>Actual UPI payment:</b> ₹'+amount+' INR</p><p><a class="order" href="phonepe://pay?'+params+'">PhonePe</a> <a class="order" href="tez://upi/pay?'+params+'">Google Pay</a> <a class="order" href="paytmmp://pay?'+params+'">Paytm</a> <a class="order" href="upi://pay?'+params+'">Other UPI</a></p><p><a href="order.html?ref='+order.public_token+'">Track this order</a></p><p><a href="'+wa+'" target="_blank" rel="noopener">Send payment screenshot on WhatsApp</a></p><p class="notice">Payment is checked manually. The order stays unpaid until the administrator verifies it.</p>';
  button.textContent='ORDER CREATED';
 }catch(error){alert(error.message||'Please try again');button.disabled=false;button.textContent='CREATE ORDER & CONTINUE TO PAYMENT →';}
 });
