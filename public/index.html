@@ -108,7 +108,7 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 <img class="hero-banner" src="ws-top-up-banner.png" alt="WS TOP UP gaming top-up banner">
 <div class="hero-actions"><a class="cta" href="#products">EXPLORE PRODUCTS ↓</a></div>
 <div class="trust">
-<span>🌍 Global Customers</span><span>🛡️ Manual Order Verification</span><span>💬 Human Support</span>
+<span>🌍 Global Customers</span><span>🛡️ Automatic Payment Verification</span><span>💬 Human Support</span>
 </div>
 </section>
 
@@ -131,7 +131,7 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 <div class="toolbar"><h2>Why choose WS TOP UP?</h2><span class="tag">SERVICE WITH CARE</span></div>
 <div class="features">
 <div class="feature">🌐<b>Global-ready</b><p>Products can be organised by country and supported region.</p></div>
-<div class="feature">🔎<b>Manual verification</b><p>Every order is checked by our team before delivery.</p></div>
+<div class="feature">🔎<b>Automatic payment verification</b><p>Payments are checked securely through the payment gateway. Our team handles product delivery.</p></div>
 <div class="feature">🔐<b>Safer ordering</b><p>We never ask for passwords, OTPs or login codes.</p></div>
 <div class="feature">💬<b>Direct support</b><p>Contact our team for order updates and assistance.</p></div>
 </div>
@@ -154,7 +154,6 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 
 <script>
 const WHATSAPP="917814003979";
-const UPI_ID="7479314460@ybl";
 // Public Supabase anon key: safe for browser use; database access remains server-side in ws-orders.
 const SUPABASE_URL="https://ghjzqytxqushxvjlvkls.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoanpxeXR4cXVzaHh2amx2a2xzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNDY4NDksImV4cCI6MjExMDgyMjg0OX0.6HOxZqQhvzbcq5zzEiLZchfp3t15sJ8qAsOxI-gjhEI";
@@ -311,12 +310,10 @@ document.getElementById("orderBtn").addEventListener("click",async()=>{
    account_label:p.fields.join(", "),account_id:values.map(x=>x.label+": "+x.value).join(" | ")+" | Country: "+country
   })});
   const order=await readJsonResponse(response);
+  if(!order.checkout_url || !order.public_token) throw new Error("Payment checkout link was not returned. Please contact support before paying.");
   const amount=(Number(order.amount_paise||Math.round(inrAmount*100))/100).toFixed(2);
-  const note="WS TOP UP Order "+order.id;
-  const params="pa="+encodeURIComponent(UPI_ID)+"&pn=WS%20TOP%20UP&am="+amount+"&cu=INR&tn="+encodeURIComponent(note);
-  const wa="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent("I have placed WS TOP UP order #"+order.id+". Product: "+p.name+". Package: "+p.packages[selected][0]+". Amount: ₹"+amount+". I will attach my payment screenshot. Please verify my payment.");
   const panel=document.getElementById("paymentPanel"); panel.classList.remove("hidden");
-  panel.innerHTML="<h2>Order created successfully</h2><p><b>Order ID: #"+order.id+"</b></p><p>Pay ₹"+amount+" to UPI ID <b>"+UPI_ID+"</b>.</p><p><a href=\"phonepe://pay?"+params+"\">PhonePe</a> · <a href=\"tez://upi/pay?"+params+"\">Google Pay</a> · <a href=\"paytmmp://pay?"+params+"\">Paytm</a> · <a href=\"upi://pay?"+params+"\">Other UPI app</a></p><p><a href=\"order.html?ref="+order.public_token+"\">Track this order</a></p><p><a href=\""+wa+"\" target=\"_blank\" rel=\"noopener\">Send payment screenshot on WhatsApp</a></p><p class=\"note\">Payment is checked manually. The order remains unpaid until the administrator verifies it.</p>";
+  panel.innerHTML="<h2>Order created successfully</h2><p><b>Order ID: #"+order.id+"</b></p><p>Amount to pay: <b style=\\"color:var(--gold)\\">₹"+amount+"</b></p><p><a class=\\"order-btn\\" style=\\"display:inline-block;text-decoration:none\\" href=\\""+order.checkout_url+"\\" target=\\"_blank\\" rel=\\"noopener noreferrer\\">PAY SECURELY ON FAMGATEWAY →</a></p><p><a href=\\"order.html?ref="+order.public_token+"\\">Track payment status</a></p><p class=\\"note\\">After paying, return to this tracking link. Payment status is verified automatically. Product delivery is handled by our team.</p>";
   button.textContent="ORDER CREATED";
  }catch(error){alert(error.message||"Please try again");button.disabled=false;button.textContent="CREATE ORDER & PAY";}
 });
