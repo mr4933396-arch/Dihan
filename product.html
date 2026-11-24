@@ -51,7 +51,7 @@ background:linear-gradient(120deg,#12334e,#14243a)
 .icon{
 width:65px;height:65px;display:grid;place-items:center;
 border-radius:15px;background:#214765;font-size:38px
-}
+}.icon img{width:100%;height:100%;object-fit:contain;padding:4px}
 .banner h1{margin:0 0 6px;font-size:21px}
 .banner p{margin:0;color:var(--gold);font-size:11px;font-weight:800}
 .pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
@@ -165,7 +165,7 @@ color:#8ea3bb;font-size:12px
 <main class="wrap">
 
 <section class="banner">
-<div class="icon" id="icon">💎</div>
+<div class="icon" id="icon"><img id="productImage" alt="Product image"></div>
 <div>
 <h1 id="name">Product</h1>
 <p>GLOBAL ORDER REQUEST · MANUAL DELIVERY</p>
@@ -371,7 +371,7 @@ const currency=document.getElementById('currency');
 const box=document.getElementById('packages');
 
 document.getElementById('name').textContent=p[0];
-document.getElementById('icon').textContent=p[1];
+const productImage=document.getElementById('productImage');productImage.src='./'+key+'.png';productImage.alt=p[0];productImage.onerror=()=>{productImage.style.display='none';document.getElementById('icon').textContent=p[1];};
 document.getElementById('idlabel').textContent=p[2]+' *';
 
 document.getElementById('descTitle').textContent=p[0]+' — WS TOP UP';
