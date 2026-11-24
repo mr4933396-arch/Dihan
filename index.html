@@ -97,7 +97,7 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 </a>
 <div class="navright">
 <select id="currency" class="select" aria-label="Choose currency">
-<option value="INR">INR ₹</option><option value="BDT">BDT ৳</option>
+<option value="INR">INR ₹</option><option value="USD">USD $</option><option value="BDT">BDT ৳</option>
 </select>
 
 </div>
@@ -154,7 +154,7 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 
 <script>
 const WHATSAPP="917814003979";
-const INR_RATE=0.7436;
+const FX={INR:1,USD:0.010757,BDT:1.331};
 const oldItems=[
 ['imo','IMO Diamond','./imo.png','social','Social app top-up','💬'],
 ['bigo','Bigo Live Diamonds','./bigo.png','social','Social app top-up','🐼'],
@@ -200,8 +200,9 @@ const detailView=document.getElementById("detailView");
 document.getElementById("currency").value=currency;
 
 function money(n){
-if(currency==="BDT")return "৳"+Number(n).toLocaleString("en-IN",{maximumFractionDigits:1});
-return "₹"+(Number(n)*INR_RATE).toLocaleString("en-IN",{maximumFractionDigits:2});
+const symbols={INR:"₹",USD:"$",BDT:"৳"};
+const digits=currency==="BDT"?1:2;
+return symbols[currency]+(Number(n)*FX[currency]).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:digits});
 }
 
 function draw(){
