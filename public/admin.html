@@ -15,7 +15,7 @@
  <form id="loginForm">
   <label for="email">Admin Email</label><input id="email" type="email" autocomplete="username" required value="dihanboy42@gmail.com" placeholder="আপনার Supabase account email">
   <label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required placeholder="আপনার Supabase password">
-  <button id="loginBtn" type="submit">Secure Login</button><div id="loginError" class="error" role="alert"></div>
+  <button id="loginBtn" type="submit">Secure Login</button><button id="forgot" class="secondary" type="button" style="width:100%;margin-top:9px">Forgot password? / পাসওয়ার্ড ভুলে গেছেন?</button><div id="loginError" class="error" role="alert"></div>
  </form>
  <p class="hint">এই পেজে গ্রাহকের কোনো লগইন নেই। অ্যাডমিন অ্যাক্সেস আলাদা করে সুরক্ষিত। আপনার পাসওয়ার্ড কাউকে দেবেন না।</p>
 </section>
@@ -55,6 +55,18 @@ $('loginForm').addEventListener('submit',async e=>{
   showApp();
  }catch(err){accessToken='';$('loginError').textContent=err.message.includes('permission')||err.message.includes('row-level')||err.message.includes('403')?'এই অ্যাকাউন্টে Admin অনুমতি নেই।':'লগইন হয়নি। ইমেইল/পাসওয়ার্ড যাচাই করুন অথবা Supabase Auth-এ পাসওয়ার্ড রিসেট করুন।';}
  finally{$('loginBtn').disabled=false;}
+});
+$('forgot').addEventListener('click',async()=>{
+ const email=$('email').value.trim();$('loginError').textContent='';
+ if(!email){$('loginError').textContent='আগে Admin Email লিখুন।';return;}
+ $('forgot').disabled=true;
+ try{
+  const res=await fetch(URL_BASE+'/auth/v1/recover',{method:'POST',headers:{apikey:ANON,'Content-Type':'application/json'},body:JSON.stringify({email})});
+  const d=await res.json().catch(()=>({}));
+  if(!res.ok)throw new Error(d.msg||d.message||d.error_description||'Reset email পাঠানো যায়নি।');
+  $('loginError').textContent='যদি এই ইমেইলটি সঠিক হয়, Supabase থেকে password reset email পাঠানো হয়েছে। Inbox/Spam দেখুন।';
+ }catch(err){$('loginError').textContent=err.message;}
+ finally{$('forgot').disabled=false;}
 });
 $('logout').addEventListener('click',showLogin);
 async function loadData(){
