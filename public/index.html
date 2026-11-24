@@ -155,6 +155,10 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 <script>
 const WHATSAPP="917814003979";
 const UPI_ID="7479314460@ybl";
+// Public Supabase anon key: safe for browser use; database access remains server-side in ws-orders.
+const SUPABASE_URL="https://ghjzqytxqushxvjlvkls.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoanpxeXR4cXVzaHh2amx2a2xzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNDY4NDksImV4cCI6MjExMDgyMjg0OX0.6HOxZqQhvzbcq5zzEiLZchfp3t15sJ8qAsOxI-gjhEI";
+const ORDERS_ENDPOINT=SUPABASE_URL+"/functions/v1/ws-orders";
 async function readJsonResponse(response){
  const raw=await response.text();
  let data={};
@@ -302,7 +306,7 @@ document.getElementById("orderBtn").addEventListener("click",async()=>{
  const button=document.getElementById("orderBtn"); button.disabled=true; button.textContent="CREATING ORDER...";
  try{
   const inrAmount=Number(p.packages[selected][1])*INR_RATE;
-  const response=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+  const response=await fetch(ORDERS_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY},body:JSON.stringify({
    product_key:p.id,product_name:p.name,package_name:p.packages[selected][0],amount:inrAmount,
    account_label:p.fields.join(", "),account_id:values.map(x=>x.label+": "+x.value).join(" | ")+" | Country: "+country
   })});
