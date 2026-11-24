@@ -13,7 +13,7 @@
 <section id="login" class="login">
  <div class="logo">WS TOP UP</div><h1>Admin Dashboard</h1><p class="muted">শুধু অনুমোদিত অ্যাডমিন অ্যাকাউন্ট দিয়ে লগইন করুন।</p>
  <form id="loginForm">
-  <label for="email">Admin Email</label><input id="email" type="email" autocomplete="username" required placeholder="আপনার Supabase account email">
+  <label for="email">Admin Email</label><input id="email" type="email" autocomplete="username" required value="dihanboy42@gmail.com" placeholder="আপনার Supabase account email">
   <label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required placeholder="আপনার Supabase password">
   <button id="loginBtn" type="submit">Secure Login</button><div id="loginError" class="error" role="alert"></div>
  </form>
@@ -37,8 +37,8 @@ let accessToken='',orders=[];
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=p=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format((Number(p)||0)/100);
-async function request(path,body){
- const res=await fetch(URL_BASE+path,{method:'POST',headers:{apikey:ANON,Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify(body||{})});
+async function api(path,method='GET',body){
+ const res=await fetch(URL_BASE+path,{method,headers:{apikey:ANON,Authorization:'Bearer '+accessToken,'Content-Type':'application/json',...(method==='PATCH'?{Prefer:'return=minimal'}:{})},body:body?JSON.stringify(body):undefined});
  const raw=await res.text();let data={};try{data=raw?JSON.parse(raw):{};}catch{throw new Error('সার্ভার থেকে ভুল উত্তর এসেছে। আবার চেষ্টা করুন।');}
  if(!res.ok)throw new Error(data.message||data.error_description||data.error||'Request failed ('+res.status+')');
  return data;
@@ -51,19 +51,22 @@ $('loginForm').addEventListener('submit',async e=>{
   const res=await fetch(URL_BASE+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:ANON,'Content-Type':'application/json'},body:JSON.stringify({email:$('email').value.trim(),password:$('password').value})});
   const d=await res.json();if(!res.ok)throw new Error(d.msg||d.message||'ইমেইল বা পাসওয়ার্ড সঠিক নয়।');
   accessToken=d.access_token;$('password').value='';
-  await request('/rest/v1/rpc/ws_admin_stats',{});
+  await api('/rest/v1/orders?select=id&limit=1');
   showApp();
- }catch(err){accessToken='';$('loginError').textContent=err.message.includes('Unauthorized')?'এই অ্যাকাউন্টে Admin অনুমতি নেই।':err.message;}
+ }catch(err){accessToken='';$('loginError').textContent=err.message.includes('permission')||err.message.includes('row-level')||err.message.includes('403')?'এই অ্যাকাউন্টে Admin অনুমতি নেই।':'লগইন হয়নি। ইমেইল/পাসওয়ার্ড যাচাই করুন অথবা Supabase Auth-এ পাসওয়ার্ড রিসেট করুন।';}
  finally{$('loginBtn').disabled=false;}
 });
 $('logout').addEventListener('click',showLogin);
 async function loadData(){
  $('orders').innerHTML='<div class="empty">অর্ডার লোড হচ্ছে…</div>';
  try{
-  const [stats,data]=await Promise.all([request('/rest/v1/rpc/ws_admin_stats',{}),request('/rest/v1/rpc/ws_admin_orders',{p_status:null})]);
-  $('total').textContent=stats.total??0;$('pending').textContent=stats.pending??0;$('processing').textContent=stats.processing??0;$('completed').textContent=stats.completed??0;$('sales').textContent=money(stats.paid_paise??0);
-  orders=Array.isArray(data)?data:[];render();
- }catch(err){$('orders').innerHTML='<div class="empty">'+esc(err.message)+'</div>';if(/Unauthorized|JWT|token/i.test(err.message))showLogin();}
+  const data=await api('/rest/v1/orders?select=id,product_name,package_name,amount_paise,account_label,account_id,customer_name,customer_phone,payment_status,order_status,created_at,payment_gateway,famgateway_status&order=created_at.desc&limit=500');
+  orders=Array.isArray(data)?data:[];
+  const stats={total:orders.length,pending:0,processing:0,completed:0,paid_paise:0};
+  for(const o of orders){if(Object.hasOwn(stats,o.order_status))stats[o.order_status]++;if(o.payment_status==='paid')stats.paid_paise+=Number(o.amount_paise)||0;}
+  $('total').textContent=stats.total;$('pending').textContent=stats.pending;$('processing').textContent=stats.processing;$('completed').textContent=stats.completed;$('sales').textContent=money(stats.paid_paise);
+  render();
+ }catch(err){$('orders').innerHTML='<div class="empty">'+esc(err.message)+'</div>';if(/401|403|JWT|token/i.test(err.message))showLogin();}
 }
 function render(){
  const q=$('search').value.trim().toLowerCase(),f=$('filter').value;
@@ -73,7 +76,7 @@ function render(){
 }
 $('orders').addEventListener('click',async e=>{
  const b=e.target.closest('.save');if(!b)return;const card=b.closest('.order');b.disabled=true;
- try{await request('/rest/v1/rpc/ws_admin_update_order',{p_id:Number(card.dataset.id),p_order_status:card.querySelector('.status').value});$('notice').textContent='অর্ডারের অবস্থা আপডেট হয়েছে।';$('notice').classList.remove('hidden');await loadData();}
+ try{await api('/rest/v1/orders?id=eq.'+encodeURIComponent(card.dataset.id),'PATCH',{order_status:card.querySelector('.status').value,updated_at:new Date().toISOString()});$('notice').textContent='অর্ডারের অবস্থা আপডেট হয়েছে।';$('notice').classList.remove('hidden');await loadData();}
  catch(err){alert(err.message);}finally{b.disabled=false;}
 });
 $('search').addEventListener('input',render);$('filter').addEventListener('change',render);$('refresh').addEventListener('click',loadData);
