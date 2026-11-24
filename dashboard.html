@@ -37,15 +37,15 @@ const safe=s=>String(s??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>
 function renderOrders(){
  const q=$('orderSearch').value.trim().toLowerCase();
  const rows=privateOrders.filter(o=>[o.id,o.product_name,o.package_name,o.account_id,o.country,o.payment_status,o.order_status].join(' ').toLowerCase().includes(q));
- $('ordersBody').innerHTML=rows.map(o=>'<tr><td>#'+safe(o.id)+'</td><td>'+safe(o.product_name)+'</td><td>'+safe(o.package_name)+'</td><td><b>'+safe(o.account_label)+'</b><br>'+safe(o.account_id)+'</td><td>'+safe(o.country)+'</td><td>'+money(o.amount_paise)+'</td><td><span class="pill">'+safe(o.payment_status)+'</span></td><td><span class="pill">'+safe(o.order_status)+'</span></td><td>'+safe(new Date(o.created_at).toLocaleString('en-IN'))+'</td></tr>').join('')||'<tr><td colspan="9">কোনো Orders / অর্ডার পাওয়া যায়নি</td></tr>';
+ $('ordersBody').innerHTML=rows.map(o=>'<tr><td>#'+safe(o.id)+'</td><td>'+safe(o.product_name)+'</td><td>'+safe(o.package_name)+'</td><td><b>'+safe(o.account_label)+'</b><br>'+safe(o.account_id)+'</td><td>'+safe(o.country)+'</td><td>'+money(o.amount_paise)+'</td><td><span class="pill">'+safe(o.payment_status)+'</span></td><td><span class="pill">'+safe(o.order_status)+'</span></td><td>'+safe(new Date(o.created_at).toLocaleString('en-IN'))+'</td></tr>').join('')||'<tr><td colspan="9">No orders found / কোনো অর্ডার পাওয়া যায়নি</td></tr>';
 }
 async function unlockOrders(){
  const code=$('adminCode').value.trim();
  if(!code){$('orderStatus').textContent='Enter the Access Code. / Access Code লিখুন।';return}
- $('unlockOrders').disabled=true;$('orderStatus').textContent='Orders / অর্ডার Loading… / লোড হচ্ছে…';
+ $('unlockOrders').disabled=true;$('orderStatus').textContent='Loading orders… / অর্ডার লোড হচ্ছে…';
  try{
   const r=await fetch(privateEndpoint,{headers:{'x-ws-admin-code':code,Accept:'application/json'}});
-  const d=await r.json();if(!r.ok)throw new Error(d.error||'Orders / Could not load orders / অর্ডার লোড করা যায়নি');
+  const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not load orders / অর্ডার লোড করা যায়নি');
   adminCode=code;privateOrders=d.orders||[];$('orderArea').classList.remove('private-hidden');$('orderStatus').textContent='Last updated: '+new Date(d.updatedAt).toLocaleString('en-IN')+' · '+d.count+' orders / '+d.count+'টি অর্ডার';
   renderOrders();$('adminCode').value='';
  }catch(e){$('orderArea').classList.add('private-hidden');$('orderStatus').textContent=e.message}
