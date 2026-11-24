@@ -50,12 +50,12 @@ a{color:inherit;text-decoration:none}
 .feature b{display:block;margin:8px 0 5px}
 .feature p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
 .support{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-.support a{padding:11px 15px;border:1px solid #31516e;border-radius:9px;background:#10243a;font-weight:700;font-size:13px}
+.support a{padding:11px 15px;border:1px solid #31516e;border-radius:9px;background:#10243a;font-weight:700;font-size:13px}.support a.support-link{display:inline-flex;align-items:center;gap:9px}.support-link svg{width:20px;height:20px;display:block;flex:0 0 20px}.support-link.whatsapp svg{color:#25D366}.support-link.telegram svg{color:#2AABEE}
 footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-align:center;padding:24px 15px;font-size:12px;line-height:1.8}
 .detail{max-width:850px;margin:25px auto 35px;padding:0 15px}
 .back{display:inline-block;color:var(--cyan);margin:0 0 15px;cursor:pointer;background:none;border:0;font-size:14px}
 .detail-head{display:flex;align-items:center;gap:14px;margin-bottom:15px}
-.detail-icon{width:62px;height:62px;display:grid;place-items:center;background:#1b3b5c;border-radius:15px;font-size:32px}
+.detail-icon{width:62px;height:62px;display:grid;place-items:center;background:#1b3b5c;border-radius:15px;overflow:hidden;font-size:32px;flex:0 0 62px}.detail-icon img{width:100%;height:100%;object-fit:contain;padding:4px}
 .detail-head h1{font-size:24px;margin:0}
 .detail-panel{background:linear-gradient(145deg,#142840,#0d1a2c);border:1px solid var(--line);border-radius:15px;padding:16px;margin:12px 0}
 .detail-panel h2{font-size:16px;margin:0 0 12px}
@@ -140,8 +140,8 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 <h2>Customer Support</h2>
 <p style="color:var(--muted)">Need help before ordering? Contact WS TOP UP.</p>
 <div class="support">
-<a href="https://wa.me/917814003979" target="_blank" rel="noopener">💬 WhatsApp Support</a>
-<a href="https://t.me/WSTopUpOfficial" target="_blank" rel="noopener">✈️ Telegram Support</a>
+<a class="support-link whatsapp" href="https://wa.me/917814003979" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.52 3.48A11.8 11.8 0 0 0 12.13 0C5.58 0 .25 5.33.25 11.88c0 2.1.55 4.15 1.6 5.96L.15 24l6.33-1.66a11.9 11.9 0 0 0 5.65 1.44h.01c6.55 0 11.88-5.33 11.88-11.88 0-3.17-1.23-6.15-3.5-8.42ZM12.14 21.76h-.01a9.85 9.85 0 0 1-5.02-1.37l-.36-.21-3.76.99 1-3.66-.24-.38a9.83 9.83 0 1 1 8.39 4.63Zm5.4-7.37c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.46-.89-.8-1.49-1.78-1.66-2.08-.18-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.08-.8.37-.28.3-1.05 1.03-1.05 2.5s1.08 2.9 1.23 3.1c.15.2 2.12 3.23 5.13 4.53.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.18-1.42-.08-.13-.28-.2-.58-.35Z"/></svg><span>WhatsApp Support</span></a>
+<a class="support-link telegram" href="https://t.me/WSTopUpOfficial" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.8 3.2 18.6 20c-.24 1.18-.87 1.47-1.76.92l-4.86-3.58-2.35 2.26c-.26.26-.48.48-.98.48l.35-4.95 9-8.13c.39-.35-.08-.55-.6-.2L6.27 13.9l-4.7-1.47c-1.02-.32-1.04-1.02.21-1.5L20.16 3.2c.85-.31 1.6.2 1.64 0Z"/></svg><span>Telegram Support</span></a>
 </div>
 </section>
 </main>
@@ -263,7 +263,7 @@ window.scrollTo(0,0);
 function renderDetail(){
 const p=current,price=p.packages[selected];
 document.getElementById("detailContent").innerHTML=`
-<div class="detail-head"><div class="detail-icon">${p.icon}</div><div><small style="color:var(--cyan)">${p.label}</small><h1>${p.name}</h1></div></div>
+<div class="detail-head"><div class="detail-icon"><img src="${p.image}" alt="${p.name}" onerror="this.style.display='none';this.parentElement.textContent='${p.icon}'"></div><div><small style="color:var(--cyan)">${p.label}</small><h1>${p.name}</h1></div></div>
 <div class="detail-panel"><h2>1. Select Package</h2><div class="packages">
 ${p.packages.map((x,i)=>`<button class="pkg ${i===selected?"selected":""}" data-pkg="${i}"><strong>${x[0]}</strong><span>${money(x[1])}</span></button>`).join("")}
 </div></div>
