@@ -314,7 +314,8 @@ document.getElementById("orderBtn").addEventListener("click",async()=>{
     package_name:p.packages[selected][0],
     amount:p.packages[selected][1],
     account_label:p.fields.join(" / "),
-    account_id:values.map(x=>x.value).join(" | ")+" | Country: "+country
+    account_id:values.map(x=>x.value).join(" | "),
+    country:country
    })
   });
   const order=await response.json();
