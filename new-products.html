@@ -13,7 +13,7 @@ a{color:inherit;text-decoration:none}
 .wrap{width:min(1100px,calc(100% - 24px));margin:auto}
 .top{position:sticky;top:0;background:#07111fee;backdrop-filter:blur(12px);border-bottom:1px solid var(--line);z-index:3}
 .nav{display:flex;justify-content:space-between;align-items:center;padding:13px 0}
-.brand{font-size:21px;font-weight:900}
+.brand{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:900}.brand img{width:48px;height:48px;object-fit:contain;object-position:center;flex:0 0 48px;border-radius:12px;padding:3px;background:#10243a;border:1px solid #284663;display:block}
 .brand b{color:var(--cyan)}
 select,input{background:#091a2d;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px;min-width:0}
 .hero{padding:28px 0 15px}
@@ -26,7 +26,7 @@ select,input{background:#091a2d;color:var(--text);border:1px solid var(--line);b
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .card,.panel{background:linear-gradient(145deg,#122943,#0b1b2e);border:1px solid var(--line);border-radius:16px;padding:14px}
 .card{display:flex;flex-direction:column;gap:8px;min-height:160px;cursor:pointer}
-.ico{width:48px;height:48px;display:grid;place-items:center;background:#1b3b5c;border-radius:14px;font-size:26px;overflow:hidden}.ico img{width:100%;height:100%;object-fit:contain;padding:3px}
+.ico{width:68px;height:68px;display:grid;place-items:center;background:#1b3b5c;border:1px solid #315675;border-radius:16px;font-size:30px;overflow:hidden;padding:5px;flex:0 0 68px}.ico img{width:100%;height:100%;object-fit:contain;object-position:center;padding:2px;display:block}
 .card h3{margin:0;font-size:15px}
 .card small{color:var(--muted)}
 .tag{font-size:11px;color:#a8dfff;background:#123653;border-radius:20px;padding:4px 8px;align-self:flex-start}
@@ -34,7 +34,7 @@ select,input{background:#091a2d;color:var(--text);border:1px solid var(--line);b
 .detail{padding:18px 0 35px}
 .back{color:var(--cyan);display:inline-block;margin:8px 0 15px}
 .head{display:flex;gap:13px;align-items:center}
-.head .ico{width:60px;height:60px;font-size:30px}
+.head .ico{width:84px;height:84px;flex-basis:84px;font-size:38px}
 .head h1{margin:0;font-size:24px}
 .panel{margin:13px 0}
 .panel h2{font-size:17px;margin:0 0 12px}
@@ -58,7 +58,7 @@ select,input{background:#091a2d;color:var(--text);border:1px solid var(--line);b
 
 <header class="top">
 <div class="wrap nav">
-<a class="brand" href="./index.html">WS <b>TOP UP</b></a>
+<a class="brand" href="./index.html"><img src="ws-top-up-logo.png" alt="WS TOP UP logo"><span>WS <b>TOP UP</b></span></a>
 <select id="currency">
 <option value="BDT">৳ BDT</option>
 <option value="INR">₹ INR</option>
