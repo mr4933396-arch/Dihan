@@ -40,7 +40,7 @@ const USDT_INR=134, MARKUP=1.15, FX={INR:1,USD:0.010757,BDT:1.33876}, SYMBOL={IN
 let currency=localStorage.getItem("ws_currency")||"INR", page=0, total=650, products=[], filtered=[], busy=false, current=null;
 const $=id=>document.getElementById(id);
 $("currency").value=currency;
-function saleINR(v){return Math.ceil(Number(v.reseller_price_usdt??v.reseller_price??v.price)*USDT_INR*MARKUP);}
+function saleINR(v){const cost=Number(v.reseller_price_usdt??v.reseller_price);if(!Number.isFinite(cost)||cost<=0)return null;return Math.ceil(cost*USDT_INR*MARKUP);}
 function money(n){return SYMBOL[currency]+(Number(n)*FX[currency]).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});}
 function safe(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function draw(){
@@ -83,8 +83,9 @@ function renderDetail(){
  vars.forEach(v=>{
   const btn=document.createElement('button');btn.type='button';btn.className='pkg';
   const stock=Number(v.stock_quantity??v.stock??0);
-  btn.innerHTML='<b>'+safe(v.label||v.name||'Package')+'</b><span>'+money(saleINR(v))+'</span><small class="muted">স্টক: '+stock+'</small>';
-  btn.disabled=v.in_stock===false||(v.stock_quantity!==undefined&&stock<=0);
+  const sellPrice=saleINR(v);
+   btn.innerHTML='<b>'+safe(v.label||v.name||'Package')+'</b><span>'+(sellPrice===null?'দাম পাওয়া যায়নি':money(sellPrice))+'</span><small class="muted">স্টক: '+stock+'</small>';
+   btn.disabled=sellPrice===null||v.in_stock===false||(v.stock_quantity!==undefined&&stock<=0);
   btn.addEventListener('click',()=>{chosen=v;box.querySelectorAll('.pkg').forEach(x=>x.style.borderColor='var(--line)');btn.style.borderColor='var(--cyan)';showFields();$('buyVertex').disabled=false;$('buyVertex').textContent='পেমেন্ট করে অর্ডার করুন · '+money(saleINR(v));});
   box.appendChild(btn);
  });
