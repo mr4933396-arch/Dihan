@@ -168,7 +168,7 @@ color:#8ea3bb;font-size:12px
 <div class="icon" id="icon"><img id="productImage" alt="Product image"></div>
 <div>
 <h1 id="name">Product</h1>
-<p>GLOBAL ORDER REQUEST · MANUAL DELIVERY</p>
+<p>GLOBAL ORDER REQUEST · SECURE ONLINE PAYMENT</p>
 <div class="pills">
 <span class="pill">🌍 Global-ready</span>
 <span class="pill">🛡️ Admin verified</span>
@@ -226,16 +226,16 @@ color:#8ea3bb;font-size:12px
 <h2 id="descTitle">About this product</h2>
 <p id="desc">
 Choose a package and provide the correct account ID.
-Our team will confirm your order manually.
+Payment is verified automatically through the secure checkout. Our team handles product delivery.
 </p>
 
 <b>How it works</b>
 <ol>
 <li>Select your preferred package.</li>
 <li>Enter your correct account ID and country.</li>
-<li>Send the request to WhatsApp.</li>
-<li>Wait for the administrator to confirm payment.</li>
-<li>After payment verification, delivery is completed.</li>
+<li>Continue to the secure FamGateway checkout.</li>
+<li>Complete payment using a method shown by the gateway.</li>
+<li>Track automatic payment verification, then our team completes delivery.</li>
 </ol>
 
 <div class="support">
@@ -247,7 +247,7 @@ Our team will confirm your order manually.
 </main>
 
 <footer>
-© 2026 WS TOP UP · Manual order processing
+© 2026 WS TOP UP · Secure checkout · Automatic payment verification
 </footer>
 
 <script>
@@ -489,12 +489,10 @@ try{
  })});
  const order=await readJsonResponse(response);
  const amount=(Number(order.amount_paise||Math.round(selected.inr*100))/100).toFixed(2);
- const note='WS TOP UP Order '+order.id;
- const params='pa=7479314460%40ybl&pn=WS%20TOP%20UP&am='+amount+'&cu=INR&tn='+encodeURIComponent(note);
- const wa='https://wa.me/917814003979?text='+encodeURIComponent('I have placed WS TOP UP order #'+order.id+'. Product: '+p[0]+'. Package: '+selected.name+'. Amount: ₹'+amount+'. I will attach my payment screenshot. Please verify my payment.');
+ if(!order.checkout_url || !order.public_token) throw new Error("Secure FamGateway checkout link was not returned. Please contact support before paying.");
  const panel=document.getElementById('paymentPanel');
  panel.style.display='block';
- panel.innerHTML='<h2>Order created successfully</h2><p><b>Order ID: #'+order.id+'</b></p><p><b>Selected display price:</b> '+money(selected.inr,currency.value)+' ('+currency.value+')</p><p><b>Actual UPI payment:</b> ₹'+amount+' INR</p><p>Pay only the INR amount above to UPI ID <b>7479314460@ybl</b>. USD/BDT are display conversions, not separate payment currencies.</p><p><a class="support" href="phonepe://pay?'+params+'">PhonePe</a> &nbsp; <a class="support" href="tez://upi/pay?'+params+'">Google Pay</a> &nbsp; <a class="support" href="paytmmp://pay?'+params+'">Paytm</a> &nbsp; <a class="support" href="upi://pay?'+params+'">Other UPI app</a></p><p><a href="order.html?ref='+order.public_token+'">Track this order</a></p><p><a href="'+wa+'" target="_blank" rel="noopener">Send payment screenshot on WhatsApp</a></p><p class="notice">Payment is checked manually. Your order remains unpaid until the administrator verifies it.</p>';
+ panel.innerHTML='<h2>Order created successfully</h2><p><b>Order ID: #'+order.id+'</b></p><p><b>Amount to pay:</b> ₹'+amount+' INR</p><p><a class="order" style="display:block;text-align:center" href="'+order.checkout_url+'" target="_blank" rel="noopener noreferrer">PAY SECURELY ON FAMGATEWAY →</a></p><p><a href="order.html?ref='+order.public_token+'">Track payment status</a></p><p class="notice">Complete payment on the secure FamGateway checkout page. Payment status is verified automatically. Product delivery is handled by our team. Do not send money to an old UPI ID or send a payment screenshot.</p>';
  button.textContent='ORDER CREATED';
 }catch(error){alert(error.message||'Please try again');button.disabled=false;button.textContent='CREATE ORDER & CONTINUE TO PAYMENT →';}
 });
