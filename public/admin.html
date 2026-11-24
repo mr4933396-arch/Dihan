@@ -11,13 +11,13 @@
 </style></head>
 <body>
 <section id="login" class="login">
- <div class="logo">WS TOP UP</div><h1>Admin Dashboard</h1><p class="muted">শুধু অনুমোদিত অ্যাডমিন অ্যাকাউন্ট দিয়ে লগইন করুন।</p>
+ <div class="logo">WS TOP UP</div><h1>Admin Dashboard</h1><p class="muted">শুধু আপনার অনুমোদিত অ্যাডমিন অ্যাকাউন্ট। প্রথমবার লগইন করলে এই ডিভাইসে সেশন মনে থাকবে।</p>
  <form id="loginForm">
   <label for="email">Admin Email</label><input id="email" type="email" autocomplete="username" required value="dihanboy42@gmail.com" placeholder="আপনার Supabase account email">
   <label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required placeholder="আপনার Supabase password">
-  <button id="loginBtn" type="submit">Secure Login</button><button id="forgot" class="secondary" type="button" style="width:100%;margin-top:9px">Forgot password? / পাসওয়ার্ড ভুলে গেছেন?</button><div id="loginError" class="error" role="alert"></div>
+  <button id="loginBtn" type="submit">একবার লগইন করুন</button><button id="forgot" class="secondary" type="button" style="width:100%;margin-top:9px">Forgot password? / পাসওয়ার্ড ভুলে গেছেন?</button><div id="loginError" class="error" role="alert"></div>
  </form>
- <p class="hint">এই পেজে গ্রাহকের কোনো লগইন নেই। অ্যাডমিন অ্যাক্সেস আলাদা করে সুরক্ষিত। আপনার পাসওয়ার্ড কাউকে দেবেন না।</p>
+ <p class="hint">এই ডিভাইসে একবার লগইন করলে সাধারণত বারবার লগইন করতে হবে না। ব্যক্তিগত ফোনে ব্যবহার করুন; ফোন অন্যকে দিলে Log out করুন।</p>
 </section>
 <main id="app" class="wrap hidden">
  <header class="top"><div><div class="logo">WS TOP UP</div><h1>Admin Control Center</h1><p>Orders • Payments • Delivery status</p></div><button id="logout" class="logout">Log out</button></header>
@@ -33,7 +33,11 @@
 <script>
 const URL_BASE='https://ghjzqytxqushxvjlvkls.supabase.co';
 const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoanpxeXR4cXVzaHh2amx2a2xzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNDY4NDksImV4cCI6MjExMDgyMjg0OX0.6HOxZqQhvzbcq5zzEiLZchfp3t15sJ8qAsOxI-gjhEI';
-let accessToken='',orders=[];
+let accessToken='',refreshToken='',orders=[];
+const SESSION_KEY='ws_topup_admin_session_v1';
+function saveSession(d){accessToken=d.access_token;refreshToken=d.refresh_token||refreshToken;localStorage.setItem(SESSION_KEY,JSON.stringify({access_token:accessToken,refresh_token:refreshToken,expires_at:Date.now()+(Number(d.expires_in)||3600)*1000}));}
+function clearSession(){accessToken='';refreshToken='';localStorage.removeItem(SESSION_KEY);}
+async function restoreSession(){try{const s=JSON.parse(localStorage.getItem(SESSION_KEY)||'null');if(!s?.refresh_token)return false;const r=await fetch(URL_BASE+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:ANON,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:s.refresh_token})});const d=await r.json();if(!r.ok||!d.access_token)throw new Error('session expired');saveSession(d);await api('/rest/v1/orders?select=id&limit=1');return true;}catch{clearSession();return false;}}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=p=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format((Number(p)||0)/100);
@@ -44,16 +48,16 @@ async function api(path,method='GET',body){
  return data;
 }
 function showApp(){ $('login').classList.add('hidden');$('app').classList.remove('hidden');loadData(); }
-function showLogin(){ accessToken='';$('app').classList.add('hidden');$('login').classList.remove('hidden'); }
+function showLogin(clear=true){ if(clear)clearSession();$('app').classList.add('hidden');$('login').classList.remove('hidden'); }
 $('loginForm').addEventListener('submit',async e=>{
  e.preventDefault();$('loginError').textContent='';$('loginBtn').disabled=true;
  try{
   const res=await fetch(URL_BASE+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:ANON,'Content-Type':'application/json'},body:JSON.stringify({email:$('email').value.trim(),password:$('password').value})});
   const d=await res.json();if(!res.ok)throw new Error(d.msg||d.message||'ইমেইল বা পাসওয়ার্ড সঠিক নয়।');
-  accessToken=d.access_token;$('password').value='';
+  saveSession(d);$('password').value='';
   await api('/rest/v1/orders?select=id&limit=1');
   showApp();
- }catch(err){accessToken='';$('loginError').textContent=err.message.includes('permission')||err.message.includes('row-level')||err.message.includes('403')?'এই অ্যাকাউন্টে Admin অনুমতি নেই।':'লগইন হয়নি। ইমেইল/পাসওয়ার্ড যাচাই করুন অথবা Supabase Auth-এ পাসওয়ার্ড রিসেট করুন।';}
+ }catch(err){clearSession();$('loginError').textContent=err.message.includes('permission')||err.message.includes('row-level')||err.message.includes('403')?'এই অ্যাকাউন্টে Admin অনুমতি নেই।':'লগইন হয়নি। ইমেইল/পাসওয়ার্ড যাচাই করুন অথবা Supabase Auth-এ পাসওয়ার্ড রিসেট করুন।';}
  finally{$('loginBtn').disabled=false;}
 });
 $('forgot').addEventListener('click',async()=>{
@@ -68,7 +72,7 @@ $('forgot').addEventListener('click',async()=>{
  }catch(err){$('loginError').textContent=err.message;}
  finally{$('forgot').disabled=false;}
 });
-$('logout').addEventListener('click',showLogin);
+$('logout').addEventListener('click',()=>showLogin(true));
 async function loadData(){
  $('orders').innerHTML='<div class="empty">অর্ডার লোড হচ্ছে…</div>';
  try{
@@ -92,4 +96,5 @@ $('orders').addEventListener('click',async e=>{
  catch(err){alert(err.message);}finally{b.disabled=false;}
 });
 $('search').addEventListener('input',render);$('filter').addEventListener('change',render);$('refresh').addEventListener('click',loadData);
+(async()=>{if(await restoreSession())showApp();})();
 </script></body></html>
