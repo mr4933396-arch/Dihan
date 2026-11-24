@@ -2,99 +2,42 @@
 <html lang="bn">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#07111f"><title>WS TOP UP | Admin Dashboard</title>
+<meta name="theme-color" content="#07111f"><title>WS TOP UP | Dashboard</title>
 <style>
 :root{color-scheme:dark;--bg:#07111f;--panel:#102039;--line:#29415f;--muted:#9fb2c9;--txt:#f5f8ff;--blue:#55b9ff;--green:#48d5a1;--amber:#ffc76a}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#183656,transparent 48%),var(--bg);color:var(--txt);font:14px system-ui,Arial,sans-serif}button,input,select{font:inherit}button{border:0;border-radius:10px;background:linear-gradient(90deg,#2689ff,#35b8e8);color:#061321;font-weight:800;padding:12px 16px;cursor:pointer}button:disabled{opacity:.5}.secondary{background:#263c59;color:white}.wrap{max-width:1200px;margin:auto;padding:18px}.login{max-width:420px;margin:9vh auto;background:var(--panel);border:1px solid var(--line);padding:24px;border-radius:18px}.logo{font-weight:950;font-size:22px;color:var(--blue);letter-spacing:1px}.login h1{font-size:23px;margin:7px 0}.muted{color:var(--muted)}label{display:block;margin:14px 0 6px;color:#d1dfef}input,select{width:100%;background:#09182b;border:1px solid var(--line);color:white;border-radius:10px;padding:12px;outline:none}.login button{width:100%;margin-top:18px}.error{color:#ff969d;min-height:22px;margin-top:12px}.hidden{display:none!important}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.top h1{font-size:19px;margin:0}.top p{margin:3px 0 0;color:var(--muted);font-size:12px}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:15px}.stat,.panel,.order{background:linear-gradient(145deg,#142a44,#0e1c30);border:1px solid var(--line);border-radius:14px}.stat{padding:14px}.stat span{display:block;color:var(--muted);font-size:12px}.stat b{display:block;font-size:24px;margin-top:4px}.panel{overflow:hidden}.tools{display:flex;gap:9px;padding:12px;border-bottom:1px solid var(--line);flex-wrap:wrap}.tools input{flex:1;min-width:170px}.tools select{width:auto;min-width:145px}.list{padding:12px;display:grid;gap:10px}.order{padding:14px}.orderhead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.order h3{font-size:15px;margin:0}.sub{font-size:12px;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}.money{font-weight:900;color:var(--amber);font-size:16px;white-space:nowrap}.details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}.detail{background:#0a192c;border:1px solid #233a56;border-radius:9px;padding:9px;min-width:0}.detail small{display:block;color:var(--muted);font-size:11px}.detail b{display:block;font-size:13px;margin-top:3px;overflow-wrap:anywhere}.bottom{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-top:1px solid #263b56;padding-top:11px}.bottom select{max-width:180px}.pill{display:inline-block;padding:5px 9px;border-radius:30px;background:#34445a;font-size:11px;font-weight:800}.paid,.completed{background:#124536;color:#75edbd}.unpaid,.pending{background:#493719;color:#ffd47c}.processing{background:#173b63;color:#a9ceff}.refunded,.cancelled{background:#4a2630;color:#ffadb3}.empty{text-align:center;padding:28px;color:var(--muted)}.hint{font-size:12px;color:var(--muted);margin:12px 2px;line-height:1.6}.toast{padding:10px 12px;margin:0 0 12px;border-radius:10px;background:#16344d;color:#d8eeff}.logout{background:#263c59;color:white}
-@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.wrap{padding:12px}.top{align-items:flex-start}.top>button{padding:10px}.stat b{font-size:21px}}
-@media(max-width:390px){.details{grid-template-columns:1fr}.tools select{width:100%}.top{flex-wrap:wrap}.top>button{width:100%}}
-</style></head>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top,#183656,transparent 48%),var(--bg);color:var(--txt);font:14px system-ui,Arial,sans-serif}.wrap{max-width:900px;margin:auto;padding:22px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}.logo{font-weight:950;font-size:23px;color:var(--blue);letter-spacing:1px}.top h1{font-size:19px;margin:5px 0}.muted{color:var(--muted);font-size:12px}button{border:0;border-radius:10px;background:linear-gradient(90deg,#2689ff,#35b8e8);color:#061321;font-weight:800;padding:12px 17px;cursor:pointer}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.stat{background:linear-gradient(145deg,#142a44,#0e1c30);border:1px solid var(--line);border-radius:15px;padding:18px;min-height:112px}.stat span{display:block;color:var(--muted);font-size:12px}.stat b{display:block;font-size:27px;margin-top:9px}.stat.money b{color:var(--green)}.foot{margin-top:18px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#0c1b2e;color:var(--muted);font-size:12px;line-height:1.7}.status{margin-top:14px;color:var(--muted);font-size:12px;min-height:20px}.error{color:#ffadb3}@media(max-width:600px){.wrap{padding:15px}.grid{grid-template-columns:repeat(2,1fr)}.stat{padding:14px;min-height:100px}.stat b{font-size:23px}.top{align-items:flex-start;flex-wrap:wrap}.top button{width:100%}}@media(max-width:360px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
 <body>
-<section id="login" class="login">
- <div class="logo">WS TOP UP</div><h1>Admin Dashboard</h1><p class="muted">Admin Username: <strong style="color:#55b9ff">DIHAN</strong></p><p class="muted">প্রথমবার অনুমোদিত অ্যাডমিন হিসেবে লগইন করুন। এরপর এই ফোনে সেশন মনে থাকবে।</p>
- <form id="loginForm">
-  <label for="email">Admin Email</label><input id="email" type="email" autocomplete="username" required value="dihanboy42@gmail.com" placeholder="আপনার Supabase account email">
-  <label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required placeholder="আপনার Supabase password">
-  <button id="loginBtn" type="submit">একবার লগইন করুন</button><button id="forgot" class="secondary" type="button" style="width:100%;margin-top:9px">Forgot password? / পাসওয়ার্ড ভুলে গেছেন?</button><div id="loginError" class="error" role="alert"></div>
- </form>
- <p class="hint">এই ডিভাইসে একবার লগইন করলে সাধারণত বারবার লগইন করতে হবে না। ব্যক্তিগত ফোনে ব্যবহার করুন; ফোন অন্যকে দিলে Log out করুন।</p>
+<main class="wrap">
+<header class="top"><div><div class="logo">WS TOP UP</div><h1>Dashboard · DIHAN</h1><div class="muted">অর্ডার ও পেমেন্টের সারসংক্ষেপ</div></div><button id="refresh">Refresh ↻</button></header>
+<section class="grid" aria-live="polite">
+<div class="stat"><span>মোট অর্ডার</span><b id="total">—</b></div>
+<div class="stat"><span>Pending</span><b id="pending">—</b></div>
+<div class="stat"><span>Processing</span><b id="processing">—</b></div>
+<div class="stat"><span>Completed</span><b id="completed">—</b></div>
+<div class="stat"><span>Cancelled</span><b id="cancelled">—</b></div>
+<div class="stat money"><span>মোট Paid Amount</span><b id="paid">—</b></div>
 </section>
-<main id="app" class="wrap hidden">
- <header class="top"><div><div class="logo">WS TOP UP</div><h1>Admin Control Center · DIHAN</h1><p>আপনার ব্যক্তিগত অ্যাডমিন ড্যাশবোর্ড · Orders • Payments • Delivery status</p></div><button id="logout" class="logout">Log out</button></header>
- <div id="notice" class="toast hidden"></div>
- <section class="stats">
-  <div class="stat"><span>মোট অর্ডার</span><b id="total">—</b></div><div class="stat"><span>Pending</span><b id="pending">—</b></div>
-  <div class="stat"><span>Processing</span><b id="processing">—</b></div><div class="stat"><span>Completed</span><b id="completed">—</b></div>
-  <div class="stat"><span>Paid total</span><b id="sales">—</b></div>
- </section>
- <section class="panel"><div class="tools"><input id="search" placeholder="অর্ডার / UID / প্রোডাক্ট খুঁজুন"><select id="filter"><option value="">সব অর্ডার</option><option>pending</option><option>processing</option><option>completed</option><option>cancelled</option></select><button id="refresh" class="secondary">Refresh</button></div><div id="orders" class="list"><div class="empty">অর্ডার লোড হচ্ছে…</div></div></section>
- <p class="hint">পেমেন্টের অবস্থা FamGateway থেকে যাচাই করা হয়; এই ড্যাশবোর্ডে পেমেন্ট Paid করা যায় না। টাকা সত্যিই জমা হয়েছে কি না নিশ্চিত না হয়ে অর্ডার Completed করবেন না। সর্বশেষ ৫০০টি অর্ডার দেখানো হয়।</p>
+<div id="status" class="status">ড্যাশবোর্ড লোড হচ্ছে…</div>
+<div class="foot">এটি পাবলিক সারসংক্ষেপ ড্যাশবোর্ড। এখানে গ্রাহকের নাম, ফোন, UID, অর্ডারের ব্যক্তিগত বিবরণ বা পেমেন্ট রেফারেন্স দেখানো হয় না। অর্ডারের অবস্থা পরিবর্তন করতে ব্যক্তিগত অ্যাডমিন ড্যাশবোর্ডে অনুমোদিত অ্যাক্সেস লাগবে।</div>
 </main>
 <script>
-const URL_BASE='https://ghjzqytxqushxvjlvkls.supabase.co';
-const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoanpxeXR4cXVzaHh2amx2a2xzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNDY4NDksImV4cCI6MjExMDgyMjg0OX0.6HOxZqQhvzbcq5zzEiLZchfp3t15sJ8qAsOxI-gjhEI';
-let accessToken='',refreshToken='',orders=[];
-const SESSION_KEY='ws_topup_admin_session_v1';
-function saveSession(d){accessToken=d.access_token;refreshToken=d.refresh_token||refreshToken;localStorage.setItem(SESSION_KEY,JSON.stringify({access_token:accessToken,refresh_token:refreshToken,expires_at:Date.now()+(Number(d.expires_in)||3600)*1000}));}
-function clearSession(){accessToken='';refreshToken='';localStorage.removeItem(SESSION_KEY);}
-async function restoreSession(){try{const s=JSON.parse(localStorage.getItem(SESSION_KEY)||'null');if(!s?.refresh_token)return false;const r=await fetch(URL_BASE+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:ANON,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:s.refresh_token})});const d=await r.json();if(!r.ok||!d.access_token)throw new Error('session expired');saveSession(d);await api('/rest/v1/orders?select=id&limit=1');return true;}catch{clearSession();return false;}}
+const endpoint='https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/ws-public-dashboard';
 const $=id=>document.getElementById(id);
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const money=p=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format((Number(p)||0)/100);
-async function api(path,method='GET',body){
- const res=await fetch(URL_BASE+path,{method,headers:{apikey:ANON,Authorization:'Bearer '+accessToken,'Content-Type':'application/json',...(method==='PATCH'?{Prefer:'return=minimal'}:{})},body:body?JSON.stringify(body):undefined});
- const raw=await res.text();let data={};try{data=raw?JSON.parse(raw):{};}catch{throw new Error('সার্ভার থেকে ভুল উত্তর এসেছে। আবার চেষ্টা করুন।');}
- if(!res.ok)throw new Error(data.message||data.error_description||data.error||'Request failed ('+res.status+')');
- return data;
-}
-function showApp(){ $('login').classList.add('hidden');$('app').classList.remove('hidden');loadData(); }
-function showLogin(clear=true){ if(clear)clearSession();$('app').classList.add('hidden');$('login').classList.remove('hidden'); }
-$('loginForm').addEventListener('submit',async e=>{
- e.preventDefault();$('loginError').textContent='';$('loginBtn').disabled=true;
+const money=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format((Number(n)||0)/100);
+async function load(){
+ $('refresh').disabled=true;$('status').textContent='তথ্য আপডেট হচ্ছে…';$('status').classList.remove('error');
  try{
-  const res=await fetch(URL_BASE+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:ANON,'Content-Type':'application/json'},body:JSON.stringify({email:$('email').value.trim(),password:$('password').value})});
-  const d=await res.json();if(!res.ok)throw new Error(d.msg||d.message||'ইমেইল বা পাসওয়ার্ড সঠিক নয়।');
-  saveSession(d);$('password').value='';
-  await api('/rest/v1/orders?select=id&limit=1');
-  showApp();
- }catch(err){clearSession();$('loginError').textContent=err.message.includes('permission')||err.message.includes('row-level')||err.message.includes('403')?'এই অ্যাকাউন্টে Admin অনুমতি নেই।':'লগইন হয়নি। ইমেইল/পাসওয়ার্ড যাচাই করুন অথবা Supabase Auth-এ পাসওয়ার্ড রিসেট করুন।';}
- finally{$('loginBtn').disabled=false;}
-});
-$('forgot').addEventListener('click',async()=>{
- const email=$('email').value.trim();$('loginError').textContent='';
- if(!email){$('loginError').textContent='আগে Admin Email লিখুন।';return;}
- $('forgot').disabled=true;
- try{
-  const res=await fetch(URL_BASE+'/auth/v1/recover',{method:'POST',headers:{apikey:ANON,'Content-Type':'application/json'},body:JSON.stringify({email})});
-  const d=await res.json().catch(()=>({}));
-  if(!res.ok)throw new Error(d.msg||d.message||d.error_description||'Reset email পাঠানো যায়নি।');
-  $('loginError').textContent='যদি এই ইমেইলটি সঠিক হয়, Supabase থেকে password reset email পাঠানো হয়েছে। Inbox/Spam দেখুন।';
- }catch(err){$('loginError').textContent=err.message;}
- finally{$('forgot').disabled=false;}
-});
-$('logout').addEventListener('click',()=>showLogin(true));
-async function loadData(){
- $('orders').innerHTML='<div class="empty">অর্ডার লোড হচ্ছে…</div>';
- try{
-  const data=await api('/rest/v1/orders?select=id,product_name,package_name,amount_paise,account_label,account_id,customer_name,customer_phone,payment_status,order_status,created_at,payment_gateway,famgateway_status&order=created_at.desc&limit=500');
-  orders=Array.isArray(data)?data:[];
-  const stats={total:orders.length,pending:0,processing:0,completed:0,paid_paise:0};
-  for(const o of orders){if(Object.hasOwn(stats,o.order_status))stats[o.order_status]++;if(o.payment_status==='paid')stats.paid_paise+=Number(o.amount_paise)||0;}
-  $('total').textContent=stats.total;$('pending').textContent=stats.pending;$('processing').textContent=stats.processing;$('completed').textContent=stats.completed;$('sales').textContent=money(stats.paid_paise);
-  render();
- }catch(err){$('orders').innerHTML='<div class="empty">'+esc(err.message)+'</div>';if(/401|403|JWT|token/i.test(err.message))showLogin();}
+  const r=await fetch(endpoint,{method:'GET',headers:{Accept:'application/json'}});
+  const d=await r.json();if(!r.ok)throw new Error(d.error||'তথ্য লোড করা যায়নি');
+  for(const k of ['total','pending','processing','completed','cancelled'])$(k).textContent=Number(d[k]||0).toLocaleString('en-IN');
+  $('paid').textContent=money(d.paidTotalPaise);
+  $('status').textContent='সর্বশেষ আপডেট: '+new Date(d.updatedAt||Date.now()).toLocaleString('bn-IN')+(d.note?' · '+d.note:'');
+ }catch(e){$('status').textContent=e.message||'তথ্য লোড করা যায়নি।';$('status').classList.add('error');}
+ finally{$('refresh').disabled=false;}
 }
-function render(){
- const q=$('search').value.trim().toLowerCase(),f=$('filter').value;
- const rows=orders.filter(o=>(!f||o.order_status===f)&&(!q||[o.id,o.product_name,o.package_name,o.account_label,o.account_id,o.customer_name,o.customer_phone].some(v=>String(v??'').toLowerCase().includes(q))));
- if(!rows.length){$('orders').innerHTML='<div class="empty">কোনো অর্ডার পাওয়া যায়নি।</div>';return;}
- $('orders').innerHTML=rows.map(o=>'<article class="order" data-id="'+esc(o.id)+'"><div class="orderhead"><div><h3>Order #'+esc(o.id)+' · '+esc(o.product_name)+'</h3><div class="sub">'+esc(o.package_name)+' · '+esc(o.created_at?new Date(o.created_at).toLocaleString():'')+'</div></div><div class="money">'+money(o.amount_paise)+'</div></div><div class="details"><div class="detail"><small>Customer / Phone</small><b>'+esc(o.customer_name||'Not provided')+' · '+esc(o.customer_phone||'No phone')+'</b></div><div class="detail"><small>'+esc(o.account_label||'UID / Account ID')+'</small><b>'+esc(o.account_id||'Not provided')+'</b></div><div class="detail"><small>Payment status</small><b><span class="pill '+esc(o.payment_status)+'">'+esc(o.payment_status)+'</span> · '+esc(o.famgateway_status||o.payment_gateway||'')+'</b></div><div class="detail"><small>Order status</small><b><span class="pill '+esc(o.order_status)+'">'+esc(o.order_status)+'</span></b></div></div><div class="bottom"><label style="margin:0">Delivery status</label><select class="status" aria-label="Delivery status">'+['pending','processing','completed','cancelled'].map(s=>'<option value="'+s+'" '+(o.order_status===s?'selected':'')+'>'+s+'</option>').join('')+'</select><button class="save">Save status</button></div></article>').join('');
-}
-$('orders').addEventListener('click',async e=>{
- const b=e.target.closest('.save');if(!b)return;const card=b.closest('.order');b.disabled=true;
- try{await api('/rest/v1/orders?id=eq.'+encodeURIComponent(card.dataset.id),'PATCH',{order_status:card.querySelector('.status').value,updated_at:new Date().toISOString()});$('notice').textContent='অর্ডারের অবস্থা আপডেট হয়েছে।';$('notice').classList.remove('hidden');await loadData();}
- catch(err){alert(err.message);}finally{b.disabled=false;}
-});
-$('search').addEventListener('input',render);$('filter').addEventListener('change',render);$('refresh').addEventListener('click',loadData);
-(async()=>{if(await restoreSession())showApp();})();
-</script></body></html>
+$('refresh').addEventListener('click',load);
+load();
+</script>
+</body></html>
