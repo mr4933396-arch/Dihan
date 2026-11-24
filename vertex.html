@@ -75,15 +75,41 @@ async function openProduct(id){
  }catch(e){$("detailContent").innerHTML='<div class="panel">এই প্রোডাক্টের তথ্য এখন পাওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।</div>';}
 }
 function renderDetail(){
- const p=current,vars=p.variations||[],cat=p.category?.name||"Top Up";
- $("detailContent").innerHTML='<div class="panel"><div style="display:flex;gap:14px;align-items:center"><img src="'+safe(p.image||"")+'" alt="" style="width:90px;height:90px;object-fit:contain;border-radius:12px;background:#10243a"><div><span class="label">'+safe(cat)+'</span><h1>'+safe(p.name)+'</h1><span class="muted">'+(p.stock_status==="instock"?"In Stock":"Out of Stock")+'</span></div></div></div><div class="panel"><h2>প্যাকেজ নির্বাচন করুন</h2><div class="packages" id="packageList"></div><p class="notice">দাম = Vertex Bazaar রিসেলার মূল্য × ₹১৩৪ × ১.১৫। অর্থাৎ ১৫% লাভ যোগ করা হয়েছে। মুদ্রা রূপান্তর আনুমানিক।</p></div><p class="notice">এই ক্যাটালগে দাম ও স্টক দেখানো হচ্ছে। Vertex-এর অর্ডার এবং গ্রাহকের পেমেন্ট যাচাইয়ের সংযোগ সম্পূর্ণ না হওয়া পর্যন্ত এখানে পেমেন্ট/অর্ডার বাটন চালু করা হয়নি।</p>';
- const box=$("packageList");
- for(const v of vars){
-  const btn=document.createElement("div");btn.className="pkg";
-  const price=saleINR(v);
-  btn.innerHTML="<b>"+safe(v.label)+"</b><span>"+money(price)+"</span><small class='muted'>রিসেলার স্টক: "+Number(v.stock_quantity||0)+"</small>";
+ const p=current,vars=p.variations||[],cat=p.category?.name||'Top Up';
+ let chosen=null;
+ const fields=Array.isArray(p.checkout_fields)?p.checkout_fields:[];
+ $('detailContent').innerHTML='<div class="panel"><h1>'+safe(p.name)+'</h1><p class="muted">'+safe(cat)+'</p></div><div class="panel"><h2>প্যাকেজ নির্বাচন করুন</h2><div class="packages" id="packageList"></div><p class="notice">রিসেলার মূল্য × ₹১৩৪ × ১.১৫ = ১৫% লাভসহ বিক্রির দাম।</p></div><div class="panel"><h2>প্রয়োজনীয় তথ্য</h2><div id="customerFields"></div><button id="buyVertex" class="btn" disabled>প্যাকেজ নির্বাচন করুন</button><p id="orderMessage" class="notice"></p></div>';
+ const box=$('packageList');
+ vars.forEach(v=>{
+  const btn=document.createElement('button');btn.type='button';btn.className='pkg';
+  const stock=Number(v.stock_quantity??v.stock??0);
+  btn.innerHTML='<b>'+safe(v.label||v.name||'Package')+'</b><span>'+money(saleINR(v))+'</span><small class="muted">স্টক: '+stock+'</small>';
+  btn.disabled=v.in_stock===false||(v.stock_quantity!==undefined&&stock<=0);
+  btn.addEventListener('click',()=>{chosen=v;box.querySelectorAll('.pkg').forEach(x=>x.style.borderColor='var(--line)');btn.style.borderColor='var(--cyan)';showFields();$('buyVertex').disabled=false;$('buyVertex').textContent='পেমেন্ট করে অর্ডার করুন · '+money(saleINR(v));});
   box.appendChild(btn);
+ });
+ function showFields(){
+  const holder=$('customerFields');holder.innerHTML='';
+  if(!fields.length){holder.innerHTML='<p class="muted">এই প্যাকেজে অতিরিক্ত তথ্য প্রয়োজন নেই।</p>';return;}
+  fields.forEach((f,i)=>{
+   const key=String(f.key||f.name||f.slug||('field_'+i)),label=String(f.label||f.name||f.title||key);
+   const wrap=document.createElement('label');wrap.style.display='grid';wrap.style.gap='6px';wrap.style.margin='10px 0';wrap.textContent=label+(f.required===false?'':' *');
+   const input=document.createElement('input');input.type=f.type==='email'?'email':'text';input.placeholder=String(f.placeholder||('Enter '+label));input.dataset.key=key;input.dataset.required=f.required===false?'false':'true';input.id='vertexField'+i;
+   input.style.cssText='width:100%;background:#091a2d;color:white;border:1px solid var(--line);border-radius:9px;padding:11px';wrap.appendChild(input);holder.appendChild(wrap);
+  });
  }
+ $('buyVertex').addEventListener('click',async()=>{
+  if(!chosen)return;const inputs=[...$('customerFields').querySelectorAll('input')],values={},missing=inputs.find(x=>x.dataset.required==='true'&&!x.value.trim());
+  if(missing){$('orderMessage').textContent='সব প্রয়োজনীয় তথ্য পূরণ করুন।';missing.focus();return;}
+  inputs.forEach(x=>{if(x.value.trim())values[x.dataset.key]=x.value.trim();});
+  const button=$('buyVertex'),msg=$('orderMessage');button.disabled=true;button.textContent='অর্ডার তৈরি হচ্ছে…';msg.textContent='';
+  try{
+   const amount=saleINR(chosen),account=Object.values(values).join(' | ')||'No account details required';
+   const response=await fetch('https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/ws-orders',{method:'POST',headers:{'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoanpxeXR4cXVzaHh2amx2a2xzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNDY4NDksImV4cCI6MjExMDgyMjg0OX0.6HOxZqQhvzbcq5zzEiLZchfp3t15sJ8qAsOxI-gjhEI','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoanpxeXR4cXVzaHh2amx2a2xzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNDY4NDksImV4cCI6MjExMDgyMjg0OX0.6HOxZqQhvzbcq5zzEiLZchfp3t15sJ8qAsOxI-gjhEI'},body:JSON.stringify({product_key:'vertex:'+p.id,product_name:p.name,package_name:String(chosen.label||chosen.name||'Package'),amount,account_label:Object.keys(values).join(' / ')||'No account details',account_id:account,vertex_product_id:String(p.id),vertex_variation_id:String(chosen.id),vertex_checkout_fields:values})});
+   const order=await response.json();if(!response.ok||!order.checkout_url)throw new Error(order.error||'পেমেন্ট লিংক তৈরি করা যায়নি।');
+   msg.textContent='অর্ডার তৈরি হয়েছে। পেমেন্ট পেজে নেওয়া হচ্ছে…';location.href=order.checkout_url;
+  }catch(e){msg.textContent=e.message||'আবার চেষ্টা করুন।';button.disabled=false;button.textContent='পেমেন্ট করে অর্ডার করুন · '+money(saleINR(chosen));}
+ });
 }
 $("search").addEventListener("input",draw);$("more").addEventListener("click",loadNext);
 $("currency").addEventListener("change",e=>{currency=e.target.value;localStorage.setItem("ws_currency",currency);draw();if(current)renderDetail();});
