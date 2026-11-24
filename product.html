@@ -383,11 +383,11 @@ currency.value=localStorage.getItem('ws_currency')||'INR';
 
 const FX={INR:1,USD:0.010757,BDT:1.331};
 const SYMBOL={INR:'₹',USD:'$',BDT:'৳'};
-function money(value,cur){
- const amount=Number(value)*FX[cur];
+function money(inr,cur){
+ const amount=Number(inr)*FX[cur];
  return SYMBOL[cur]+amount.toLocaleString('en-IN',{
   minimumFractionDigits:2,
-  maximumFractionDigits:cur==='BDT'?1:2
+  maximumFractionDigits:2
  });
 }
 
@@ -402,28 +402,24 @@ return;
 
 p[3].forEach((x,i)=>{
 
-const inr=x[1];
-const usd=x.length>2?x[2]:inr*FX.USD;
+const inr=Number(x[1]);
 
 const b=document.createElement('button');
 b.type='button';
 b.className='pack';
 
-const values={INR:inr,USD:usd,BDT:inr*FX.BDT};
 const otherCurrency=currency.value==='INR'?'USD':'INR';
-const otherValue=otherCurrency==='USD'?usd:inr;
 b.innerHTML=`
 <strong>${x[0]}</strong>
-<span class="price">${money(values[currency.value],currency.value)}</span>
-<span class="usd">${money(otherValue,otherCurrency)} approx.</span>
+<span class="price">${money(inr,currency.value)}</span>
+<span class="usd">${money(inr,otherCurrency)} approx.</span>
 <span class="stock">● In Stock</span>
 `;
 
 b.onclick=()=>{
 selected={
 name:x[0],
-inr:inr,
-usd:usd
+inr:inr
 };
 
 document.querySelectorAll('.pack').forEach(z=>{
@@ -451,10 +447,9 @@ total.textContent='Select package';
 return;
 }
 
-const values={INR:selected.inr,USD:selected.usd,BDT:selected.inr*FX.BDT};
-const main=money(values[currency.value],currency.value);
+const main=money(selected.inr,currency.value);
 const otherCurrency=currency.value==='INR'?'USD':'INR';
-const other=money(otherCurrency==='USD'?selected.usd:selected.inr,otherCurrency);
+const other=money(selected.inr,otherCurrency);
 
 total.innerHTML=main+
 '<br><small style="color:#00c99a;font-size:11px">'+
@@ -499,7 +494,7 @@ try{
  const wa='https://wa.me/917814003979?text='+encodeURIComponent('I have placed WS TOP UP order #'+order.id+'. Product: '+p[0]+'. Package: '+selected.name+'. Amount: ₹'+amount+'. I will attach my payment screenshot. Please verify my payment.');
  const panel=document.getElementById('paymentPanel');
  panel.style.display='block';
- panel.innerHTML='<h2>Order created successfully</h2><p><b>Order ID: #'+order.id+'</b></p><p>Pay ₹'+amount+' to UPI ID <b>7479314460@ybl</b>.</p><p><a class="support" href="phonepe://pay?'+params+'">PhonePe</a> &nbsp; <a class="support" href="tez://upi/pay?'+params+'">Google Pay</a> &nbsp; <a class="support" href="paytmmp://pay?'+params+'">Paytm</a> &nbsp; <a class="support" href="upi://pay?'+params+'">Other UPI app</a></p><p><a href="order.html?ref='+order.public_token+'">Track this order</a></p><p><a href="'+wa+'" target="_blank" rel="noopener">Send payment screenshot on WhatsApp</a></p><p class="notice">Payment is checked manually. Your order remains unpaid until the administrator verifies it.</p>';
+ panel.innerHTML='<h2>Order created successfully</h2><p><b>Order ID: #'+order.id+'</b></p><p><b>Selected display price:</b> '+money(selected.inr,currency.value)+' ('+currency.value+')</p><p><b>Actual UPI payment:</b> ₹'+amount+' INR</p><p>Pay only the INR amount above to UPI ID <b>7479314460@ybl</b>. USD/BDT are display conversions, not separate payment currencies.</p><p><a class="support" href="phonepe://pay?'+params+'">PhonePe</a> &nbsp; <a class="support" href="tez://upi/pay?'+params+'">Google Pay</a> &nbsp; <a class="support" href="paytmmp://pay?'+params+'">Paytm</a> &nbsp; <a class="support" href="upi://pay?'+params+'">Other UPI app</a></p><p><a href="order.html?ref='+order.public_token+'">Track this order</a></p><p><a href="'+wa+'" target="_blank" rel="noopener">Send payment screenshot on WhatsApp</a></p><p class="notice">Payment is checked manually. Your order remains unpaid until the administrator verifies it.</p>';
  button.textContent='ORDER CREATED';
 }catch(error){alert(error.message||'Please try again');button.disabled=false;button.textContent='CREATE ORDER & CONTINUE TO PAYMENT →';}
 });
