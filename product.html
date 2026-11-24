@@ -368,7 +368,14 @@ document.getElementById('desc').textContent=
 currency.value=localStorage.getItem('ws_currency')||'INR';
 
 const FX={INR:1,USD:0.010757,BDT:1.331};
-const SYMBOL={INR:'₹',USD:'
+const SYMBOL={INR:'₹',USD:'$',BDT:'৳'};
+function money(value,cur){
+ const amount=Number(value)*FX[cur];
+ return SYMBOL[cur]+amount.toLocaleString('en-IN',{
+  minimumFractionDigits:2,
+  maximumFractionDigits:cur==='BDT'?1:2
+ });
+}
 
 function renderPackages(){
 
