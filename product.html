@@ -115,6 +115,25 @@ background:linear-gradient(90deg,var(--cyan),#4a8fff);
 font-weight:900;color:#061321;cursor:pointer
 }
 .order:disabled{opacity:.4;cursor:not-allowed}
+.payment-actions{
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:10px;
+margin:14px 0;
+}
+.payment-actions .order{
+display:flex;
+align-items:center;
+justify-content:center;
+width:100%;
+min-width:0;
+min-height:48px;
+padding:12px 8px;
+text-align:center;
+white-space:normal;
+overflow-wrap:anywhere;
+line-height:1.25;
+}
 .notice{font-size:12px;color:#ffcf85;line-height:1.7}
 .content{
 margin-top:17px;border:1px solid var(--line);
@@ -493,7 +512,7 @@ try{
  const wa="https://wa.me/917814003979?text="+encodeURIComponent("I placed WS TOP UP order #"+order.id+". Product: "+p[0]+". Package: "+selected.name+". UPI amount: ₹"+amount+". I will attach my payment screenshot. Please verify my payment.");
  const panel=document.getElementById('paymentPanel');
  panel.style.display='block';
- panel.innerHTML='<h2>Order created successfully</h2><p><b>Order ID: #'+order.id+'</b></p><p><b>Selected package:</b> '+selected.name+'</p><p><b>Display price:</b> '+money(selected.inr,currency.value)+' ('+currency.value+')</p><p><b>Actual UPI payment:</b> ₹'+amount+' INR</p><p><a class="order" href="phonepe://pay?'+params+'">PhonePe</a> <a class="order" href="tez://upi/pay?'+params+'">Google Pay</a> <a class="order" href="paytmmp://pay?'+params+'">Paytm</a> <a class="order" href="upi://pay?'+params+'">Other UPI</a></p><p><a href="order.html?ref='+order.public_token+'">Track this order</a></p><p><a href="'+wa+'" target="_blank" rel="noopener">Send payment screenshot on WhatsApp</a></p><p class="notice">Payment is checked manually. The order stays unpaid until the administrator verifies it.</p>';
+ panel.innerHTML='<h2>Order created successfully</h2><p><b>Order ID: #'+order.id+'</b></p><p><b>Selected package:</b> '+selected.name+'</p><p><b>Display price:</b> '+money(selected.inr,currency.value)+' ('+currency.value+')</p><p><b>Actual UPI payment:</b> ₹'+amount+' INR</p><div class="payment-actions"><a class="order" href="phonepe://pay?'+params+'">PhonePe</a><a class="order" href="tez://upi/pay?'+params+'">Google Pay</a><a class="order" href="paytmmp://pay?'+params+'">Paytm</a><a class="order" href="upi://pay?'+params+'">Other UPI</a></div><p><a href="order.html?ref='+order.public_token+'">Track this order</a></p><p><a href="'+wa+'" target="_blank" rel="noopener">Send payment screenshot on WhatsApp</a></p><p class="notice">Payment is checked manually. The order stays unpaid until the administrator verifies it.</p>';
  button.textContent='ORDER CREATED';
 }catch(error){alert(error.message||'Please try again');button.disabled=false;button.textContent='CREATE ORDER & CONTINUE TO PAYMENT →';}
 });
