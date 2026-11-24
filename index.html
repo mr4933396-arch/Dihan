@@ -254,7 +254,24 @@ function draw(){
  oldItems.filter(x=>(cat==="all"||x[3]===cat)&&x[1].toLowerCase().includes(q)).forEach(x=>entries.push({cat:x[3],kind:"old",item:x}));
  newItems.filter(x=>(cat==="all"||x.cat===cat)&&(x.name+" "+x.label).toLowerCase().includes(q)).forEach(x=>entries.push({cat:x.cat,kind:"new",item:x}));
  vertexProducts.filter(p=>(cat==="all"||classifyVertexProduct(p)===cat)&&(p.name+" "+(p.category?.name||"")+" "+(p.categories||[]).map(x=>x.name).join(" ")).toLowerCase().includes(q)).forEach(p=>entries.push({cat:classifyVertexProduct(p),kind:"vertex",item:p}));
- const order=["social","games","gift","subs"],labels={social:"SOCIAL MEDIA",games:"GAMING",gift:"GIFT CARDS",subs:"SUBSCRIPTIONS"},counts={social:0,games:0,gift:0,subs:0};
+ // Put the most-used products first in each category; keep other products in their existing order.
+ const popularRank=(entry)=>{
+  const name=String(entry.item.name||entry.item[1]||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+  const rules={
+   social:[/\bimo\b/,/\btiktok\b/,/\binstagram\b/,/\bfacebook\b/,/\bwhatsapp\b/,/\bbigo\b/,/\bpoppo\b/,/\bchamet\b/,/\btelegram\b/,/\bsnapchat\b/,/\blikee\b/,/\bstarmaker\b/,/\btango\b/,/\byoho\b/],
+   games:[/\bpubg\b/,/\bfree fire\b/,/\bcall of duty\b|\bcod mobile\b/,/\bbgmi\b/,/\bmobile legends\b|\bmlbb\b/,/\bfc mobile\b/,/\befootball\b/,/\bclash of clans\b/,/\bgenshin\b/,/\bblood strike\b/,/\bhonor of kings\b/,/\bsuper sus\b/],
+   subs:[/\bnetflix\b/,/\byoutube premium\b/,/\bspotify\b/,/\bchatgpt\b/,/\bcanva\b/,/\btelegram\b/,/\btruecaller\b/],
+   gift:[/\bgoogle play\b/,/\bitunes\b/,/\bsteam\b/,/\brazer gold\b/]
+  };
+  const rank=(rules[entry.cat]||[]).findIndex(rx=>rx.test(name));
+  return rank<0?10000:rank;
+ };
+ entries.forEach((entry,index)=>entry.originalIndex=index);
+ entries.sort((a,b)=>{
+  const sectionOrder={social:0,games:1,subs:2,gift:3};
+  return (sectionOrder[a.cat]??9)-(sectionOrder[b.cat]??9)||popularRank(a)-popularRank(b)||a.originalIndex-b.originalIndex;
+ });
+ const order=["social","games","subs","gift"],labels={social:"SOCIAL MEDIA",games:"GAMING",gift:"GIFT CARDS",subs:"SUBSCRIPTIONS"},counts={social:0,games:0,gift:0,subs:0};
  entries.forEach(x=>counts[x.cat]=(counts[x.cat]||0)+1);
  for(const group of order){if(!counts[group])continue;const section=document.createElement("section");section.className="catalog-section";const heading=document.createElement("h3");heading.textContent=labels[group];section.appendChild(heading);const cards=document.createElement("div");cards.className="section-grid";entries.filter(x=>x.cat===group).forEach(x=>cards.appendChild(x.kind==="old"?makeOldCard(x.item):x.kind==="new"?makeNewCard(x.item):makeVertexCard(x.item)));section.appendChild(cards);grid.appendChild(section);}
  document.getElementById("productCount").textContent=entries.length+" products shown"+(vertexLoading?" · Loading remaining reseller products…":vertexFinished?" · All reseller products loaded":"");
