@@ -155,6 +155,7 @@ color:#8ea3bb;font-size:12px
 <select id="currency" class="select">
 <option value="INR">INR ₹</option>
 <option value="USD">USD $</option>
+<option value="BDT">BDT ৳</option>
 </select>
 <a class="back" href="index.html">← PRODUCTS</a>
 </div>
@@ -366,14 +367,131 @@ document.getElementById('desc').textContent=
 
 currency.value=localStorage.getItem('ws_currency')||'INR';
 
-function money(value,cur){
-if(cur==='USD'){
-return '$'+Number(value).toFixed(2);
+const FX={INR:1,USD:0.010757,BDT:1.331};
+const SYMBOL={INR:'₹',USD:'
+
+function renderPackages(){
+
+box.innerHTML='';
+
+if(!p[3].length){
+box.innerHTML='<p style="color:#ffd18d">Package list coming soon. Contact support for a quote.</p>';
+return;
 }
-return '₹'+Number(value).toLocaleString('en-IN',{
-minimumFractionDigits:2,
-maximumFractionDigits:2
+
+p[3].forEach((x,i)=>{
+
+const inr=x[1];
+const usd=x.length>2?x[2]:inr*FX.USD;
+
+const b=document.createElement('button');
+b.type='button';
+b.className='pack';
+
+const values={INR:inr,USD:usd,BDT:inr*FX.BDT};
+const otherCurrency=currency.value==='INR'?'USD':'INR';
+const otherValue=otherCurrency==='USD'?usd:inr;
+b.innerHTML=`
+<strong>${x[0]}</strong>
+<span class="price">${money(values[currency.value],currency.value)}</span>
+<span class="usd">${money(otherValue,otherCurrency)} approx.</span>
+<span class="stock">● In Stock</span>
+`;
+
+b.onclick=()=>{
+selected={
+name:x[0],
+inr:inr,
+usd:usd
+};
+
+document.querySelectorAll('.pack').forEach(z=>{
+z.classList.remove('selected');
 });
+
+b.classList.add('selected');
+
+updatePrice();
+validate();
+};
+
+box.appendChild(b);
+
+});
+
+}
+
+function updatePrice(){
+
+const total=document.getElementById('total');
+
+if(!selected){
+total.textContent='Select package';
+return;
+}
+
+const values={INR:selected.inr,USD:selected.usd,BDT:selected.inr*FX.BDT};
+const main=money(values[currency.value],currency.value);
+const otherCurrency=currency.value==='INR'?'USD':'INR';
+const other=money(otherCurrency==='USD'?selected.usd:selected.inr,otherCurrency);
+
+total.innerHTML=main+
+'<br><small style="color:#00c99a;font-size:11px">'+
+other+' approx.</small>';
+
+}
+
+currency.addEventListener('change',()=>{
+localStorage.setItem('ws_currency',currency.value);
+renderPackages();
+updatePrice();
+});
+
+function validate(){
+
+document.getElementById('order').disabled=!(
+selected &&
+document.getElementById('uid').value.trim() &&
+document.getElementById('country').value
+);
+
+}
+
+document.getElementById('uid').addEventListener('input',validate);
+document.getElementById('country').addEventListener('change',validate);
+
+document.getElementById('order').addEventListener('click',async()=>{
+if(!selected)return;
+const button=document.getElementById('order');
+const account=document.getElementById('uid').value.trim();
+const country=document.getElementById('country').value;
+button.disabled=true; button.textContent='CREATING ORDER...';
+try{
+ const response=await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+  product_key:key,product_name:p[0],package_name:selected.name,amount:selected.inr,
+  account_label:p[2],account_id:account+' | Country: '+country
+ })});
+ const order=await readJsonResponse(response);
+ const amount=(Number(order.amount_paise||Math.round(selected.inr*100))/100).toFixed(2);
+ const note='WS TOP UP Order '+order.id;
+ const params='pa=7479314460%40ybl&pn=WS%20TOP%20UP&am='+amount+'&cu=INR&tn='+encodeURIComponent(note);
+ const wa='https://wa.me/917814003979?text='+encodeURIComponent('I have placed WS TOP UP order #'+order.id+'. Product: '+p[0]+'. Package: '+selected.name+'. Amount: ₹'+amount+'. I will attach my payment screenshot. Please verify my payment.');
+ const panel=document.getElementById('paymentPanel');
+ panel.style.display='block';
+ panel.innerHTML='<h2>Order created successfully</h2><p><b>Order ID: #'+order.id+'</b></p><p>Pay ₹'+amount+' to UPI ID <b>7479314460@ybl</b>.</p><p><a class="support" href="phonepe://pay?'+params+'">PhonePe</a> &nbsp; <a class="support" href="tez://upi/pay?'+params+'">Google Pay</a> &nbsp; <a class="support" href="paytmmp://pay?'+params+'">Paytm</a> &nbsp; <a class="support" href="upi://pay?'+params+'">Other UPI app</a></p><p><a href="order.html?ref='+order.public_token+'">Track this order</a></p><p><a href="'+wa+'" target="_blank" rel="noopener">Send payment screenshot on WhatsApp</a></p><p class="notice">Payment is checked manually. Your order remains unpaid until the administrator verifies it.</p>';
+ button.textContent='ORDER CREATED';
+}catch(error){alert(error.message||'Please try again');button.disabled=false;button.textContent='CREATE ORDER & CONTINUE TO PAYMENT →';}
+});
+
+renderPackages();
+
+</script>
+</body>
+</html>
+,BDT:'৳'};
+function money(value,cur){
+const amount=Number(value)*FX[cur];
+return SYMBOL[cur]+amount.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:cur==='BDT'?1:2});
 }
 
 function renderPackages(){
