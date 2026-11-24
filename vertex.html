@@ -41,7 +41,7 @@ let currency=localStorage.getItem("ws_currency")||"INR", products=[], filtered=[
 const groups=["top_up","digital_gift_card"];
 const groupState={top_up:{page:0,total:null,done:false},digital_gift_card:{page:0,total:null,done:false}};
 const existingNames=new Set([
- "imo","imo diamond","bigo live diamonds","bigo live","poppo live coins","poppo live","chamet",
+ "imo","imo diamond","imo instant use","bigo live diamonds","bigo live","poppo live coins","poppo live","chamet",
  "telegram stars premium","telegram stars & premium","truecaller premium","starmaker coins","starmaker",
  "likee diamonds","likee","tango live","tango","yoho coins","yoho",
  "free fire diamonds","free fire","bgmi uc","bgmi","pubg mobile uc","pubg mobile","pubg",
@@ -94,10 +94,13 @@ async function loadNext(){
      p.__group=group;products.push(p);
     }
    }
-   if(!rows.length||rows.length===0|| (state.total>0&&state.page*Number(data.data?.per_page||rows.length)>=state.total) || (state.total===0&&rows.length===0)){
+   const meta=data.data||{};
+   const currentPage=Number(meta.current_page||meta.page||state.page);
+   const lastPage=Number(meta.last_page||meta.total_pages||0);
+   const perPage=Number(meta.per_page||meta.limit||0);
+   if(!rows.length||(lastPage>0&&currentPage>=lastPage)||(perPage>0&&state.total>0&&currentPage*perPage>=state.total)||(perPage>0&&rows.length<perPage)){
     state.done=true;
    }
-   if(state.total>0&&Number(data.data?.current_page||state.page)>=Number(data.data?.last_page||Math.ceil(state.total/Math.max(1,rows.length))))state.done=true;
   }
   draw();
   $("status").textContent=groups.every(g=>groupState[g].done)?"সব ক্যাটাগরির প্রোডাক্ট লোড শেষ।":"আরও প্রোডাক্ট দেখতে নিচের বাটনে চাপ দিন।";
