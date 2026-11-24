@@ -23,12 +23,12 @@
  <header class="top"><div><div class="logo">WS TOP UP</div><h1>Admin Control Center · DIHAN</h1><p>Your Private Admin Dashboard · Orders • Payments • Delivery Status / আপনার ব্যক্তিগত অ্যাডমিন ড্যাশবোর্ড · Orders • Payments • Delivery status</p></div><button id="logout" class="logout">Log out</button></header>
  <div id="notice" class="toast hidden"></div>
  <section class="stats">
-  <div class="stat"><span>Total Orders / Total Orders / মোট Orders / অর্ডার</span><b id="total">—</b></div><div class="stat"><span>Pending</span><b id="pending">—</b></div>
+  <div class="stat"><span>Total Orders / মোট অর্ডার</span><b id="total">—</b></div><div class="stat"><span>Pending</span><b id="pending">—</b></div>
   <div class="stat"><span>Processing</span><b id="processing">—</b></div><div class="stat"><span>Completed</span><b id="completed">—</b></div>
   <div class="stat"><span>Paid total</span><b id="sales">—</b></div>
  </section>
- <section class="panel"><div class="tools"><input id="search" placeholder="Search Orders / UID / Products"><select id="filter"><option value="">All Orders / সব Orders / অর্ডার</option><option>pending</option><option>processing</option><option>completed</option><option>cancelled</option></select><button id="refresh" class="secondary">Refresh</button></div><div id="orders" class="list"><div class="empty">Loading orders… / Orders / অর্ডার লোড হচ্ছে…</div></div></section>
- <p class="hint">Payment status is verified by FamGateway; payments cannot be marked as Paid from this dashboard. Do not mark an order Completed until you confirm the money has arrived. The latest 500 orders are shown. / Payments / পেমেন্টের অবস্থা FamGateway থেকে যাচাই করা হয়; এই ড্যাশবোর্ডে Payments / পেমেন্ট Paid করা যায় না। টাকা সত্যিই জমা হয়েছে কি না নিশ্চিত না হয়ে Orders / অর্ডার Completed করবেন না। সর্বশেষ ৫০০টি Orders / অর্ডার দেখানো হয়।</p>
+ <section class="panel"><div class="tools"><input id="search" placeholder="Search Orders / UID / Products"><select id="filter"><option value="">All Orders / সব অর্ডার</option><option>pending</option><option>processing</option><option>completed</option><option>cancelled</option></select><button id="refresh" class="secondary">Refresh</button></div><div id="orders" class="list"><div class="empty">Loading orders… / অর্ডার লোড হচ্ছে…</div></div></section>
+ <p class="hint">Payment status is verified by FamGateway; payments cannot be marked as Paid from this dashboard. Do not mark an order Completed until you confirm the money has arrived. The latest 500 orders are shown. / পেমেন্টের অবস্থা FamGateway থেকে যাচাই করা হয়; এই ড্যাশবোর্ডে পেমেন্ট Paid করা যায় না। টাকা সত্যিই জমা হয়েছে কি না নিশ্চিত না হয়ে অর্ডার Completed করবেন না। সর্বশেষ ৫০০টি অর্ডার দেখানো হয়।</p>
 </main>
 <script>
 const URL_BASE='https://ghjzqytxqushxvjlvkls.supabase.co';
@@ -74,7 +74,7 @@ $('forgot').addEventListener('click',async()=>{
 });
 $('logout').addEventListener('click',()=>showLogin(true));
 async function loadData(){
- $('orders').innerHTML='<div class="empty">Loading orders… / Orders / অর্ডার লোড হচ্ছে…</div>';
+ $('orders').innerHTML='<div class="empty">Loading orders… / অর্ডার লোড হচ্ছে…</div>';
  try{
   const data=await api('/rest/v1/orders?select=id,product_name,package_name,amount_paise,account_label,account_id,customer_name,customer_phone,payment_status,order_status,created_at,payment_gateway,famgateway_status&order=created_at.desc&limit=500');
   orders=Array.isArray(data)?data:[];
@@ -87,12 +87,12 @@ async function loadData(){
 function render(){
  const q=$('search').value.trim().toLowerCase(),f=$('filter').value;
  const rows=orders.filter(o=>(!f||o.order_status===f)&&(!q||[o.id,o.product_name,o.package_name,o.account_label,o.account_id,o.customer_name,o.customer_phone].some(v=>String(v??'').toLowerCase().includes(q))));
- if(!rows.length){$('orders').innerHTML='<div class="empty">No orders found. / কোনো Orders / অর্ডার পাওয়া যায়নি।</div>';return;}
+ if(!rows.length){$('orders').innerHTML='<div class="empty">No orders found. / কোনো অর্ডার পাওয়া যায়নি।</div>';return;}
  $('orders').innerHTML=rows.map(o=>'<article class="order" data-id="'+esc(o.id)+'"><div class="orderhead"><div><h3>Order #'+esc(o.id)+' · '+esc(o.product_name)+'</h3><div class="sub">'+esc(o.package_name)+' · '+esc(o.created_at?new Date(o.created_at).toLocaleString():'')+'</div></div><div class="money">'+money(o.amount_paise)+'</div></div><div class="details"><div class="detail"><small>Customer / Phone</small><b>'+esc(o.customer_name||'Not provided')+' · '+esc(o.customer_phone||'No phone')+'</b></div><div class="detail"><small>'+esc(o.account_label||'UID / Account ID')+'</small><b>'+esc(o.account_id||'Not provided')+'</b></div><div class="detail"><small>Payment status</small><b><span class="pill '+esc(o.payment_status)+'">'+esc(o.payment_status)+'</span> · '+esc(o.famgateway_status||o.payment_gateway||'')+'</b></div><div class="detail"><small>Order status</small><b><span class="pill '+esc(o.order_status)+'">'+esc(o.order_status)+'</span></b></div></div><div class="bottom"><label style="margin:0">Delivery status</label><select class="status" aria-label="Delivery status">'+['pending','processing','completed','cancelled'].map(s=>'<option value="'+s+'" '+(o.order_status===s?'selected':'')+'>'+s+'</option>').join('')+'</select><button class="save">Save status</button></div></article>').join('');
 }
 $('orders').addEventListener('click',async e=>{
  const b=e.target.closest('.save');if(!b)return;const card=b.closest('.order');b.disabled=true;
- try{await api('/rest/v1/orders?id=eq.'+encodeURIComponent(card.dataset.id),'PATCH',{order_status:card.querySelector('.status').value,updated_at:new Date().toISOString()});$('notice').textContent='Order status updated. / Orders / অর্ডারের অবস্থা আপডেট হয়েছে।';$('notice').classList.remove('hidden');await loadData();}
+ try{await api('/rest/v1/orders?id=eq.'+encodeURIComponent(card.dataset.id),'PATCH',{order_status:card.querySelector('.status').value,updated_at:new Date().toISOString()});$('notice').textContent='Order status updated. / অর্ডারের অবস্থা আপডেট হয়েছে।';$('notice').classList.remove('hidden');await loadData();}
  catch(err){alert(err.message);}finally{b.disabled=false;}
 });
 $('search').addEventListener('input',render);$('filter').addEventListener('change',render);$('refresh').addEventListener('click',loadData);
