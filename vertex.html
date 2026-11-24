@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07111f"><title>Vertex Products | WS TOP UP</title>
+<style>
+:root{--bg:#07111f;--panel:#102139;--line:#263e5c;--cyan:#45d8ff;--gold:#ffc15a;--muted:#9eb0c6;--white:#f5f8ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#183c5a 0,transparent 46%),var(--bg);color:var(--white);font:15px Inter,system-ui,Arial,sans-serif}
+a{color:inherit;text-decoration:none}.top{position:sticky;top:0;z-index:5;background:#091626ed;border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+.nav{max-width:1160px;margin:auto;min-height:66px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-weight:900;font-size:19px;color:var(--cyan)}
+.wrap{max-width:1160px;margin:auto;padding:20px 16px 40px}.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+h1{font-size:23px;margin:4px 0 7px}.sub{color:var(--muted);font-size:13px;margin:0 0 17px}
+.search,select{background:#102238;border:1px solid #304966;color:white;border-radius:9px;padding:11px 12px}.search{min-width:220px;flex:1;max-width:420px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-top:14px}.card{background:linear-gradient(145deg,#142840,#0d1a2c);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;min-width:0}
+.art{height:145px;background:radial-gradient(circle at 50% 40%,#28618a,#12243a 75%);display:grid;place-items:center;padding:9px}.art img{width:100%;height:100%;object-fit:contain}.info{padding:12px}.info strong{font-size:13px;line-height:1.4;display:block}.info small{display:block;color:var(--muted);font-size:11px;margin-top:7px}
+.label{font-size:10px;color:#9de8ff}.price{color:var(--gold);font-weight:800}.actions{display:flex;gap:10px;justify-content:center;margin:20px 0}.btn{border:1px solid #31516e;border-radius:10px;padding:11px 16px;background:#10243a;color:white;font-weight:800;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}
+.detail{max-width:800px;margin:18px auto}.panel{background:linear-gradient(145deg,#142840,#0d1a2c);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+.packages{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.pkg{background:#091a2d;border:1px solid var(--line);border-radius:10px;color:white;text-align:left;padding:12px}.pkg b{display:block}.pkg span{display:block;color:var(--gold);font-weight:800;margin-top:6px}
+.muted{color:var(--muted);font-size:12px}.notice{color:#ffd58a;font-size:12px;line-height:1.6}.hidden{display:none!important}
+@media(max-width:850px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:580px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.art{height:115px}.wrap{padding:16px 11px}.search{max-width:none;width:100%}.toolbar{align-items:stretch}.packages{grid-template-columns:1fr}}
+</style></head>
+<body>
+<header class="top"><nav class="nav"><a class="brand" href="index.html">← WS TOP UP</a><select id="currency" aria-label="Currency"><option value="INR">INR ₹</option><option value="USD">USD $</option><option value="BDT">BDT ৳</option></select></nav></header>
+<main class="wrap">
+<section id="catalog">
+<h1>Vertex Bazaar Products</h1><p class="sub">৬৫০টি Top Up প্রোডাক্ট · রিসেলার দামের সঙ্গে ১৫% লাভ যোগ করা হয়েছে।</p>
+<div class="toolbar"><input id="search" class="search" placeholder="প্রোডাক্ট খুঁজুন…" aria-label="Search products"><span id="count" class="muted">লোড হচ্ছে…</span></div>
+<div id="grid" class="grid"></div>
+<div class="actions"><button id="more" class="btn">আরও প্রোডাক্ট দেখুন</button></div>
+<p id="status" class="muted" aria-live="polite"></p>
+</section>
+<section id="detail" class="detail hidden">
+<button id="back" class="btn">← সব প্রোডাক্টে ফিরে যান</button>
+<div id="detailContent"></div>
+</section>
+</main>
+<script>
+const API="https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/vertex-catalog";
+const USDT_INR=134, MARKUP=1.15, FX={INR:1,USD:0.010757,BDT:1.33876}, SYMBOL={INR:"₹",USD:"$",BDT:"৳"};
+let currency=localStorage.getItem("ws_currency")||"INR", page=0, total=650, products=[], filtered=[], busy=false, current=null;
+const $=id=>document.getElementById(id);
+$("currency").value=currency;
+function saleINR(v){return Math.ceil(Number(v.reseller_price_usdt??v.reseller_price??v.price)*USDT_INR*MARKUP);}
+function money(n){return SYMBOL[currency]+(Number(n)*FX[currency]).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function safe(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function draw(){
+ const q=$("search").value.trim().toLowerCase();
+ filtered=products.filter(p=>(p.name+" "+(p.category?.name||"")+" "+(p.categories||[]).map(c=>c.name).join(" ")).toLowerCase().includes(q));
+ $("grid").innerHTML="";
+ for(const p of filtered){
+  const card=document.createElement("article");card.className="card";
+  const cat=p.category?.name||(p.categories||[])[0]?.name||"Top Up";
+  card.innerHTML='<div class="art"><img loading="lazy" src="'+safe(p.image||"")+'" alt="'+safe(p.name)+'" onerror="this.style.display=\'none\'"></div><div class="info"><span class="label">'+safe(cat)+'</span><strong>'+safe(p.name)+'</strong><small>'+Number(p.package_count||0)+' প্যাকেজ · '+(p.in_stock?"In Stock":"Out of Stock")+'</small></div>';
+  card.addEventListener("click",()=>openProduct(p.id));$("grid").appendChild(card);
+ }
+ $("count").textContent=products.length+" / "+total+" প্রোডাক্ট লোড হয়েছে";
+ $("more").disabled=busy||products.length>=total;
+}
+async function loadNext(){
+ if(busy||products.length>=total)return;busy=true;$("more").disabled=true;$("status").textContent="প্রোডাক্ট লোড হচ্ছে…";
+ try{
+  const next=page+1, res=await fetch(API+"?action=products&group=top_up&page="+next,{cache:"no-store"});
+  const data=await res.json();if(!res.ok||!data.ok)throw new Error(data.error||"Catalog load failed");
+  const rows=data.data?.products||[];if(!rows.length){total=products.length;}else{products.push(...rows);page=next;}
+  total=Number(data.data?.total||total);draw();$("status").textContent=products.length>=total?"সব প্রোডাক্ট লোড হয়েছে।":"";
+ }catch(e){$("status").textContent="লোড করা যায়নি। আবার চেষ্টা করুন।";}
+ finally{busy=false;$("more").disabled=products.length>=total;}
+}
+async function openProduct(id){
+ $("catalog").classList.add("hidden");$("detail").classList.remove("hidden");$("detailContent").innerHTML='<p class="muted">প্যাকেজ ও দাম লোড হচ্ছে…</p>';window.scrollTo(0,0);
+ try{
+  const res=await fetch(API+"?action=product&id="+encodeURIComponent(id),{cache:"no-store"}),data=await res.json();
+  if(!res.ok||!data.ok)throw new Error(data.error||"Product details unavailable");
+  current=data.data.product;renderDetail();
+ }catch(e){$("detailContent").innerHTML='<div class="panel">এই প্রোডাক্টের তথ্য এখন পাওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।</div>';}
+}
+function renderDetail(){
+ const p=current,vars=p.variations||[],cat=p.category?.name||"Top Up";
+ $("detailContent").innerHTML='<div class="panel"><div style="display:flex;gap:14px;align-items:center"><img src="'+safe(p.image||"")+'" alt="" style="width:90px;height:90px;object-fit:contain;border-radius:12px;background:#10243a"><div><span class="label">'+safe(cat)+'</span><h1>'+safe(p.name)+'</h1><span class="muted">'+(p.stock_status==="instock"?"In Stock":"Out of Stock")+'</span></div></div></div><div class="panel"><h2>প্যাকেজ নির্বাচন করুন</h2><div class="packages" id="packageList"></div><p class="notice">দাম = Vertex Bazaar রিসেলার মূল্য × ₹১৩৪ × ১.১৫। অর্থাৎ ১৫% লাভ যোগ করা হয়েছে। মুদ্রা রূপান্তর আনুমানিক।</p></div><p class="notice">এই ক্যাটালগে দাম ও স্টক দেখানো হচ্ছে। Vertex-এর অর্ডার এবং গ্রাহকের পেমেন্ট যাচাইয়ের সংযোগ সম্পূর্ণ না হওয়া পর্যন্ত এখানে পেমেন্ট/অর্ডার বাটন চালু করা হয়নি।</p>';
+ const box=$("packageList");
+ for(const v of vars){
+  const btn=document.createElement("div");btn.className="pkg";
+  const price=saleINR(v);
+  btn.innerHTML="<b>"+safe(v.label)+"</b><span>"+money(price)+"</span><small class='muted'>রিসেলার স্টক: "+Number(v.stock_quantity||0)+"</small>";
+  box.appendChild(btn);
+ }
+}
+$("search").addEventListener("input",draw);$("more").addEventListener("click",loadNext);
+$("currency").addEventListener("change",e=>{currency=e.target.value;localStorage.setItem("ws_currency",currency);draw();if(current)renderDetail();});
+$("back").addEventListener("click",()=>{$("detail").classList.add("hidden");$("catalog").classList.remove("hidden");current=null;window.scrollTo(0,0);});
+loadNext();
+</script></body></html>
