@@ -9,10 +9,16 @@
   "theme_color": "#07111f",
   "icons": [
     {
-      "src": "/ws-top-up-logo.png",
+      "src": "/ws-top-up-icon.svg?v=2",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/ws-top-up-logo.png?v=2",
       "sizes": "any",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
