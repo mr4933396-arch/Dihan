@@ -271,19 +271,22 @@ function classifyVertexProduct(p){
  if(/social media|social app|instagram|facebook|telegram|whatsapp|imo|bigo|poppo|chamet|likee|tango|yoho|starmaker|snapchat|tiktok coins/.test(all))return "social";
  return "games";
 }
+function openSupplierUnavailable(name){
+ vertexChosen=null;vertexCurrent=null;current=null;catalogView.classList.add("hidden");document.getElementById("hero").classList.add("hidden");detailView.classList.remove("hidden");document.getElementById("detailContent").innerHTML='<div class="detail-panel"><h2>'+safeText(name)+'</h2><p class="note">This product does not currently have an exact matching listing in Vertex Bazaar. Ordering is paused until the supplier listing and package prices can be verified. / Vertex Bazaar-এ এই প্রোডাক্টের সঠিক মিল পাওয়া যায়নি। সরবরাহকারীর প্যাকেজ ও দাম যাচাই না হওয়া পর্যন্ত অর্ডার বন্ধ থাকবে।</p></div>';window.scrollTo(0,0);
+}
 function makeOldCard(x){
- const a=document.createElement("a");a.className="card";const supplierId=VERTEX_STATIC_MAP[x[0]];a.href=supplierId?"#":"product.html?item="+encodeURIComponent(x[0]);
+ const a=document.createElement("a");a.className="card";const supplierId=VERTEX_STATIC_MAP[x[0]];a.href="#";
  let imageHTML;
  if(x[2].endsWith(".png"))imageHTML='<img src="'+x[2]+'" alt="'+safeText(x[1])+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">'+x[5]+'</span>';
  else imageHTML='<span class="emoji">'+x[2]+'</span>';
- a.innerHTML='<div class="art">'+imageHTML+'</div><div class="info"><span class="label">'+safeText(x[4])+'</span><br><strong>'+safeText(x[1])+'</strong><div class="stars">★ WS TOP UP</div><small>View details & order →</small></div>';
- if(supplierId)a.addEventListener("click",e=>{e.preventDefault();openVertexProduct(supplierId);});
+ a.innerHTML='<div class="art">'+imageHTML+'</div><div class="info"><span class="label">'+safeText(supplierId?x[4]:"Supplier match pending")+'</span><br><strong>'+safeText(x[1])+'</strong><div class="stars">★ WS TOP UP</div><small>View details & order →</small></div>';
+ a.addEventListener("click",e=>{e.preventDefault();if(supplierId)openVertexProduct(supplierId);else openSupplierUnavailable(x[1]);});
  return a;
 }
 function makeNewCard(p){
  const a=document.createElement("article");a.className="card";
- a.innerHTML='<div class="art"><img src="'+safeText(p.image)+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">'+safeText(p.icon)+'</span></div><div class="info"><span class="label">'+safeText(p.label)+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+p.packages.length+' packages · Available</small><small>View packages & order →</small></div>';
- const supplierId=VERTEX_STATIC_MAP[p.id];a.addEventListener("click",()=>supplierId?openVertexProduct(supplierId):openProduct(p.id));return a;
+ a.innerHTML='<div class="art"><img src="'+safeText(p.image)+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">'+safeText(p.icon)+'</span></div><div class="info"><span class="label">'+safeText(VERTEX_STATIC_MAP[p.id]?p.label:"Supplier match pending")+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+p.packages.length+' packages · Available</small><small>View packages & order →</small></div>';
+ const supplierId=VERTEX_STATIC_MAP[p.id];a.addEventListener("click",()=>supplierId?openVertexProduct(supplierId):openSupplierUnavailable(p.name));return a;
 }
 function makeVertexCard(p){
  const a=document.createElement("article");a.className="card";
