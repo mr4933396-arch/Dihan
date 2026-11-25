@@ -426,7 +426,8 @@ const inr=Number(x[1]);
 
 const b=document.createElement('button');
 b.type='button';
-b.className='pack';
+b.className='pack'+(selected&&selected.name===x[0]?' selected':'');
+b.setAttribute('aria-pressed',String(!!(selected&&selected.name===x[0])));
 
 const otherCurrency=currency.value==='INR'?'USD':'INR';
 b.innerHTML=`
