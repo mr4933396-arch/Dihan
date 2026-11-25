@@ -262,7 +262,7 @@ function unavailableStock(p){
 }
 function isVertexInStock(p){return !unavailableStock(p);}
 function supplierProductFor(key){const id=VERTEX_STATIC_MAP[key];return id?vertexSourceProducts.find(p=>String(p.id)===id)||null:null;}
-function isSupplierProductAvailable(key){const id=VERTEX_STATIC_MAP[key];if(!id)return true;const p=supplierProductFor(key);return p?isVertexInStock(p):true;}
+function isSupplierProductAvailable(key){const id=VERTEX_STATIC_MAP[key];if(!id)return true;const p=supplierProductFor(key);return p?isVertexInStock(p):false;}
 function classifyVertexProduct(p){
  const catNames=[p.category?.name,...(p.categories||[]).map(x=>x?.name)].filter(Boolean).join(" ").toLowerCase();
  const all=catNames+" "+String(p.name||"").toLowerCase();
