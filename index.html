@@ -230,7 +230,7 @@ const newItems=[
 {id:"spotify",image:"./spotify.png",name:"Spotify Premium",cat:"subs",label:"Subscriptions",icon:"🎧",fields:["Account Email (never password)"],packages:[["1 Month",17292],["3 Month",46833]]}
 ];
 
-let cat="all",selected=-1,current=null,vertexCurrent=null,vertexChosen=null,vertexProducts=[],vertexLoading=false,vertexFinished=false;
+let cat="all",selected=-1,current=null,vertexCurrent=null,vertexChosen=null,vertexProducts=[],vertexSourceProducts=[],vertexLoading=false,vertexFinished=false;
 let currency=localStorage.getItem("ws_currency")||"INR";
 const grid=document.getElementById("grid");
 const catalogView=document.getElementById("catalogView");
@@ -255,6 +255,14 @@ function money(n,cur=currency){
 function safeText(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function normCatalogName(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();}
 const existingVertexNames=new Set(["imo","imo diamond","imo instant use","bigo live diamonds","bigo live","poppo live coins","poppo live","chamet","telegram stars premium","telegram stars and premium","truecaller premium","starmaker coins","starmaker","likee diamonds","likee","tango live","tango","yoho coins","yoho","free fire diamonds","free fire","bgmi uc","bgmi","pubg mobile uc","pubg mobile","pubg","mobile legends diamonds","mobile legends","mlbb","itunes gift card","itunes","google play gift card","google play","steam wallet","steam","netflix subscription","netflix","fc mobile bd","fc mobile","genshin impact us","genshin impact","super sus goldstar","super sus","blood strike","honor of kings","razer gold india","chatgpt plus subscription","canva pro","efootball top up","efootball","clash of clans","youtube premium","tiktok coins","spotify premium"]);
+const VERTEX_STATIC_MAP={imo:"137",bigo:"134",poppo:"177",chamet:"138",telegram:"189",truecaller:"206",starmaker:"136",likee:"178",tango:"135",yoho:"268",pubg:"121",mlbb:"200","fc-mobile":"122",genshin:"204","super-sus":"149","blood-strike":"154","honor-kings":"151","razer-gold":"242"};
+function unavailableStock(p){
+ const status=String(p?.stock_status||"").trim().toLowerCase().replace(/[\\s-]+/g,"_");
+ return p?.in_stock===false||["outofstock","out_of_stock","sold_out","unavailable","not_available"].includes(status);
+}
+function isVertexInStock(p){return !unavailableStock(p);}
+function supplierProductFor(key){const id=VERTEX_STATIC_MAP[key];return id?vertexSourceProducts.find(p=>String(p.id)===id)||null:null;}
+function isSupplierProductAvailable(key){const id=VERTEX_STATIC_MAP[key];if(!id)return true;const p=supplierProductFor(key);return p?isVertexInStock(p):true;}
 function classifyVertexProduct(p){
  const catNames=[p.category?.name,...(p.categories||[]).map(x=>x?.name)].filter(Boolean).join(" ").toLowerCase();
  const all=catNames+" "+String(p.name||"").toLowerCase();
@@ -264,17 +272,18 @@ function classifyVertexProduct(p){
  return "games";
 }
 function makeOldCard(x){
- const a=document.createElement("a");a.className="card";a.href="product.html?item="+encodeURIComponent(x[0]);
+ const a=document.createElement("a");a.className="card";const supplierId=VERTEX_STATIC_MAP[x[0]];a.href=supplierId?"#":"product.html?item="+encodeURIComponent(x[0]);
  let imageHTML;
- if(x[2].endsWith(".png"))imageHTML='<img src="'+x[2]+'" alt="'+safeText(x[1])+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">'+x[5]+'</span>';
+ if(x[2].endsWith(".png"))imageHTML='<img src="'+x[2]+'" alt="'+safeText(x[1])+'" loading="lazy" onerror="this.style.display=\\'none\\';this.nextElementSibling.style.display=\\'block\\';"><span class="emoji" style="display:none">'+x[5]+'</span>';
  else imageHTML='<span class="emoji">'+x[2]+'</span>';
  a.innerHTML='<div class="art">'+imageHTML+'</div><div class="info"><span class="label">'+safeText(x[4])+'</span><br><strong>'+safeText(x[1])+'</strong><div class="stars">★ WS TOP UP</div><small>View details & order →</small></div>';
+ if(supplierId)a.addEventListener("click",e=>{e.preventDefault();openVertexProduct(supplierId);});
  return a;
 }
 function makeNewCard(p){
  const a=document.createElement("article");a.className="card";
- a.innerHTML='<div class="art"><img src="'+safeText(p.image)+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">'+safeText(p.icon)+'</span></div><div class="info"><span class="label">'+safeText(p.label)+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+p.packages.length+' packages · Available</small><small>View packages & order →</small></div>';
- a.addEventListener("click",()=>openProduct(p.id));return a;
+ a.innerHTML='<div class="art"><img src="'+safeText(p.image)+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.style.display=\\'none\\';this.nextElementSibling.style.display=\\'block\\';"><span class="emoji" style="display:none">'+safeText(p.icon)+'</span></div><div class="info"><span class="label">'+safeText(p.label)+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+p.packages.length+' packages · Available</small><small>View packages & order →</small></div>';
+ const supplierId=VERTEX_STATIC_MAP[p.id];a.addEventListener("click",()=>supplierId?openVertexProduct(supplierId):openProduct(p.id));return a;
 }
 function makeVertexCard(p){
  const a=document.createElement("article");a.className="card";
@@ -285,9 +294,9 @@ function makeVertexCard(p){
 function draw(){
  const q=document.getElementById("search").value.toLowerCase().trim();grid.innerHTML="";
  const entries=[];
- oldItems.filter(x=>(cat==="all"||x[3]===cat)&&x[1].toLowerCase().includes(q)).forEach(x=>entries.push({cat:x[3],kind:"old",item:x}));
- newItems.filter(x=>(cat==="all"||x.cat===cat)&&(x.name+" "+x.label).toLowerCase().includes(q)).forEach(x=>entries.push({cat:x.cat,kind:"new",item:x}));
- vertexProducts.filter(p=>(cat==="all"||classifyVertexProduct(p)===cat)&&(p.name+" "+(p.category?.name||"")+" "+(p.categories||[]).map(x=>x.name).join(" ")).toLowerCase().includes(q)).forEach(p=>entries.push({cat:classifyVertexProduct(p),kind:"vertex",item:p}));
+ oldItems.filter(x=>(cat==="all"||x[3]===cat)&&isSupplierProductAvailable(x[0])&&x[1].toLowerCase().includes(q)).forEach(x=>entries.push({cat:x[3],kind:"old",item:x}));
+ newItems.filter(x=>(cat==="all"||x.cat===cat)&&isSupplierProductAvailable(x.id)&&(x.name+" "+x.label).toLowerCase().includes(q)).forEach(x=>entries.push({cat:x.cat,kind:"new",item:x}));
+ vertexProducts.filter(p=>isVertexInStock(p)&&(cat==="all"||classifyVertexProduct(p)===cat)&&(p.name+" "+(p.category?.name||"")+" "+(p.categories||[]).map(x=>x.name).join(" ")).toLowerCase().includes(q)).forEach(p=>entries.push({cat:classifyVertexProduct(p),kind:"vertex",item:p}));
  // Put the most-used products first in each category; keep other products in their existing order.
  const popularRank=(entry)=>{
   const name=String(entry.item.name||entry.item[1]||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
@@ -326,12 +335,7 @@ async function fetchCatalogPage(group,page){
  }finally{clearTimeout(timeout);}
 }
 function mergeCatalogRows(target,group,rows){
- for(const p of rows){
-  const normalized=normCatalogName(p.name);
-  if(!existingVertexNames.has(normalized)&&!target.some(x=>String(x.id)===String(p.id))){
-   p.__group=group;target.push(p);
-  }
- }
+ for(const p of rows){if(!target.some(x=>String(x.id)===String(p.id))){p.__group=group;target.push(p);}}
 }
 async function loadVertexCatalog(){
  if(vertexLoading||vertexFinished)return;
@@ -359,7 +363,8 @@ async function loadVertexCatalog(){
   const fresh=[];
   allRows.forEach(item=>mergeCatalogRows(fresh,item.group,item.rows));
   if(fresh.length||!vertexProducts.length){
-   vertexProducts=fresh;
+   vertexSourceProducts=fresh;
+   vertexProducts=fresh.filter(p=>!existingVertexNames.has(normCatalogName(p.name)));
    try{localStorage.setItem(VERTEX_CACHE_KEY,JSON.stringify({savedAt:Date.now(),products:vertexProducts}));}catch(storageError){console.warn("Catalog cache could not be saved",storageError);}
   }
   vertexFinished=true;
@@ -393,7 +398,7 @@ function openVertexProduct(id){
  fetch(VERTEX_API+"?action=product&id="+encodeURIComponent(id),{cache:"no-store"}).then(async response=>{const data=await response.json();if(!response.ok||!data.ok)throw new Error(data.error||"Product details unavailable");return data.data.product;}).then(product=>{vertexCurrent=product;renderVertexDetail();}).catch(error=>{document.getElementById("detailContent").innerHTML='<div class="detail-panel">Product details are unavailable right now. Please try again later. / এই প্রোডাক্টের তথ্য এখন পাওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।</div>';});
 }
 function renderVertexDetail(){
- const p=vertexCurrent;if(!p)return;const variations=Array.isArray(p.variations)?p.variations:[],fields=Array.isArray(p.checkout_fields)?p.checkout_fields:[];let chosen=vertexChosen;
+ const p=vertexCurrent;if(!p)return;if(unavailableStock(p)){document.getElementById("detailContent").innerHTML="<div class=\\\"detail-panel\\\"><h2>Out of stock / স্টক শেষ</h2><p>This product is currently unavailable at the supplier. / সরবরাহকারীর কাছে এই প্রোডাক্টটি এখন স্টক আউট।</p></div>";return;}const variations=Array.isArray(p.variations)?p.variations:[],fields=Array.isArray(p.checkout_fields)?p.checkout_fields:[];let chosen=vertexChosen;
  document.getElementById("detailContent").innerHTML='<div class="detail-head"><div class="detail-icon"><img src="'+safeText(p.image||"")+'" alt="'+safeText(p.name)+'" onerror="this.style.display=\'none\';this.parentElement.textContent=\'🎮\'"></div><div><small style="color:var(--cyan)">WS TOP UP</small><h1>'+safeText(p.name)+'</h1></div></div>'+'<div class="detail-panel"><h2>1. Select a Package / প্যাকেজ নির্বাচন করুন</h2><div class="packages" id="vertexPackages"></div></div>'+'<div class="detail-panel"><h2>2. Enter Required Details / প্রয়োজনীয় তথ্য দিন</h2><div id="vertexFields" class="fields"></div><button class="order-btn" id="vertexOrderBtn" type="button" disabled>Select a package first / আগে প্যাকেজ নির্বাচন করুন</button><p class="note" id="vertexOrderMessage"></p></div>';
  const packageBox=document.getElementById("vertexPackages");
  variations.forEach(v=>{const price=saleINR(v),rawStock=v.stock_quantity??v.stock,stock=Number(rawStock),b=document.createElement("button");b.type="button";b.className="pkg";b.innerHTML='<strong>'+safeText(v.label||v.name||"Package")+'</strong><span>'+(price===null?"Price unavailable / দাম পাওয়া যায়নি":money(price))+'</span><small style="color:var(--muted)">Stock: '+(v.stock_quantity??v.stock??"Check at order")+'</small>';const status=String(v.stock_status||"").trim().toLowerCase().replace(/[\s-]+/g,"_");const explicitlyOutOfStock=v.in_stock===false||["outofstock","out_of_stock","sold_out","unavailable","not_available"].includes(status)||(rawStock!==null&&rawStock!==undefined&&rawStock!==""&&Number.isFinite(stock)&&stock<=0&&v.in_stock!==true);b.disabled=price===null||explicitlyOutOfStock;b.setAttribute("aria-pressed",String(chosen===v));if(chosen===v)b.classList.add("selected");b.addEventListener("click",()=>{chosen=v;vertexChosen=v;packageBox.querySelectorAll(".pkg").forEach(x=>{x.classList.remove("selected");x.setAttribute("aria-pressed","false");});b.classList.add("selected");b.setAttribute("aria-pressed","true");buildVertexFields();const btn=document.getElementById("vertexOrderBtn");btn.disabled=false;btn.textContent="Pay & Place Order / পেমেন্ট করে অর্ডার করুন · "+money(price);});packageBox.appendChild(b);});
