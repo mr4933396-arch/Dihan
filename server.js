@@ -24,6 +24,7 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, "public")));
 app.get("/product.html", (req,res) => res.sendFile(path.join(__dirname,"product.html")));
+app.get("/new-products.html", (req,res) => res.sendFile(path.join(__dirname,"new-products.html")));
 
 // Serve only top-level image assets used by the storefront. Do not expose repository source files.
 app.get(/^\/[A-Za-z0-9._-]+\.(?:png|jpe?g|webp|gif)$/i, (req, res, next) => {
