@@ -235,7 +235,7 @@ let currency=localStorage.getItem("ws_currency")||"INR";
 const grid=document.getElementById("grid");
 const catalogView=document.getElementById("catalogView");
 const detailView=document.getElementById("detailView");
-const VERTEX_API="https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/vertex-catalog";
+const VERTEX_API="https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/jubaly-catalog";
 const ORDERS_API="https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/ws-orders";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoanpxeXR4cXVzaHh2amx2a2xzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNDY4NDksImV4cCI6MjExMDgyMjg0OX0.6HOxZqQhvzbcq5zzEiLZchfp3t15sJ8qAsOxI-gjhEI";
 const VERTEX_GROUPS=["top_up","digital_gift_card"];
@@ -255,14 +255,14 @@ function money(n,cur=currency){
 function safeText(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function normCatalogName(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();}
 const existingVertexNames=new Set(["imo","imo diamond","imo instant use","bigo live diamonds","bigo live","poppo live coins","poppo live","chamet","telegram stars premium","telegram stars and premium","truecaller premium","starmaker coins","starmaker","likee diamonds","likee","tango live","tango","yoho coins","yoho","free fire diamonds","free fire","bgmi uc","bgmi","pubg mobile uc","pubg mobile","pubg","mobile legends diamonds","mobile legends","mlbb","itunes gift card","itunes","google play gift card","google play","steam wallet","steam","netflix subscription","netflix","fc mobile bd","fc mobile","genshin impact us","genshin impact","super sus goldstar","super sus","blood strike","honor of kings","razer gold india","chatgpt plus subscription","canva pro","efootball top up","efootball","clash of clans","youtube premium","tiktok coins","spotify premium"]);
-const VERTEX_STATIC_MAP={imo:"137",bigo:"134",poppo:"177",chamet:"138",telegram:"189",truecaller:"206",starmaker:"136",likee:"178",tango:"135",yoho:"268",pubg:"121",mlbb:"200","fc-mobile":"122",genshin:"204","super-sus":"149","blood-strike":"154","honor-kings":"151","razer-gold":"242"};
+const VERTEX_STATIC_MAP={imo:"176258",bigo:"47097",poppo:"1280472",chamet:"1077201",telegram:"716618",likee:"1300340",tango:"1374631",mlbb:"11010","fc-mobile":"298671",genshin:"1440831","super-sus":"195034","blood-strike":"472814"};
 function unavailableStock(p){
  const status=String(p?.stock_status||"").trim().toLowerCase().replace(/[\s-]+/g,"_");
  return p?.in_stock===false||["outofstock","out_of_stock","sold_out","unavailable","not_available"].includes(status);
 }
 function isVertexInStock(p){return !unavailableStock(p);}
-function supplierProductFor(key){const id=VERTEX_STATIC_MAP[key];return id?vertexSourceProducts.find(p=>String(p.id)===id)||null:null;}
-function isSupplierProductAvailable(key){const id=VERTEX_STATIC_MAP[key];if(!id)return true;const p=supplierProductFor(key);return p?isVertexInStock(p):false;}
+function supplierProductFor(key){return null;}
+function isSupplierProductAvailable(key){return true;}
 function classifyVertexProduct(p){
  const catNames=[p.category?.name,...(p.categories||[]).map(x=>x?.name)].filter(Boolean).join(" ").toLowerCase();
  const all=catNames+" "+String(p.name||"").toLowerCase();
@@ -341,45 +341,10 @@ function mergeCatalogRows(target,group,rows){
  for(const p of rows){if(!target.some(x=>String(x.id)===String(p.id))){p.__group=group;target.push(p);}}
 }
 async function loadVertexCatalog(){
- if(vertexLoading||vertexFinished)return;
- vertexLoading=true;draw();
- try{
-  // Fetch both reseller groups together instead of waiting for one group to finish.
-  const firstPages=await Promise.all(VERTEX_GROUPS.map(async group=>({group,meta:await fetchCatalogPage(group,1)})));
-  const allRows=[];
-  for(const item of firstPages){
-   const meta=item.meta,rows=Array.isArray(meta.products)?meta.products:[];
-   allRows.push({group:item.group,rows});
-   const currentPage=Number(meta.current_page||meta.page||1);
-   const lastPage=Number(meta.last_page||meta.total_pages||0);
-   const perPage=Number(meta.per_page||meta.limit||0);
-   const totalItems=Number(meta.total||0);
-   let pages=lastPage>0?lastPage:(perPage>0&&totalItems>0?Math.ceil(totalItems/perPage):1);
-   if(!rows.length)pages=1;
-   pages=Math.max(1,Math.min(100,pages));
-   if(currentPage<pages){
-    const remaining=Array.from({length:pages-currentPage},(_,i)=>currentPage+i+1);
-    const pageResults=await Promise.all(remaining.map(page=>fetchCatalogPage(item.group,page)));
-    pageResults.forEach(metaPage=>allRows.push({group:item.group,rows:Array.isArray(metaPage.products)?metaPage.products:[]}));
-   }
-  }
-  const fresh=[];
-  allRows.forEach(item=>mergeCatalogRows(fresh,item.group,item.rows));
-  if(fresh.length||!vertexProducts.length){
-   vertexSourceProducts=fresh;
-   vertexProducts=fresh.filter(p=>!existingVertexNames.has(normCatalogName(p.name)));
-   try{localStorage.setItem(VERTEX_CACHE_KEY,JSON.stringify({savedAt:Date.now(),products:vertexProducts}));}catch(storageError){console.warn("Catalog cache could not be saved",storageError);}
-  }
-  vertexFinished=true;
- }catch(error){
-  console.error("Vertex catalog refresh failed; keeping cached catalog",error);
-  const status=document.getElementById("productCount");
-  status.textContent=vertexProducts.length+" products available · Live refresh failed; showing saved catalog. Refresh to retry.";
- }finally{
-  vertexLoading=false;draw();
- }
+ vertexLoading=false;vertexFinished=true;vertexProducts=[];vertexSourceProducts=[];draw();
 }
-function saleINR(v){const cost=Number(v.reseller_price_usdt??v.reseller_price);if(!Number.isFinite(cost)||cost<=0)return null;const price=Math.ceil(cost*134*1.15);return Number.isFinite(price)&&price>0?price:null;}
+
+function saleINR(v){const cost=Number(v.reseller_price);const accountCurrency=String(vertexCurrent?.reseller_account_currency||"").toUpperCase();const fx=accountCurrency==="USD"?0.010757:accountCurrency==="BDT"?1.33876:NaN;if(!Number.isFinite(cost)||cost<=0||!Number.isFinite(fx))return null;const price=Math.ceil((cost/fx)*1.15);return Number.isFinite(price)&&price>0?price:null;}
 document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
 document.querySelectorAll(".chip").forEach(z=>z.classList.remove("active"));
 b.classList.add("active");
@@ -401,12 +366,12 @@ function openVertexProduct(id){
  fetch(VERTEX_API+"?action=product&id="+encodeURIComponent(id),{cache:"no-store"}).then(async response=>{const data=await response.json();if(!response.ok||!data.ok)throw new Error(data.error||"Product details unavailable");return data.data.product;}).then(product=>{vertexCurrent=product;renderVertexDetail();}).catch(error=>{document.getElementById("detailContent").innerHTML='<div class="detail-panel">Product details are unavailable right now. Please try again later. / এই প্রোডাক্টের তথ্য এখন পাওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।</div>';});
 }
 function renderVertexDetail(){
- const p=vertexCurrent;if(!p)return;if(unavailableStock(p)){document.getElementById("detailContent").innerHTML='<div class="detail-panel"><h2>Out of stock / স্টক শেষ</h2><p>This product is currently unavailable at the supplier. / সরবরাহকারীর কাছে এই প্রোডাক্টটি এখন স্টক আউট।</p></div>';return;}const variations=Array.isArray(p.variations)?p.variations:[],fields=Array.isArray(p.checkout_fields)?p.checkout_fields:[];let chosen=vertexChosen;
+ const p=vertexCurrent;if(!p)return;if(unavailableStock(p)){document.getElementById("detailContent").innerHTML='<div class="detail-panel"><h2>Out of stock / স্টক শেষ</h2><p>This product is currently unavailable at the supplier. / সরবরাহকারীর কাছে এই প্রোডাক্টটি এখন স্টক আউট।</p></div>';return;}const variations=Array.isArray(p.variations)?p.variations:[],fields=Array.isArray(p.required_fields)?p.required_fields:[];let chosen=vertexChosen;
  document.getElementById("detailContent").innerHTML='<div class="detail-head"><div class="detail-icon"><img src="'+safeText(p.image||"")+'" alt="'+safeText(p.name)+'" onerror="this.style.display=\'none\';this.parentElement.textContent=\'🎮\'"></div><div><small style="color:var(--cyan)">WS TOP UP</small><h1>'+safeText(p.name)+'</h1></div></div>'+'<div class="detail-panel"><h2>1. Select a Package / প্যাকেজ নির্বাচন করুন</h2><div class="packages" id="vertexPackages"></div></div>'+'<div class="detail-panel"><h2>2. Enter Required Details / প্রয়োজনীয় তথ্য দিন</h2><div id="vertexFields" class="fields"></div><button class="order-btn" id="vertexOrderBtn" type="button" disabled>Select a package first / আগে প্যাকেজ নির্বাচন করুন</button><p class="note" id="vertexOrderMessage"></p></div>';
  const packageBox=document.getElementById("vertexPackages");
  variations.forEach(v=>{const price=saleINR(v),rawStock=v.stock_quantity??v.stock,stock=Number(rawStock),b=document.createElement("button");b.type="button";b.className="pkg";b.innerHTML='<strong>'+safeText(v.label||v.name||"Package")+'</strong><span>'+(price===null?"Price unavailable / দাম পাওয়া যায়নি":money(price))+'</span><small style="color:var(--muted)">Stock: '+(v.stock_quantity??v.stock??"Check at order")+'</small>';const status=String(v.stock_status||"").trim().toLowerCase().replace(/[\s-]+/g,"_");const explicitlyOutOfStock=v.in_stock===false||["outofstock","out_of_stock","sold_out","unavailable","not_available"].includes(status)||(rawStock!==null&&rawStock!==undefined&&rawStock!==""&&Number.isFinite(stock)&&stock<=0&&v.in_stock!==true);b.disabled=price===null||explicitlyOutOfStock;b.setAttribute("aria-pressed",String(chosen===v));if(chosen===v)b.classList.add("selected");b.addEventListener("click",()=>{chosen=v;vertexChosen=v;packageBox.querySelectorAll(".pkg").forEach(x=>{x.classList.remove("selected");x.setAttribute("aria-pressed","false");});b.classList.add("selected");b.setAttribute("aria-pressed","true");buildVertexFields();const btn=document.getElementById("vertexOrderBtn");btn.disabled=false;btn.textContent="Pay & Place Order / পেমেন্ট করে অর্ডার করুন · "+money(price);});packageBox.appendChild(b);});
- function buildVertexFields(){const holder=document.getElementById("vertexFields");holder.innerHTML="";if(!fields.length){const p=document.createElement("p");p.className="note";p.textContent="No extra details are required for this package. / এই প্যাকেজে অতিরিক্ত তথ্য প্রয়োজন নেই।";holder.appendChild(p);}fields.forEach((f,i)=>{const key=String(f.key||f.name||f.slug||("field_"+i)),label=String(f.label||f.name||f.title||key),wrap=document.createElement("label"),title=document.createElement("span");title.textContent=label+(f.required===false?"":" *");wrap.appendChild(title);const kind=String(f.type||f.input_type||"text").toLowerCase(),choices=Array.isArray(f.options)?f.options:Array.isArray(f.choices)?f.choices:[];let input;if(["select","dropdown","choice"].includes(kind)&&choices.length){input=document.createElement("select");const first=document.createElement("option");first.value="";first.textContent=String(f.placeholder||("Select "+label));input.appendChild(first);choices.forEach(option=>{const item=document.createElement("option");if(option&&typeof option==="object"){item.value=String(option.value??option.id??option.name??option.label??"");item.textContent=String(option.label??option.name??option.value??option.id??"");}else{item.value=String(option);item.textContent=String(option);}input.appendChild(item);});}else{input=document.createElement("input");input.type=kind==="email"?"email":kind==="number"?"number":"text";input.placeholder=String(f.placeholder||("Enter "+label));}input.dataset.key=key;input.dataset.required=f.required===false?"false":"true";wrap.appendChild(input);holder.appendChild(wrap);});const countryWrap=document.createElement("label"),countryTitle=document.createElement("span"),country=document.createElement("select");countryTitle.textContent="Country / দেশ *";countryWrap.appendChild(countryTitle);country.id="vertexCountry";country.innerHTML='<option value="">Select Country / দেশ নির্বাচন করুন</option><option value="India">India</option><option value="Bangladesh">Bangladesh</option><option value="Other">Other</option>';countryWrap.appendChild(country);holder.appendChild(countryWrap);}
- document.getElementById("vertexOrderBtn").addEventListener("click",async()=>{if(!chosen)return;const holder=document.getElementById("vertexFields"),inputs=[...holder.querySelectorAll("input,select")],values={},missing=inputs.find(x=>x.dataset.required==="true"&&!x.value.trim()),country=document.getElementById("vertexCountry").value,msg=document.getElementById("vertexOrderMessage"),button=document.getElementById("vertexOrderBtn");if(missing){msg.textContent="Please fill in all required fields. / সব প্রয়োজনীয় তথ্য পূরণ করুন।";missing.focus();return;}if(!country){msg.textContent="Select Country / দেশ নির্বাচন করুন।";document.getElementById("vertexCountry").focus();return;}inputs.forEach(x=>{if(x.dataset.key&&x.value.trim())values[x.dataset.key]=x.value.trim();});button.disabled=true;button.textContent="Creating order… / অর্ডার তৈরি হচ্ছে…";msg.textContent="";try{const price=saleINR(chosen);if(price===null)throw new Error("A reliable price is unavailable for this package. / এই প্যাকেজের নির্ভরযোগ্য দাম পাওয়া যায়নি।");const account=Object.values(values).join(" | ")||"No account details required";const response=await fetch(ORDERS_API,{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY},body:JSON.stringify({product_key:"vertex:"+String(p.id),product_name:p.name,package_name:String(chosen.label||chosen.name||"Package"),amount:price,account_label:Object.keys(values).join(" / ")||"No account details",account_id:account,country,vertex_product_id:String(p.id),vertex_variation_id:String(chosen.id),vertex_checkout_fields:values})});const order=await response.json();if(!response.ok||!order.checkout_url)throw new Error(order.error||"Could not create the payment link. / পেমেন্ট লিংক তৈরি করা যায়নি।");msg.textContent="Order created. Redirecting to the payment page… / অর্ডার তৈরি হয়েছে। পেমেন্ট পেজে নেওয়া হচ্ছে…";window.location.href=order.checkout_url;}catch(error){msg.textContent=error.message||"Please try again. / আবার চেষ্টা করুন।";button.disabled=false;button.textContent="Pay & Place Order / পেমেন্ট করে অর্ডার করুন · "+money(saleINR(chosen));}});
+ function buildVertexFields(){const holder=document.getElementById("vertexFields");holder.innerHTML="";if(!fields.length){const p=document.createElement("p");p.className="note";p.textContent="No extra details are required for this package. / এই প্যাকেজে অতিরিক্ত তথ্য প্রয়োজন নেই।";holder.appendChild(p);}fields.forEach((f,i)=>{const key=String(f.key||f.name||f.slug||("field_"+i)),label=String(f.label||f.name||f.title||key),wrap=document.createElement("label"),title=document.createElement("span");title.textContent=label+(f.required===false?"":" *");wrap.appendChild(title);const kind=String(f.type||f.input_type||"text").toLowerCase(),choices=Array.isArray(f.options)?f.options:Array.isArray(f.choices)?f.choices:[];let input;if(["select","dropdown","choice"].includes(kind)&&choices.length){input=document.createElement("select");const first=document.createElement("option");first.value="";first.textContent=String(f.placeholder||("Select "+label));input.appendChild(first);choices.forEach(option=>{const item=document.createElement("option");if(option&&typeof option==="object"){item.value=String(option.value??option.id??option.name??option.label??"");item.textContent=String(option.label??option.name??option.value??option.id??"");}else{item.value=String(option);item.textContent=String(option);}input.appendChild(item);});}else{input=document.createElement("input");input.type=kind==="email"?"email":kind==="number"?"number":"text";input.placeholder=String(f.placeholder||("Enter "+label));}input.dataset.key=key;input.dataset.required=f.required===false?"false":"true";wrap.appendChild(input);holder.appendChild(wrap);});}
+ document.getElementById("vertexOrderBtn").addEventListener("click",async()=>{if(!chosen)return;const holder=document.getElementById("vertexFields"),inputs=[...holder.querySelectorAll("input,select")],values={},missing=inputs.find(x=>x.dataset.required==="true"&&!x.value.trim()),msg=document.getElementById("vertexOrderMessage"),button=document.getElementById("vertexOrderBtn");if(missing){msg.textContent="Please fill in all required fields. / সব প্রয়োজনীয় তথ্য পূরণ করুন।";missing.focus();return;}inputs.forEach(x=>{if(x.dataset.key&&x.value.trim())values[x.dataset.key]=x.value.trim();});button.disabled=true;button.textContent="Creating order… / অর্ডার তৈরি হচ্ছে…";msg.textContent="";try{const price=saleINR(chosen);if(price===null)throw new Error("A reliable price is unavailable for this package. / এই প্যাকেজের নির্ভরযোগ্য দাম পাওয়া যায়নি।");const account=Object.values(values).join(" | ")||"No account details required";const response=await fetch(ORDERS_API,{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY},body:JSON.stringify({product_key:"jubaly:"+String(p.id),product_name:p.name,package_name:String(chosen.label||chosen.name||"Package"),amount:price,account_label:Object.keys(values).join(" / ")||"No account details",account_id:account,jubaly_product_id:String(p.id),jubaly_variation_id:String(chosen.id),jubaly_checkout_fields:values})});const order=await response.json();if(!response.ok||!order.checkout_url)throw new Error(order.error||"Could not create the payment link. / পেমেন্ট লিংক তৈরি করা যায়নি।");msg.textContent="Order created. Redirecting to the payment page… / অর্ডার তৈরি হয়েছে। পেমেন্ট পেজে নেওয়া হচ্ছে…";window.location.href=order.checkout_url;}catch(error){msg.textContent=error.message||"Please try again. / আবার চেষ্টা করুন।";button.disabled=false;button.textContent="Pay & Place Order / পেমেন্ট করে অর্ডার করুন · "+money(saleINR(chosen));}});
 }
 function openProduct(id){
 current=newItems.find(p=>p.id===id);
