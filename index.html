@@ -247,7 +247,7 @@ function money(n,cur=currency){
 function safeText(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function normCatalogName(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();}
 
-const JUBALY_STATIC_MAP={imo:"176258",bigo:"47097",poppo:"1280472",chamet:"1077201",telegram:"716618",likee:"1300340",tango:"1374631",mlbb:"11010","fc-mobile":"298671",genshin:"1440831","super-sus":"195034","blood-strike":"472814"};
+const JUBALY_STATIC_MAP={imo:"176258",bigo:"47097",poppo:"1280472",chamet:"1077201",telegram:"716618",likee:"1300340",tango:"1374631",mlbb:"11010",itunes:"1538812","fc-mobile":"298671",genshin:"1440831","super-sus":"195034","blood-strike":"472814"};
 function unavailableStock(p){
  const status=String(p?.stock_status||"").trim().toLowerCase().replace(/[\s-]+/g,"_");
  return p?.in_stock===false||["outofstock","out_of_stock","sold_out","unavailable","not_available"].includes(status);
