@@ -1,3 +1,21 @@
 <!doctype html>
 <html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07111f"><title>My Account | WS TOP UP</title><link rel="stylesheet" href="./customer-auth.css"></head>
-<body data-page="account"><main class="auth-wrap"><div class="brand"><a href="./index.html">WS <span>TOP UP</span></a></div><section class="auth-card"><h1>My Account / আমার অ্যাকাউন্ট</h1><p class="sub">তোমার অ্যাকাউন্টের তথ্য।</p><div class="profile-line"><strong>Name / নাম</strong><span id="user-name">Loading...</span></div><div class="profile-line"><strong>Email / ইমেইল</strong><span id="user-email">Loading...</span></div><div class="order-placeholder"><strong>Order History / অর্ডার হিস্ট্রি</strong><div id="order-history" class="sub" style="margin:8px 0 0">অর্ডার লোড হচ্ছে…</div><p class="sub" style="margin:8px 0 0">লগইন করার পর করা নতুন অর্ডার এখানে দেখা যাবে। আগের Guest অর্ডার স্বয়ংক্রিয়ভাবে যুক্ত হবে না।</p></div><button id="logout" type="button">Logout / লগআউট</button><div id="message" class="message" role="status" aria-live="polite"></div></section><a class="back-link" href="./index.html">← Back to Store</a></main><script type="module" src="./customer-auth.js"></script></body></html>
+<body data-page="account"><main class="auth-wrap"><div class="brand"><a href="./index.html">WS <span>TOP UP</span></a></div><section class="auth-card"><h1>My Account / আমার অ্যাকাউন্ট</h1><p class="sub">তোমার অ্যাকাউন্টের তথ্য।</p><div class="profile-line"><strong>Name / নাম</strong><span id="user-name">Loading...</span></div><div class="profile-line"><strong>Email / ইমেইল</strong><span id="user-email">Loading...</span></div><section class="order-placeholder wallet-panel">
+<strong>My Wallet / আমার Wallet</strong>
+<div class="wallet-balance"><span>Available Balance / বর্তমান ব্যালেন্স</span><b id="wallet-balance">₹0.00</b></div>
+<p class="sub wallet-note">Wallet balance INR-এ হিসাব করা হয়। টাকা Add Money করলে পেমেন্ট যাচাইয়ের পর ব্যালেন্স যোগ হবে।</p>
+<form id="wallet-form">
+<label for="wallet-currency">Payment Currency / পেমেন্টের মুদ্রা</label>
+<select id="wallet-currency"><option value="INR">INR ₹ · UPI</option><option value="BDT">BDT ৳ · bKash</option></select>
+<label for="wallet-amount">Amount / টাকার পরিমাণ</label><input id="wallet-amount" type="number" min="10" max="50000" step="0.01" required placeholder="যেমন 100">
+<p class="wallet-receiver" id="wallet-receiver">UPI ID: 7479314460@ybl</p>
+<a id="wallet-pay" class="auth-button" href="#" hidden>Open UPI App / UPI দিয়ে পেমেন্ট</a>
+<label for="wallet-sender">Sender Number or UPI ID / যে নম্বর বা UPI ID থেকে পাঠিয়েছ</label><input id="wallet-sender" required maxlength="100" placeholder="Sender mobile / UPI ID">
+<label for="wallet-transaction">Transaction ID / ট্রানজেকশন আইডি</label><input id="wallet-transaction" required maxlength="80" placeholder="Payment transaction ID">
+<button type="submit">Submit Add Money Request / টাকা জমার অনুরোধ পাঠাও</button>
+</form>
+<div id="wallet-message" class="message" role="status" aria-live="polite"></div>
+<div class="wallet-subsection"><strong>Top-up Requests / টাকা জমার অনুরোধ</strong><div id="wallet-topups" class="customer-orders">লোড হচ্ছে…</div></div>
+<div class="wallet-subsection"><strong>Wallet History / লেনদেনের হিসাব</strong><div id="wallet-transactions" class="customer-orders">লোড হচ্ছে…</div></div>
+</section>
+<div class="order-placeholder"><strong>Order History / অর্ডার হিস্ট্রি</strong><div id="order-history" class="sub" style="margin:8px 0 0">অর্ডার লোড হচ্ছে…</div><p class="sub" style="margin:8px 0 0">লগইন করার পর করা নতুন অর্ডার এখানে দেখা যাবে। আগের Guest অর্ডার স্বয়ংক্রিয়ভাবে যুক্ত হবে না।</p></div><button id="logout" type="button">Logout / লগআউট</button><div id="message" class="message" role="status" aria-live="polite"></div></section><a class="back-link" href="./index.html">← Back to Store</a></main><script type="module" src="./customer-auth.js"></script></body></html>
