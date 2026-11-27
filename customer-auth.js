@@ -152,6 +152,83 @@ if (page === "account") {
       .maybeSingle();
     if (profile?.display_name) $("user-name").textContent = profile.display_name;
 
+    const walletApi = "https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/ws-wallet";
+    const walletMessage = $("wallet-message");
+    const walletStatus = (text, isError = false) => {
+      if (!walletMessage) return;
+      walletMessage.textContent = text;
+      walletMessage.className = isError ? "message error" : "message success";
+    };
+    const walletHeaders = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session?.access_token) throw new Error("আবার Login করো।");
+      return { "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY, "Authorization": "Bearer " + data.session.access_token };
+    };
+    const walletMoney = (paise) => "₹" + (Number(paise || 0) / 100).toLocaleString("en-IN", {minimumFractionDigits:2,maximumFractionDigits:2});
+    const renderWallet = (data) => {
+      $("wallet-balance").textContent = walletMoney(data.balance_paise);
+      const topups = $("wallet-topups");
+      topups.replaceChildren();
+      if (!data.topups?.length) topups.textContent = "এখনো কোনো Add Money request নেই।";
+      else data.topups.forEach(item => {
+        const row = document.createElement("div"); row.className = "customer-order";
+        const title = document.createElement("strong"); title.textContent = "Top-up #" + item.id + " · " + walletMoney(item.amount_paise);
+        const detail = document.createElement("p"); detail.textContent = item.payment_currency + " " + Number(item.payment_amount).toFixed(2) + " · " + item.payment_method.toUpperCase() + " · " + item.status.toUpperCase();
+        const date = document.createElement("small"); date.textContent = item.created_at ? new Date(item.created_at).toLocaleString() : "";
+        row.append(title, detail, date); topups.append(row);
+      });
+      const tx = $("wallet-transactions"); tx.replaceChildren();
+      if (!data.transactions?.length) tx.textContent = "এখনো কোনো Wallet transaction নেই।";
+      else data.transactions.forEach(item => {
+        const row = document.createElement("div"); row.className = "customer-order";
+        const title = document.createElement("strong"); title.textContent = (Number(item.amount_paise) >= 0 ? "+" : "−") + walletMoney(Math.abs(Number(item.amount_paise)));
+        const detail = document.createElement("p"); detail.textContent = item.description || item.transaction_type;
+        const date = document.createElement("small"); date.textContent = item.created_at ? new Date(item.created_at).toLocaleString() : "";
+        row.append(title, detail, date); tx.append(row);
+      });
+      $("wallet-receiver").textContent = $("wallet-currency").value === "BDT" ? "bKash: " + data.bkash_number : "UPI: " + data.upi_id;
+    };
+    const loadWallet = async () => {
+      try {
+        const response = await fetch(walletApi, { headers: await walletHeaders(), cache: "no-store" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Wallet লোড হয়নি।");
+        renderWallet(data);
+      } catch (error) { walletStatus(error.message || "Wallet লোড হয়নি।", true); }
+    };
+    const updateWalletPaymentInfo = async () => {
+      const currency = $("wallet-currency").value;
+      $("wallet-method").textContent = currency === "BDT" ? "bKash" : "UPI";
+      $("wallet-receiver").textContent = currency === "BDT" ? "bKash নম্বর: 01618896284" : "UPI ID: 7479314460@ybl";
+      const amount = Number($("wallet-amount").value);
+      const pay = $("wallet-pay");
+      if (currency === "INR" && Number.isFinite(amount) && amount >= 10) {
+        const params = new URLSearchParams({pa:"7479314460@ybl",pn:"WS TOP UP",am:amount.toFixed(2),cu:"INR",tn:"WS TOP UP Wallet"});
+        pay.href = "upi://pay?" + params.toString(); pay.hidden = false;
+      } else { pay.hidden = true; pay.removeAttribute("href"); }
+    };
+    $("wallet-currency").addEventListener("change", updateWalletPaymentInfo);
+    $("wallet-amount").addEventListener("input", updateWalletPaymentInfo);
+    $("wallet-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const submit = form.querySelector('button[type="submit"]');
+      submit.disabled = true; submit.textContent = "জমা হচ্ছে…";
+      try {
+        const currency = $("wallet-currency").value;
+        const payload = {action:"topup-request",currency,method:currency==="BDT"?"bkash":"upi",amount:Number($("wallet-amount").value),sender:$("wallet-sender").value.trim(),transaction_id:$("wallet-transaction").value.trim()};
+        const response = await fetch(walletApi,{method:"POST",headers:await walletHeaders(),body:JSON.stringify(payload)});
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Request জমা হয়নি।");
+        form.reset(); updateWalletPaymentInfo();
+        walletStatus("Top-up request #" + data.topup.id + " জমা হয়েছে। Admin পেমেন্ট যাচাই করলে ব্যালেন্স যোগ হবে।");
+        await loadWallet();
+      } catch (error) { walletStatus(error.message || "Request জমা হয়নি।", true); }
+      finally { submit.disabled = false; submit.textContent = "Submit Add Money Request / টাকা জমার অনুরোধ পাঠাও"; }
+    });
+    updateWalletPaymentInfo();
+    loadWallet();
+
     const history = $("order-history");
     if (history) {
       history.replaceChildren();
