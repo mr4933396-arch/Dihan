@@ -37,6 +37,9 @@ a{color:inherit;text-decoration:none}
 .auth-nav{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .auth-nav a{display:inline-flex;align-items:center;justify-content:center;padding:8px 10px;border:1px solid #365371;border-radius:9px;background:#10243a;color:#eaf6ff;font-size:12px;font-weight:800;white-space:nowrap}
 .auth-nav a:last-child{border-color:#24759a;color:var(--cyan)}
+.wallet-nav{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 11px;border:1px solid #2c8a9e;border-radius:10px;background:linear-gradient(135deg,#123c50,#10243a);color:#7fe7ff;font-size:12px;font-weight:900;white-space:nowrap;box-shadow:0 3px 12px #0005}
+.wallet-nav svg{width:17px;height:17px;flex:0 0 17px}
+@media(max-width:580px){.wallet-nav{padding:7px 8px;font-size:10px;gap:4px}.wallet-nav svg{width:15px;height:15px}}
 @media(max-width:580px){.nav{gap:7px}.navright{gap:6px}.auth-nav{gap:4px}.auth-nav a{padding:7px 7px;font-size:10px}.select{padding:7px 6px;font-size:11px}}
 .select{background:#142740;color:white;border:1px solid #365371;border-radius:9px;padding:9px 10px}
 .hero{max-width:1160px;margin:22px auto 18px;padding:0 18px;text-align:center}
@@ -142,6 +145,7 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 <span>WS TOP UP</span>
 </a>
 <div class="navright">
+<a class="wallet-nav" href="./my-account.html#wallet" aria-label="Wallet / ওয়ালেট" title="Open My Wallet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="15" rx="3"/><path d="M2.5 9h19M16 14h.01M6 5V3.5h13"/></svg><span>Wallet / ওয়ালেট</span></a>
 <div class="auth-nav" aria-label="Customer account">
 <a href="./login.html">Login</a>
 <a href="./register.html">Register</a>
