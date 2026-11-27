@@ -230,7 +230,7 @@ const newItems=[
 {id:"spotify",image:"./spotify.png",name:"Spotify Premium",cat:"subs",label:"Subscriptions",icon:"🎧",fields:["Account Email (never password)"],packages:[["1 Month",17292],["3 Month",46833]]}
 ];
 
-let cat="all",selected=-1,current=null,jubalyCurrent=null,jubalyChosen=null,jubalyProducts=[],jubalySourceProducts=[],jubalyLoading=false,jubalyFinished=false;
+let cat="all",selected=-1,current=null,jubalyCurrent=null,jubalyDisplayImage="",jubalyChosen=null,jubalyProducts=[],jubalySourceProducts=[],jubalyLoading=false,jubalyFinished=false;
 let currency=localStorage.getItem("ws_currency")||"INR";
 const grid=document.getElementById("grid");
 const catalogView=document.getElementById("catalogView");
@@ -272,18 +272,18 @@ function makeOldCard(x){
  if(x[2].endsWith(".png"))imageHTML='<img src="'+x[2]+'" alt="'+safeText(x[1])+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">'+x[5]+'</span>';
  else imageHTML='<span class="emoji">'+x[2]+'</span>';
  a.innerHTML='<div class="art">'+imageHTML+'</div><div class="info"><span class="label">'+safeText(supplierId?x[4]:"Supplier match pending")+'</span><br><strong>'+safeText(x[1])+'</strong><div class="stars">★ WS TOP UP</div><small>View details & order →</small></div>';
- a.addEventListener("click",e=>{e.preventDefault();if(supplierId)openJubalyProduct(supplierId);else openSupplierUnavailable(x[1]);});
+ a.addEventListener("click",e=>{e.preventDefault();if(supplierId)openJubalyProduct(supplierId,x[2].endsWith(".png")?x[2]:"");else openSupplierUnavailable(x[1]);});
  return a;
 }
 function makeNewCard(p){
  const a=document.createElement("article");a.className="card";
  a.innerHTML='<div class="art"><img src="'+safeText(p.image)+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">'+safeText(p.icon)+'</span></div><div class="info"><span class="label">'+safeText(JUBALY_STATIC_MAP[p.id]?p.label:"Supplier match pending")+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+(JUBALY_STATIC_MAP[p.id]?'Supplier packages load live':p.packages.length+' saved packages · supplier match pending')+'</small><small>View packages & order →</small></div>';
- const supplierId=supplierProductFor(p.id);a.addEventListener("click",()=>supplierId?openJubalyProduct(supplierId):openSupplierUnavailable(p.name));return a;
+ const supplierId=supplierProductFor(p.id);a.addEventListener("click",()=>supplierId?openJubalyProduct(supplierId,p.image):openSupplierUnavailable(p.name));return a;
 }
 function makeJubalyCard(p){
  const a=document.createElement("article");a.className="card";
  const category=p.category?.name||(p.categories||[])[0]?.name||"Digital product";
- a.innerHTML='<div class="art"><img src="'+safeText(p.image||"")+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.style.display=\'none\';"></div><div class="info"><span class="label">'+safeText(category)+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+Number(p.package_count||0)+' packages · '+(p.in_stock?"In Stock":"Check availability")+'</small><small>View packages & order →</small></div>';
+ a.innerHTML='<div class="art"><img src="'+safeText(jubalyDisplayImage||p.image||"")+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.style.display=\'none\';"></div><div class="info"><span class="label">'+safeText(category)+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+Number(p.package_count||0)+' packages · '+(p.in_stock?"In Stock":"Check availability")+'</small><small>View packages & order →</small></div>';
  a.addEventListener("click",()=>openJubalyProduct(p.id));return a;
 }
 function draw(){
@@ -335,8 +335,8 @@ if(jubalyCurrent)renderJubalyDetail();
 draw();
 });
 
-function openJubalyProduct(id){
- jubalyChosen=null;jubalyCurrent=null;current=null;catalogView.classList.add("hidden");document.getElementById("hero").classList.add("hidden");detailView.classList.remove("hidden");document.getElementById("detailContent").innerHTML='<p class="note">Loading packages and prices… / প্যাকেজ ও দাম লোড হচ্ছে…</p>';window.scrollTo(0,0);
+function openJubalyProduct(id,displayImage=""){
+ jubalyDisplayImage=displayImage||"";jubalyChosen=null;jubalyCurrent=null;current=null;catalogView.classList.add("hidden");document.getElementById("hero").classList.add("hidden");detailView.classList.remove("hidden");document.getElementById("detailContent").innerHTML='<p class="note">Loading packages and prices… / প্যাকেজ ও দাম লোড হচ্ছে…</p>';window.scrollTo(0,0);
  fetch(JUBALY_API+"?action=product&id="+encodeURIComponent(id),{cache:"no-store"}).then(async response=>{const data=await response.json();if(!response.ok||!data.ok)throw new Error(data.error||"Product details unavailable");return data.data.product;}).then(product=>{jubalyCurrent=product;renderJubalyDetail();}).catch(error=>{document.getElementById("detailContent").innerHTML='<div class="detail-panel">Product details are unavailable right now. Please try again later. / এই প্রোডাক্টের তথ্য এখন পাওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।</div>';});
 }
 function renderJubalyDetail(){
@@ -421,7 +421,7 @@ document.getElementById("orderBtn").addEventListener("click",async()=>{
 }
 
 document.getElementById("back").addEventListener("click",()=>{
- current=null;jubalyCurrent=null;
+ current=null;jubalyCurrent=null;jubalyDisplayImage="";
  detailView.classList.add("hidden");
  catalogView.classList.remove("hidden");
  document.getElementById("hero").classList.remove("hidden");
