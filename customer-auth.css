@@ -8,3 +8,9 @@ button,.auth-button{display:flex;justify-content:center;align-items:center;width
 .profile-line,.order-placeholder{padding:13px;background:#091a2d;border:1px solid var(--line);border-radius:11px;margin-top:11px;overflow-wrap:anywhere}.profile-line strong{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}.profile-line span{font-weight:700}
 .back-link{display:block;text-align:center;margin-top:17px;color:var(--cyan);text-decoration:none;font-size:13px}
 @media(max-width:480px){body{padding:14px}.auth-card{padding:21px}.auth-card h1{font-size:22px}}
+
+.customer-orders{display:grid;gap:10px;margin-top:10px}
+.customer-order{padding:13px;background:#0d2035;border:1px solid var(--line);border-radius:11px;overflow-wrap:anywhere}
+.customer-order strong{display:block;color:var(--cyan);font-size:14px}
+.customer-order p{margin:7px 0;color:#dce8f5;font-size:13px;line-height:1.45}
+.customer-order small{display:block;color:var(--muted);font-size:11px;margin-top:9px}
