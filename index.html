@@ -312,9 +312,7 @@ function makeJubalyCard(p){
  const available=p.purchasable===true&&p.api_orderable!==false&&p.in_stock!==false&&!unavailableStock(p);
   const image=resolveProductImage(p);
   a.innerHTML='<div class="art">'+(image?'<img src="'+safeText(image)+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.onerror=null;this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">🎮</span>':'<span class="emoji">🎮</span>')+'</div><div class="info"><span class="label">'+labels[group]+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+Number(p.variation_count||0)+' packages</small><small>'+(available?'Available now':p.api_orderable===false?'Currently unavailable':'Currently unavailable')+'</small><small>View packages & order →</small></div>';
- a.dataset.jubalyProductId=String(p.id);
- if(jubalyPrefetchObserver)jubalyPrefetchObserver.observe(a);
-  const warm=()=>prefetchJubalyProduct(p.id);a.addEventListener("pointerenter",warm,{passive:true,once:true});a.addEventListener("touchstart",warm,{passive:true,once:true});a.addEventListener("focus",warm,{once:true});a.addEventListener("click",()=>openJubalyProduct(p.id,image));return a;
+ a.addEventListener("click",()=>openJubalyProduct(p.id,image));return a;
 }
 function draw(){
  const q=document.getElementById("search").value.toLowerCase().trim();grid.innerHTML="";
@@ -408,14 +406,6 @@ draw();
 const JUBALY_DETAIL_TTL=5*60*1000;
 const jubalyDetailCache=new Map();
 const jubalyDetailRequests=new Map();
-const jubalyPrefetchObserver=("IntersectionObserver" in window)?new IntersectionObserver(entries=>{
- entries.forEach(entry=>{
-  if(!entry.isIntersecting)return;
-  const id=entry.target.dataset.jubalyProductId;
-  if(id)prefetchJubalyProduct(id);
-  jubalyPrefetchObserver.unobserve(entry.target);
- });
-},{rootMargin:"700px 0px",threshold:0.01}):null;
 function fetchJubalyProduct(id){
  const key=String(id),cached=jubalyDetailCache.get(key);
  if(cached&&Date.now()-cached.savedAt<JUBALY_DETAIL_TTL)return Promise.resolve(cached.product);
@@ -424,11 +414,6 @@ function fetchJubalyProduct(id){
   .then(async response=>{const data=await response.json();if(!response.ok||!data.ok)throw new Error(data.error||"Product details unavailable");if(!data.data?.product)throw new Error("Product details are incomplete");jubalyDetailCache.set(key,{savedAt:Date.now(),product:data.data.product});return data.data.product;})
   .finally(()=>jubalyDetailRequests.delete(key));
  jubalyDetailRequests.set(key,request);return request;
-}
-function prefetchJubalyProduct(id){
- const cached=jubalyDetailCache.get(String(id));
- if(cached&&Date.now()-cached.savedAt<JUBALY_DETAIL_TTL)return;
- fetchJubalyProduct(id).catch(()=>{});
 }
 function applyJubalyProduct(product){
  jubalyCurrent=product;const fx=product.customer_fx;
