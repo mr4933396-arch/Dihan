@@ -291,7 +291,7 @@ function draw(){
  const entries=[];
  oldItems.filter(x=>(cat==="all"||x[3]===cat)&&isSupplierProductAvailable(x[0])&&x[1].toLowerCase().includes(q)).forEach(x=>entries.push({cat:x[3],kind:"old",item:x}));
  newItems.filter(x=>(cat==="all"||x.cat===cat)&&isSupplierProductAvailable(x.id)&&(x.name+" "+x.label).toLowerCase().includes(q)).forEach(x=>entries.push({cat:x.cat,kind:"new",item:x}));
- jubalyProducts.filter(p=>isJubalyInStock(p)&&(cat==="all"||classifyJubalyProduct(p)===cat)&&(p.name+" "+(p.category?.name||"")+" "+(p.categories||[]).map(x=>x.name).join(" ")).toLowerCase().includes(q)).forEach(p=>entries.push({cat:classifyJubalyProduct(p),kind:"vertex",item:p}));
+ jubalyProducts.filter(p=>isJubalyInStock(p)&&(cat==="all"||classifyJubalyProduct(p)===cat)&&(p.name+" "+(p.category?.name||"")+" "+(p.categories||[]).map(x=>x.name).join(" ")).toLowerCase().includes(q)).forEach(p=>entries.push({cat:classifyJubalyProduct(p),kind:"jubaly",item:p}));
  // Put the most-used products first in each category; keep other products in their existing order.
  const popularRank=(entry)=>{
   const name=String(entry.item.name||entry.item[1]||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
