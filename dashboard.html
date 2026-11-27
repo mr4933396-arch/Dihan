@@ -18,7 +18,7 @@
 <div id="orderStatus" class="status">Enter the Access Code to view orders. / অর্ডার তালিকা দেখতে Access Code দিন।</div>
 <div id="orderArea" class="private-hidden">
 <div class="order-tools"><input id="orderSearch" placeholder="Search Order ID / Product / UID / Country"><button id="orderCsv" class="secondary">Download Orders CSV ↓ / অর্ডার CSV ↓</button></div>
-<div class="tablewrap"><table class="orders-table"><thead><tr><th>Order / অর্ডার</th><th>Product / প্রোডাক্ট</th><th>Package / প্যাকেজ</th><th>UID / Account</th><th>Country / দেশ</th><th>Amount / পরিমাণ</th><th>Payment / পেমেন্ট</th><th>bKash Payment Details / bKash তথ্য</th><th>Review / যাচাই</th><th>Order Status / অর্ডারের অবস্থা</th><th>Date / তারিখ</th></tr></thead><tbody id="ordersBody"><tr><td colspan="9">Loading… / লোড হচ্ছে…</td></tr></tbody></table></div>
+<div class="tablewrap"><table class="orders-table"><thead><tr><th>Order / অর্ডার</th><th>Product / প্রোডাক্ট</th><th>Package / প্যাকেজ</th><th>UID / Account</th><th>Country / দেশ</th><th>Amount / পরিমাণ</th><th>Payment / পেমেন্ট</th><th>bKash Payment Details / bKash তথ্য</th><th>Review / যাচাই</th><th>Order Status / অর্ডারের অবস্থা</th><th>Date / তারিখ</th></tr></thead><tbody id="ordersBody"><tr><td colspan="11">Loading… / লোড হচ্ছে…</td></tr></tbody></table></div>
 </div>
 </section>
 <div id="status" class="status">Loading Dashboard… / ড্যাশবোর্ড লোড হচ্ছে…</div><div class="foot">Overall sales summary is public. An Admin Access Code is required to view private order details. / সামগ্রিক বিক্রির হিসাব সবার জন্য। ব্যক্তিগত অর্ডার তালিকা দেখতে Admin Access Code লাগবে।</div>
@@ -77,7 +77,7 @@ $('ordersBody').addEventListener('click',async e=>{
   return;
  }
 });
-$('orderCsv').onclick=()=>{const rows=[['Order ID','Product','Package','Account Label','UID / Account','Country','Amount INR','Payment Status','Order Status','Created At'],...privateOrders.map(o=>[o.id,o.product_name,o.package_name,o.account_label,o.account_id,o.country,(Number(o.amount_paise||0)/100).toFixed(2),o.payment_status,o.order_status,o.created_at])];const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n'),a=document.createElement('a'),u=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.href=u;a.download='ws-top-up-orders.csv';a.click();URL.revokeObjectURL(u)};
+$('orderCsv').onclick=()=>{const rows=[['Order ID','Product','Package','Account Label','UID / Account','Country','Amount INR','Payment Status','bKash Sender','bKash Transaction ID','bKash Amount BDT','Order Status','Created At'],...privateOrders.map(o=>[o.id,o.product_name,o.package_name,o.account_label,o.account_id,o.country,(Number(o.amount_paise||0)/100).toFixed(2),o.payment_status,o.manual_sender_number,o.manual_transaction_id,o.manual_payment_amount,o.order_status,o.created_at])];const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n'),a=document.createElement('a'),u=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.href=u;a.download='ws-top-up-orders.csv';a.click();URL.revokeObjectURL(u)};
 
 load();
 </script>
