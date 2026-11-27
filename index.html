@@ -333,10 +333,12 @@ async function loadJubalyCatalog(){
   jubalySourceProducts=jubalyProducts.slice();
   jubalyLoading=false;jubalyFinished=true;draw();
  }else{
-  jubalyLoading=true;jubalyFinished=false;draw();
+  jubalyLoading=true;jubalyFinished=false;
+  grid.innerHTML='<div class="detail-panel"><h2>Loading products…</h2><p class="note">প্রোডাক্ট তালিকা আনা হচ্ছে। অনুগ্রহ করে একটু অপেক্ষা করুন।</p></div>';
+  document.getElementById("productCount").textContent="Loading products…";
  }
  try{
-  const response=await fetch(JUBALY_API+"?action=all",{cache:"no-store"});
+  const response=await fetch(JUBALY_API+"?action=all",{cache:"default"});
   const result=await response.json();
   if(!response.ok||!result.ok||!Array.isArray(result.data?.products))throw new Error(result.error||"Product catalog could not be refreshed");
   const fresh=result.data.products.filter(p=>p&&p.id&&p.name);
