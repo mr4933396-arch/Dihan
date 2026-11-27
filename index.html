@@ -282,16 +282,16 @@ function makeNewCard(p){
 }
 function makeJubalyCard(p){
  const a=document.createElement("article");a.className="card";
- const category=p.category?.name||(p.categories||[])[0]?.name||"Digital product";
- a.innerHTML='<div class="art"><img src="'+safeText(jubalyDisplayImage||p.image||"")+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.style.display=\'none\';"></div><div class="info"><span class="label">'+safeText(category)+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+Number(p.package_count||0)+' packages · '+(p.in_stock?"In Stock":"Check availability")+'</small><small>View packages & order →</small></div>';
+ const group=classifyJubalyProduct(p),labels={social:"SOCIAL MEDIA",games:"GAMING",subs:"SUBSCRIPTIONS",gift:"GIFT CARDS"};
+ const available=p.purchasable===true&&!unavailableStock(p);
+ const image=p.image||"";
+ a.innerHTML='<div class="art">'+(image?'<img src="'+safeText(image)+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">🎮</span>':'<span class="emoji">🎮</span>')+'</div><div class="info"><span class="label">'+labels[group]+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+Number(p.variation_count||0)+' Jubaly packages</small><small>'+(available?'Available at Jubaly':'Currently unavailable at Jubaly')+'</small><small>View packages & order →</small></div>';
  a.addEventListener("click",()=>openJubalyProduct(p.id));return a;
 }
 function draw(){
  const q=document.getElementById("search").value.toLowerCase().trim();grid.innerHTML="";
  const entries=[];
- oldItems.filter(x=>(cat==="all"||x[3]===cat)&&isSupplierProductAvailable(x[0])&&x[1].toLowerCase().includes(q)).forEach(x=>entries.push({cat:x[3],kind:"old",item:x}));
- newItems.filter(x=>(cat==="all"||x.cat===cat)&&isSupplierProductAvailable(x.id)&&(x.name+" "+x.label).toLowerCase().includes(q)).forEach(x=>entries.push({cat:x.cat,kind:"new",item:x}));
- jubalyProducts.filter(p=>isJubalyInStock(p)&&(cat==="all"||classifyJubalyProduct(p)===cat)&&(p.name+" "+(p.category?.name||"")+" "+(p.categories||[]).map(x=>x.name).join(" ")).toLowerCase().includes(q)).forEach(p=>entries.push({cat:classifyJubalyProduct(p),kind:"jubaly",item:p}));
+ jubalyProducts.filter(p=>(cat==="all"||classifyJubalyProduct(p)===cat)&&(p.name||"").toLowerCase().includes(q)).forEach(p=>entries.push({cat:classifyJubalyProduct(p),kind:"jubaly",item:p}));
  // Put the most-used products first in each category; keep other products in their existing order.
  const popularRank=(entry)=>{
   const name=String(entry.item.name||entry.item[1]||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
@@ -311,11 +311,24 @@ function draw(){
  });
  const order=["social","games","subs","gift"],labels={social:"SOCIAL MEDIA",games:"GAMING",gift:"GIFT CARDS",subs:"SUBSCRIPTIONS"},counts={social:0,games:0,gift:0,subs:0};
  entries.forEach(x=>counts[x.cat]=(counts[x.cat]||0)+1);
- for(const group of order){if(!counts[group])continue;const section=document.createElement("section");section.className="catalog-section";const heading=document.createElement("h3");heading.textContent=labels[group];section.appendChild(heading);const cards=document.createElement("div");cards.className="section-grid";entries.filter(x=>x.cat===group).forEach(x=>cards.appendChild(x.kind==="old"?makeOldCard(x.item):x.kind==="new"?makeNewCard(x.item):makeJubalyCard(x.item)));section.appendChild(cards);grid.appendChild(section);}
- document.getElementById("productCount").textContent=entries.length+" products shown"+(jubalyLoading?" · Loading more products…":jubalyFinished?" · All products loaded":"");
+ for(const group of order){if(!counts[group])continue;const section=document.createElement("section");section.className="catalog-section";const heading=document.createElement("h3");heading.textContent=labels[group];section.appendChild(heading);const cards=document.createElement("div");cards.className="section-grid";entries.filter(x=>x.cat===group).forEach(x=>cards.appendChild(makeJubalyCard(x.item)));section.appendChild(cards);grid.appendChild(section);}
+ document.getElementById("productCount").textContent=entries.length+" Jubaly products shown"+(jubalyLoading?" · Loading supplier catalog…":jubalyFinished?" · Live supplier catalog":"");
 }
 async function loadJubalyCatalog(){
- jubalyLoading=false;jubalyFinished=true;jubalyProducts=[];jubalySourceProducts=[];draw();
+ jubalyLoading=true;jubalyFinished=false;jubalyProducts=[];jubalySourceProducts=[];draw();
+ try{
+  const response=await fetch(JUBALY_API+"?action=all",{cache:"no-store"});
+  const result=await response.json();
+  if(!response.ok||!result.ok||!Array.isArray(result.data?.products))throw new Error(result.error||"Jubaly catalog could not be loaded");
+  jubalyProducts=result.data.products.filter(p=>p&&p.id&&p.name);
+  jubalySourceProducts=jubalyProducts.slice();
+  jubalyLoading=false;jubalyFinished=true;draw();
+  if(!jubalyProducts.length)throw new Error("Jubaly returned an empty product catalog");
+ }catch(error){
+  jubalyLoading=false;jubalyFinished=true;jubalyProducts=[];draw();
+  grid.innerHTML='<div class="detail-panel"><h2>Jubaly catalog unavailable</h2><p class="note">Jubaly-এর লাইভ প্রোডাক্ট তালিকা এখন লোড করা যাচ্ছে না। ভুল বা পুরোনো প্যাকেজ দেখানো বন্ধ রাখা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।</p></div>';
+  document.getElementById("productCount").textContent="Jubaly catalog could not be verified";
+ }
 }
 
 function saleINR(v){const price=Number(v.customer_price_inr);return Number.isFinite(price)&&price>0?price:null;}
@@ -340,7 +353,7 @@ function openJubalyProduct(id,displayImage=""){
  fetch(JUBALY_API+"?action=product&id="+encodeURIComponent(id),{cache:"no-store"}).then(async response=>{const data=await response.json();if(!response.ok||!data.ok)throw new Error(data.error||"Product details unavailable");return data.data.product;}).then(product=>{jubalyCurrent=product;renderJubalyDetail();}).catch(error=>{document.getElementById("detailContent").innerHTML='<div class="detail-panel">Product details are unavailable right now. Please try again later. / এই প্রোডাক্টের তথ্য এখন পাওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।</div>';});
 }
 function renderJubalyDetail(){
- const p=jubalyCurrent;if(!p)return;if(unavailableStock(p)){document.getElementById("detailContent").innerHTML='<div class="detail-panel"><h2>Out of stock / স্টক শেষ</h2><p>This product is currently unavailable at the supplier. / সরবরাহকারীর কাছে এই প্রোডাক্টটি এখন স্টক আউট।</p></div>';return;}const variations=Array.isArray(p.variations)?p.variations:[],fields=Array.isArray(p.required_fields)?p.required_fields:[];let chosen=jubalyChosen;
+ const p=jubalyCurrent;if(!p)return;if(unavailableStock(p)||p.purchasable===false||p.api_orderable===false){document.getElementById("detailContent").innerHTML='<div class="detail-panel"><h2>Currently unavailable / আপাতত অর্ডার বন্ধ</h2><p>This product cannot currently be ordered through Jubaly. / Jubaly-তে এই প্রোডাক্টটি এখন অর্ডার করা যাচ্ছে না।</p></div>';return;}const variations=Array.isArray(p.variations)?p.variations:[],fields=Array.isArray(p.required_fields)?p.required_fields:[];let chosen=jubalyChosen;
  document.getElementById("detailContent").innerHTML='<div class="detail-head"><div class="detail-icon"><img src="'+safeText(p.image||"")+'" alt="'+safeText(p.name)+'" onerror="this.style.display=\'none\';this.parentElement.textContent=\'🎮\'"></div><div><small style="color:var(--cyan)">WS TOP UP</small><h1>'+safeText(p.name)+'</h1></div></div>'+'<div class="detail-panel"><h2>1. Select a Package / প্যাকেজ নির্বাচন করুন</h2><div class="packages" id="jubalyPackages"></div></div>'+'<div class="detail-panel"><h2>2. Enter Required Details / প্রয়োজনীয় তথ্য দিন</h2><div id="jubalyFields" class="fields"></div><button class="order-btn" id="jubalyOrderBtn" type="button" disabled>Select a package first / আগে প্যাকেজ নির্বাচন করুন</button><p class="note" id="jubalyOrderMessage"></p></div>';
  const packageBox=document.getElementById("jubalyPackages");
  variations.forEach(v=>{const price=saleINR(v),rawStock=v.stock_quantity??v.stock,stock=Number(rawStock),b=document.createElement("button");b.type="button";b.className="pkg";b.innerHTML='<strong>'+safeText(v.label||v.name||"Package")+'</strong><span>'+(price===null?"Price unavailable / দাম পাওয়া যায়নি":money(price))+'</span><small style="color:var(--muted)">Stock: '+(v.stock_quantity??v.stock??"Check at order")+'</small>';const status=String(v.stock_status||"").trim().toLowerCase().replace(/[\s-]+/g,"_");const explicitlyOutOfStock=v.in_stock===false||["outofstock","out_of_stock","sold_out","unavailable","not_available"].includes(status)||(rawStock!==null&&rawStock!==undefined&&rawStock!==""&&Number.isFinite(stock)&&stock<=0&&v.in_stock!==true);b.disabled=price===null||explicitlyOutOfStock;b.setAttribute("aria-pressed",String(chosen===v));if(chosen===v)b.classList.add("selected");b.addEventListener("click",()=>{chosen=v;jubalyChosen=v;packageBox.querySelectorAll(".pkg").forEach(x=>{x.classList.remove("selected");x.setAttribute("aria-pressed","false");});b.classList.add("selected");b.setAttribute("aria-pressed","true");buildJubalyFields();const btn=document.getElementById("jubalyOrderBtn");btn.disabled=false;btn.textContent="Pay & Place Order / পেমেন্ট করে অর্ডার করুন · "+money(price);});packageBox.appendChild(b);});
