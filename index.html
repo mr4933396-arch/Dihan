@@ -277,7 +277,7 @@ function makeOldCard(x){
 }
 function makeNewCard(p){
  const a=document.createElement("article");a.className="card";
- a.innerHTML='<div class="art"><img src="'+safeText(p.image)+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">'+safeText(p.icon)+'</span></div><div class="info"><span class="label">'+safeText(JUBALY_STATIC_MAP[p.id]?p.label:"Supplier match pending")+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+p.packages.length+' packages · Available</small><small>View packages & order →</small></div>';
+ a.innerHTML='<div class="art"><img src="'+safeText(p.image)+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">'+safeText(p.icon)+'</span></div><div class="info"><span class="label">'+safeText(JUBALY_STATIC_MAP[p.id]?p.label:"Supplier match pending")+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+(JUBALY_STATIC_MAP[p.id]?'Supplier packages load live':p.packages.length+' saved packages · supplier match pending')+'</small><small>View packages & order →</small></div>';
  const supplierId=JUBALY_STATIC_MAP[p.id];a.addEventListener("click",()=>supplierId?openJubalyProduct(supplierId):openSupplierUnavailable(p.name));return a;
 }
 function makeJubalyCard(p){
