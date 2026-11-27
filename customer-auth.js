@@ -151,6 +151,41 @@ if (page === "account") {
       .eq("id", user.id)
       .maybeSingle();
     if (profile?.display_name) $("user-name").textContent = profile.display_name;
+
+    const history = $("order-history");
+    if (history) {
+      history.replaceChildren();
+      const { data: orders, error: orderError } = await supabase
+        .from("orders")
+        .select("id,product_name,package_name,amount_paise,payment_status,order_status,created_at,manual_payment_method,manual_payment_amount,jubaly_order_status")
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (orderError) {
+        history.textContent = "অর্ডার লোড করা যায়নি। পরে আবার চেষ্টা করো।";
+      } else if (!orders?.length) {
+        history.textContent = "এখনো কোনো অর্ডার নেই। লগইন অবস্থায় করা নতুন অর্ডার এখানে দেখা যাবে।";
+      } else {
+        const list = document.createElement("div");
+        list.className = "customer-orders";
+        for (const order of orders) {
+          const card = document.createElement("article");
+          card.className = "customer-order";
+          const heading = document.createElement("strong");
+          heading.textContent = "#" + order.id + " · " + (order.product_name || "Order");
+          const packageLine = document.createElement("p");
+          packageLine.textContent = order.package_name || "—";
+          const amount = document.createElement("p");
+          amount.textContent = "Amount: ₹" + (Number(order.amount_paise || 0) / 100).toFixed(2);
+          const status = document.createElement("p");
+          status.textContent = "Payment: " + (order.payment_status || "pending") + " · Order: " + (order.order_status || "pending");
+          const date = document.createElement("small");
+          date.textContent = order.created_at ? new Date(order.created_at).toLocaleString() : "";
+          card.append(heading, packageLine, amount, status, date);
+          list.appendChild(card);
+        }
+        history.appendChild(list);
+      }
+    }
   };
   loadAccount().catch((error) => message(friendlyError(error), true));
   $("logout")?.addEventListener("click", async () => {
