@@ -272,7 +272,7 @@ function classifyVertexProduct(p){
  return "games";
 }
 function openSupplierUnavailable(name){
- vertexChosen=null;vertexCurrent=null;current=null;catalogView.classList.add("hidden");document.getElementById("hero").classList.add("hidden");detailView.classList.remove("hidden");document.getElementById("detailContent").innerHTML='<div class="detail-panel"><h2>'+safeText(name)+'</h2><p class="note">This product does not currently have an exact matching listing in Vertex Bazaar. Ordering is paused until the supplier listing and package prices can be verified. / Vertex Bazaar-এ এই প্রোডাক্টের সঠিক মিল পাওয়া যায়নি। সরবরাহকারীর প্যাকেজ ও দাম যাচাই না হওয়া পর্যন্ত অর্ডার বন্ধ থাকবে।</p></div>';window.scrollTo(0,0);
+ vertexChosen=null;vertexCurrent=null;current=null;catalogView.classList.add("hidden");document.getElementById("hero").classList.add("hidden");detailView.classList.remove("hidden");document.getElementById("detailContent").innerHTML='<div class="detail-panel"><h2>'+safeText(name)+'</h2><p class="note">এই পণ্যটির Jubaly-তে নির্ভরযোগ্য প্যাকেজ মিল এখনো পাওয়া যায়নি। সঠিক প্যাকেজ যাচাই না হওয়া পর্যন্ত অর্ডার বন্ধ আছে। / A verified Jubaly package match is not available yet, so ordering is paused.</p></div>';window.scrollTo(0,0);
 }
 function makeOldCard(x){
  const a=document.createElement("a");a.className="card";const supplierId=VERTEX_STATIC_MAP[x[0]];a.href="#";
