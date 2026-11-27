@@ -253,7 +253,7 @@ function unavailableStock(p){
  return p?.in_stock===false||["outofstock","out_of_stock","sold_out","unavailable","not_available"].includes(status);
 }
 function isJubalyInStock(p){return !unavailableStock(p);}
-function supplierProductFor(key){return null;}
+function supplierProductFor(key){return Object.prototype.hasOwnProperty.call(JUBALY_STATIC_MAP,key)?JUBALY_STATIC_MAP[key]:null;}
 function isSupplierProductAvailable(key){return true;}
 function classifyJubalyProduct(p){
  const catNames=[p.category?.name,...(p.categories||[]).map(x=>x?.name)].filter(Boolean).join(" ").toLowerCase();
@@ -267,7 +267,7 @@ function openSupplierUnavailable(name){
  jubalyChosen=null;jubalyCurrent=null;current=null;catalogView.classList.add("hidden");document.getElementById("hero").classList.add("hidden");detailView.classList.remove("hidden");document.getElementById("detailContent").innerHTML='<div class="detail-panel"><h2>'+safeText(name)+'</h2><p class="note">এই পণ্যটির Jubaly-তে নির্ভরযোগ্য প্যাকেজ মিল এখনো পাওয়া যায়নি। সঠিক প্যাকেজ যাচাই না হওয়া পর্যন্ত অর্ডার বন্ধ আছে। / A verified Jubaly package match is not available yet, so ordering is paused.</p></div>';window.scrollTo(0,0);
 }
 function makeOldCard(x){
- const a=document.createElement("a");a.className="card";const supplierId=JUBALY_STATIC_MAP[x[0]];a.href="#";
+ const a=document.createElement("a");a.className="card";const supplierId=supplierProductFor(x[0]);a.href="#";
  let imageHTML;
  if(x[2].endsWith(".png"))imageHTML='<img src="'+x[2]+'" alt="'+safeText(x[1])+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">'+x[5]+'</span>';
  else imageHTML='<span class="emoji">'+x[2]+'</span>';
@@ -278,7 +278,7 @@ function makeOldCard(x){
 function makeNewCard(p){
  const a=document.createElement("article");a.className="card";
  a.innerHTML='<div class="art"><img src="'+safeText(p.image)+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">'+safeText(p.icon)+'</span></div><div class="info"><span class="label">'+safeText(JUBALY_STATIC_MAP[p.id]?p.label:"Supplier match pending")+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+(JUBALY_STATIC_MAP[p.id]?'Supplier packages load live':p.packages.length+' saved packages · supplier match pending')+'</small><small>View packages & order →</small></div>';
- const supplierId=JUBALY_STATIC_MAP[p.id];a.addEventListener("click",()=>supplierId?openJubalyProduct(supplierId):openSupplierUnavailable(p.name));return a;
+ const supplierId=supplierProductFor(p.id);a.addEventListener("click",()=>supplierId?openJubalyProduct(supplierId):openSupplierUnavailable(p.name));return a;
 }
 function makeJubalyCard(p){
  const a=document.createElement("article");a.className="card";
