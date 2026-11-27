@@ -318,6 +318,7 @@ function makeOldCard(x){
  if(x[2].endsWith(".png"))imageHTML='<img src="'+x[2]+'" alt="'+safeText(x[1])+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">'+x[5]+'</span>';
  else imageHTML='<span class="emoji">'+x[2]+'</span>';
  a.innerHTML='<div class="art">'+imageHTML+'</div><div class="info"><span class="label">'+safeText(supplierId?x[4]:"Supplier match pending")+'</span><br><strong>'+safeText(x[1])+'</strong><div class="stars">★ WS TOP UP</div><small>View details & order →</small></div>';
+ if(supplierId){a.addEventListener("pointerdown",()=>{fetchJubalyProduct(supplierId).catch(()=>{});},{passive:true,once:true});a.addEventListener("pointerenter",()=>{fetchJubalyProduct(supplierId).catch(()=>{});},{passive:true,once:true});}
  a.addEventListener("click",e=>{e.preventDefault();if(supplierId)openJubalyProduct(supplierId,x[2].endsWith(".png")?x[2]:"");else openSupplierUnavailable(x[1]);});
  return a;
 }
@@ -332,6 +333,9 @@ function makeJubalyCard(p){
  const available=p.purchasable===true&&p.api_orderable!==false&&p.in_stock!==false&&!unavailableStock(p);
   const image=resolveProductImage(p);
   a.innerHTML='<div class="art">'+(image?'<img src="'+safeText(image)+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.onerror=null;this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">🎮</span>':'<span class="emoji">🎮</span>')+'</div><div class="info"><span class="label">'+labels[group]+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+Number(p.variation_count||0)+' packages</small><small>'+(available?'Available now':p.api_orderable===false?'Currently unavailable':'Currently unavailable')+'</small><small>View packages & order →</small></div>';
+ // Start fetching only the product the customer touches; do not prefetch the whole catalog.
+ a.addEventListener("pointerdown",()=>{fetchJubalyProduct(p.id).catch(()=>{});},{passive:true,once:true});
+ a.addEventListener("pointerenter",()=>{fetchJubalyProduct(p.id).catch(()=>{});},{passive:true,once:true});
  a.addEventListener("click",()=>openJubalyProduct(p.id,image));return a;
 }
 function draw(){
