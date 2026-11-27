@@ -507,11 +507,12 @@ function renderJubalyDetail(){
    input.dataset.key=key;input.dataset.required=f.required===false?"false":"true";wrap.appendChild(input);holder.appendChild(wrap);
   });
  }
- async function submitOrder(country,values,manual,paymentMethod){
+ async function submitOrder(country,values,manual,paymentMethod,requestId){
   const price=saleINR(chosen);if(price===null)throw new Error("A reliable price is unavailable for this package.");
   const account=Object.values(values).join(" | ")||"No account details required";
   const payload={product_key:"jubaly:"+String(p.id),product_name:p.name,package_name:String(chosen.label||chosen.name||"Package"),amount:price,account_label:Object.keys(values).join(" / ")||"No account details",account_id:account,country:country,jubaly_product_id:String(p.id),jubaly_variation_id:String(chosen.sku||chosen.variation_id||chosen.id||""),jubaly_checkout_fields:values};
   if(paymentMethod)payload.payment_method=paymentMethod;
+  if(paymentMethod==="wallet"&&requestId)payload.wallet_request_id=requestId;
   if(manual){payload.manual_sender_number=manual.sender;payload.manual_transaction_id=manual.transaction;}
   const response=await fetch(ORDERS_API,{method:"POST",headers:await orderAuthHeaders(),body:JSON.stringify(payload)});
   const order=await response.json();if(!response.ok)throw new Error(order.error||"Could not submit order.");
@@ -560,9 +561,10 @@ function renderJubalyDetail(){
   inputs.forEach(x=>{if(x.dataset.key&&x.value.trim())values[x.dataset.key]=x.value.trim();});
   walletButton.disabled=true;walletButton.textContent="Wallet payment হচ্ছে…";msg.textContent="";
   try{
-   const order=await submitOrder(country,values,null,"wallet");
+   const requestId=walletButton.dataset.requestId||(crypto.randomUUID?crypto.randomUUID():Array.from(crypto.getRandomValues(new Uint8Array(18)),x=>x.toString(16).padStart(2,"0")).join(""));walletButton.dataset.requestId=requestId;
+   const order=await submitOrder(country,values,null,"wallet",requestId);
    msg.textContent="Wallet payment successful. Order #"+order.id+" · Remaining Wallet: ₹"+(Number(order.wallet_balance_paise||0)/100).toFixed(2)+" · Supplier: "+String(order.jubaly_order_status||order.order_status||"processing");
-   walletButton.textContent="Paid from Wallet / Wallet থেকে Paid";
+   walletButton.textContent="Paid from Wallet / Wallet থেকে Paid";delete walletButton.dataset.requestId;
   }catch(error){
    msg.textContent=error.message||"Wallet payment হয়নি।";
    walletButton.disabled=false;walletButton.textContent="Pay with Customer Wallet / Wallet দিয়ে পেমেন্ট";
