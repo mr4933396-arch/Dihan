@@ -264,7 +264,7 @@ function classifyJubalyProduct(p){
  return "games";
 }
 function openSupplierUnavailable(name){
- jubalyChosen=null;jubalyCurrent=null;current=null;catalogView.classList.add("hidden");document.getElementById("hero").classList.add("hidden");detailView.classList.remove("hidden");document.getElementById("detailContent").innerHTML='<div class="detail-panel"><h2>'+safeText(name)+'</h2><p class="note">এই পণ্যটির Jubaly-তে নির্ভরযোগ্য প্যাকেজ মিল এখনো পাওয়া যায়নি। সঠিক প্যাকেজ যাচাই না হওয়া পর্যন্ত অর্ডার বন্ধ আছে। / A verified Jubaly package match is not available yet, so ordering is paused.</p></div>';window.scrollTo(0,0);
+ jubalyChosen=null;jubalyCurrent=null;current=null;catalogView.classList.add("hidden");document.getElementById("hero").classList.add("hidden");detailView.classList.remove("hidden");document.getElementById("detailContent").innerHTML='<div class="detail-panel"><h2>'+safeText(name)+'</h2><p class="note">এই পণ্যটির এই পণ্যটির প্যাকেজ এখনো যাচাই করা যায়নি। / Packages are not currently available.</p></div>';window.scrollTo(0,0);
 }
 function makeOldCard(x){
  const a=document.createElement("a");a.className="card";const supplierId=supplierProductFor(x[0]);a.href="#";
@@ -285,7 +285,7 @@ function makeJubalyCard(p){
  const group=classifyJubalyProduct(p),labels={social:"SOCIAL MEDIA",games:"GAMING",subs:"SUBSCRIPTIONS",gift:"GIFT CARDS"};
  const available=p.purchasable===true&&p.api_orderable!==false&&p.in_stock!==false&&!unavailableStock(p);
  const image=p.image||"";
- a.innerHTML='<div class="art">'+(image?'<img src="'+safeText(image)+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">🎮</span>':'<span class="emoji">🎮</span>')+'</div><div class="info"><span class="label">'+labels[group]+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+Number(p.variation_count||0)+' Jubaly packages</small><small>'+(available?'Available at Jubaly':p.api_orderable===false?'Not API-orderable at Jubaly':'Currently unavailable at Jubaly')+'</small><small>View packages & order →</small></div>';
+ a.innerHTML='<div class="art">'+(image?'<img src="'+safeText(image)+'" alt="'+safeText(p.name)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="emoji" style="display:none">🎮</span>':'<span class="emoji">🎮</span>')+'</div><div class="info"><span class="label">'+labels[group]+'</span><br><strong>'+safeText(p.name)+'</strong><div class="stars">★ WS TOP UP</div><small>'+Number(p.variation_count||0)+' packages</small><small>'+(available?'Available now':p.api_orderable===false?'Currently unavailable':'Currently unavailable')+'</small><small>View packages & order →</small></div>';
  a.addEventListener("click",()=>openJubalyProduct(p.id));return a;
 }
 function draw(){
@@ -312,22 +312,48 @@ function draw(){
  const order=["social","games","subs","gift"],labels={social:"SOCIAL MEDIA",games:"GAMING",gift:"GIFT CARDS",subs:"SUBSCRIPTIONS"},counts={social:0,games:0,gift:0,subs:0};
  entries.forEach(x=>counts[x.cat]=(counts[x.cat]||0)+1);
  for(const group of order){if(!counts[group])continue;const section=document.createElement("section");section.className="catalog-section";const heading=document.createElement("h3");heading.textContent=labels[group];section.appendChild(heading);const cards=document.createElement("div");cards.className="section-grid";entries.filter(x=>x.cat===group).forEach(x=>cards.appendChild(makeJubalyCard(x.item)));section.appendChild(cards);grid.appendChild(section);}
- document.getElementById("productCount").textContent=entries.length+" Jubaly products shown"+(jubalyLoading?" · Loading supplier catalog…":jubalyFinished?" · Live supplier catalog":"");
+ document.getElementById("productCount").textContent=entries.length+" products available";
+}
+const CATALOG_CACHE_KEY="ws_topup_catalog_v2";
+const CATALOG_CACHE_MAX_AGE=12*60*60*1000;
+function readCatalogCache(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(CATALOG_CACHE_KEY)||"null");
+  if(saved&&Array.isArray(saved.products)&&saved.products.length)return saved;
+ }catch(e){}
+ return null;
+}
+function saveCatalogCache(products){
+ try{localStorage.setItem(CATALOG_CACHE_KEY,JSON.stringify({savedAt:Date.now(),products}));}catch(e){}
 }
 async function loadJubalyCatalog(){
- jubalyLoading=true;jubalyFinished=false;jubalyProducts=[];jubalySourceProducts=[];draw();
+ const cached=readCatalogCache();
+ if(cached){
+  jubalyProducts=cached.products.filter(p=>p&&p.id&&p.name);
+  jubalySourceProducts=jubalyProducts.slice();
+  jubalyLoading=false;jubalyFinished=true;draw();
+ }else{
+  jubalyLoading=true;jubalyFinished=false;draw();
+ }
  try{
   const response=await fetch(JUBALY_API+"?action=all",{cache:"no-store"});
   const result=await response.json();
-  if(!response.ok||!result.ok||!Array.isArray(result.data?.products))throw new Error(result.error||"Jubaly catalog could not be loaded");
-  jubalyProducts=result.data.products.filter(p=>p&&p.id&&p.name);
-  jubalySourceProducts=jubalyProducts.slice();
+  if(!response.ok||!result.ok||!Array.isArray(result.data?.products))throw new Error(result.error||"Product catalog could not be refreshed");
+  const fresh=result.data.products.filter(p=>p&&p.id&&p.name);
+  if(!fresh.length)throw new Error("Empty product catalog");
+  jubalyProducts=fresh;jubalySourceProducts=fresh.slice();
+  saveCatalogCache(fresh);
   jubalyLoading=false;jubalyFinished=true;draw();
-  if(!jubalyProducts.length)throw new Error("Jubaly returned an empty product catalog");
  }catch(error){
-  jubalyLoading=false;jubalyFinished=true;jubalyProducts=[];draw();
-  grid.innerHTML='<div class="detail-panel"><h2>Jubaly catalog unavailable</h2><p class="note">Jubaly-এর লাইভ প্রোডাক্ট তালিকা এখন লোড করা যাচ্ছে না। ভুল বা পুরোনো প্যাকেজ দেখানো বন্ধ রাখা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।</p></div>';
-  document.getElementById("productCount").textContent="Jubaly catalog could not be verified";
+  jubalyLoading=false;jubalyFinished=true;
+  if(cached&&jubalyProducts.length){
+   draw();
+   document.getElementById("productCount").textContent=jubalyProducts.length+" products available";
+  }else{
+   jubalyProducts=[];draw();
+   grid.innerHTML='<div class="detail-panel"><h2>Products temporarily unavailable</h2><p class="note">প্রোডাক্ট তালিকা এখন আপডেট করা যাচ্ছে না। কিছুক্ষণ পরে আবার চেষ্টা করুন।</p></div>';
+   document.getElementById("productCount").textContent="Products could not be loaded";
+  }
  }
 }
 
@@ -353,10 +379,10 @@ function openJubalyProduct(id,displayImage=""){
  fetch(JUBALY_API+"?action=product&id="+encodeURIComponent(id),{cache:"no-store"}).then(async response=>{const data=await response.json();if(!response.ok||!data.ok)throw new Error(data.error||"Product details unavailable");return data.data.product;}).then(product=>{jubalyCurrent=product;const fx=product.customer_fx;if(fx&&Number(fx.usd_to_inr)>0&&Number(fx.usd_to_bdt)>0){FX.USD=1/Number(fx.usd_to_inr);FX.BDT=Number(fx.usd_to_bdt)/Number(fx.usd_to_inr);}renderJubalyDetail();}).catch(error=>{document.getElementById("detailContent").innerHTML='<div class="detail-panel">Product details are unavailable right now. Please try again later. / এই প্রোডাক্টের তথ্য এখন পাওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।</div>';});
 }
 function renderJubalyDetail(){
- const p=jubalyCurrent;if(!p)return;if(unavailableStock(p)||p.purchasable===false||p.api_orderable===false){document.getElementById("detailContent").innerHTML='<div class="detail-panel"><h2>Currently unavailable / আপাতত অর্ডার বন্ধ</h2><p>This product cannot currently be ordered through Jubaly. / Jubaly-তে এই প্রোডাক্টটি এখন অর্ডার করা যাচ্ছে না।</p></div>';return;}const variations=Array.isArray(p.variations)?p.variations:[],fields=Array.isArray(p.required_fields)?p.required_fields:[];let chosen=jubalyChosen;
+ const p=jubalyCurrent;if(!p)return;if(unavailableStock(p)||p.purchasable===false||p.api_orderable===false){document.getElementById("detailContent").innerHTML='<div class="detail-panel"><h2>Currently unavailable / আপাতত অর্ডার বন্ধ</h2><p>This product cannot currently be ordered through Jubaly. / এই প্রোডাক্টটি এখন অর্ডার করা যাচ্ছে না।</p></div>';return;}const variations=Array.isArray(p.variations)?p.variations:[],fields=Array.isArray(p.required_fields)?p.required_fields:[];let chosen=jubalyChosen;
  document.getElementById("detailContent").innerHTML='<div class="detail-head"><div class="detail-icon"><img src="'+safeText(p.image||"")+'" alt="'+safeText(p.name)+'" onerror="this.style.display=\'none\';this.parentElement.textContent=\'🎮\'"></div><div><small style="color:var(--cyan)">WS TOP UP</small><h1>'+safeText(p.name)+'</h1></div></div>'+'<div class="detail-panel"><h2>1. Select a Package / প্যাকেজ নির্বাচন করুন</h2><div class="packages" id="jubalyPackages"></div></div>'+'<div class="detail-panel"><h2>2. Enter Required Details / প্রয়োজনীয় তথ্য দিন</h2><div id="jubalyFields" class="fields"></div><button class="order-btn" id="jubalyOrderBtn" type="button" disabled>Select a package first / আগে প্যাকেজ নির্বাচন করুন</button><p class="note" id="jubalyOrderMessage"></p></div>';
  const packageBox=document.getElementById("jubalyPackages");
- if(!variations.length){packageBox.innerHTML='<p class="note">Jubaly এই প্রোডাক্টের জন্য বর্তমানে কোনো প্যাকেজ পাঠায়নি। তাই ভুল প্যাকেজ বা দাম দেখানো হচ্ছে না। / No package variations are currently available from Jubaly.</p>';}
+ if(!variations.length){packageBox.innerHTML='<p class="note">এই প্রোডাক্টের কোনো প্যাকেজ বর্তমানে পাওয়া যাচ্ছে না। / No package variations are currently available.</p>';}
  variations.forEach(v=>{const price=saleINR(v),rawStock=v.stock_quantity??v.stock,stock=Number(rawStock),b=document.createElement("button");b.type="button";b.className="pkg";const packageImage=v.image||v.image_url||v.thumbnail||v.icon||"";const packageVisual=packageImage?'<img src="'+safeText(packageImage)+'" alt="" loading="lazy" style="width:30px;height:30px;object-fit:contain;display:block;margin-bottom:7px" onerror="this.style.display=\'none\'">':"";b.innerHTML=packageVisual+'<strong>'+safeText(v.label||v.name||"Package")+'</strong><span>'+(price===null?"Price unavailable / দাম পাওয়া যায়নি":money(price))+'</span><small style="color:var(--muted)">Stock: '+(v.stock_quantity??v.stock??"Check at order")+'</small>';const status=String(v.stock_status||"").trim().toLowerCase().replace(/[\s-]+/g,"_");const explicitlyOutOfStock=v.in_stock===false||["outofstock","out_of_stock","sold_out","unavailable","not_available"].includes(status)||(rawStock!==null&&rawStock!==undefined&&rawStock!==""&&Number.isFinite(stock)&&stock<=0&&v.in_stock!==true);b.disabled=price===null||explicitlyOutOfStock;b.setAttribute("aria-pressed",String(chosen===v));if(chosen===v)b.classList.add("selected");b.addEventListener("click",()=>{chosen=v;jubalyChosen=v;packageBox.querySelectorAll(".pkg").forEach(x=>{x.classList.remove("selected");x.setAttribute("aria-pressed","false");});b.classList.add("selected");b.setAttribute("aria-pressed","true");buildJubalyFields();const btn=document.getElementById("jubalyOrderBtn");btn.disabled=false;btn.textContent="Pay & Place Order / পেমেন্ট করে অর্ডার করুন · "+money(price);});packageBox.appendChild(b);});
  function buildJubalyFields(){const holder=document.getElementById("jubalyFields");holder.innerHTML="";if(!fields.length){const p=document.createElement("p");p.className="note";p.textContent="No extra details are required for this package. / এই প্যাকেজে অতিরিক্ত তথ্য প্রয়োজন নেই।";holder.appendChild(p);}fields.forEach((f,i)=>{const key=String(f.key||f.name||f.slug||("field_"+i)),label=String(f.label||f.name||f.title||key),wrap=document.createElement("label"),title=document.createElement("span");title.textContent=label+(f.required===false?"":" *");wrap.appendChild(title);const kind=String(f.type||f.input_type||"text").toLowerCase(),choices=Array.isArray(f.options)?f.options:Array.isArray(f.choices)?f.choices:[];let input;if(["select","dropdown","choice"].includes(kind)&&choices.length){input=document.createElement("select");const first=document.createElement("option");first.value="";first.textContent=String(f.placeholder||("Select "+label));input.appendChild(first);choices.forEach(option=>{const item=document.createElement("option");if(option&&typeof option==="object"){item.value=String(option.value??option.id??option.name??option.label??"");item.textContent=String(option.label??option.name??option.value??option.id??"");}else{item.value=String(option);item.textContent=String(option);}input.appendChild(item);});}else{input=document.createElement("input");input.type=kind==="email"?"email":kind==="number"?"number":"text";input.placeholder=String(f.placeholder||("Enter "+label));}input.dataset.key=key;input.dataset.required=f.required===false?"false":"true";wrap.appendChild(input);holder.appendChild(wrap);});}
  document.getElementById("jubalyOrderBtn").addEventListener("click",async()=>{if(!chosen)return;const holder=document.getElementById("jubalyFields"),inputs=[...holder.querySelectorAll("input,select")],values={},missing=inputs.find(x=>x.dataset.required==="true"&&!x.value.trim()),msg=document.getElementById("jubalyOrderMessage"),button=document.getElementById("jubalyOrderBtn");if(missing){msg.textContent="Please fill in all required fields. / সব প্রয়োজনীয় তথ্য পূরণ করুন।";missing.focus();return;}inputs.forEach(x=>{if(x.dataset.key&&x.value.trim())values[x.dataset.key]=x.value.trim();});button.disabled=true;button.textContent="Creating order… / অর্ডার তৈরি হচ্ছে…";msg.textContent="";try{const price=saleINR(chosen);if(price===null)throw new Error("A reliable price is unavailable for this package. / এই প্যাকেজের নির্ভরযোগ্য দাম পাওয়া যায়নি।");const account=Object.values(values).join(" | ")||"No account details required";const response=await fetch(ORDERS_API,{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY},body:JSON.stringify({product_key:"jubaly:"+String(p.id),product_name:p.name,package_name:String(chosen.label||chosen.name||"Package"),amount:price,account_label:Object.keys(values).join(" / ")||"No account details",account_id:account,jubaly_product_id:String(p.id),jubaly_variation_id:String(chosen.id),jubaly_checkout_fields:values})});const order=await response.json();if(!response.ok||!order.checkout_url)throw new Error(order.error||"Could not create the payment link. / পেমেন্ট লিংক তৈরি করা যায়নি।");msg.textContent="Order created. Redirecting to the payment page… / অর্ডার তৈরি হয়েছে। পেমেন্ট পেজে নেওয়া হচ্ছে…";window.location.href=order.checkout_url;}catch(error){msg.textContent=error.message||"Please try again. / আবার চেষ্টা করুন।";button.disabled=false;button.textContent="Pay & Place Order / পেমেন্ট করে অর্ডার করুন · "+money(saleINR(chosen));}});
