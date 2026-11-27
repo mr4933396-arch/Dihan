@@ -42,7 +42,7 @@ function renderOrders(){
  $('ordersBody').innerHTML=rows.map(o=>{
   const manual=o.manual_payment_method==='bkash';
   const details=manual?('Sender: '+safe(o.manual_sender_number)+'<br>Transaction ID: <b>'+safe(o.manual_transaction_id)+'</b><br>Expected: ৳'+safe(o.manual_payment_amount)+'<br>'+safe(o.manual_payment_note||'')):'—';
-  const review=manual&&o.payment_status==='unpaid'?('<button class="review-payment" data-action="approve" data-id="'+safe(o.id)+'">Approve / Paid</button> <button class="review-payment secondary" data-action="reject" data-id="'+safe(o.id)+'">Reject</button>'):(manual?safe(o.manual_payment_reviewed_at?'Reviewed':'No action'):'—');
+  const review=manual&&o.payment_status==='unpaid'?('<button class="review-payment" data-action="approve" data-id="'+safe(o.id)+'">Approve / Paid</button> <button class="review-payment secondary" data-action="reject" data-id="'+safe(o.id)+'">Reject</button>'):manual&&o.payment_status==='paid'&&o.order_status==='processing'?('<button class="review-payment" data-action="complete" data-id="'+safe(o.id)+'">Mark Delivered / ডায়মন্ড পাঠানো হয়েছে</button>'):manual?safe(o.manual_payment_reviewed_at?'Reviewed':'No action'):'—';
   return '<tr><td>#'+safe(o.id)+'</td><td>'+safe(o.product_name)+'</td><td>'+safe(o.package_name)+'</td><td><b>'+safe(o.account_label)+'</b><br>'+safe(o.account_id)+'</td><td>'+safe(o.country)+'</td><td>'+money(o.amount_paise)+'</td><td><span class="pill">'+safe(statusText(o.payment_status))+'</span></td><td>'+details+'</td><td>'+review+'</td><td><span class="pill">'+safe(statusText(o.order_status))+'</span></td><td>'+safe(new Date(o.created_at).toLocaleString('en-IN'))+'</td></tr>';
  }).join('')||'<tr><td colspan="11">No orders found / কোনো অর্ডার পাওয়া যায়নি</td></tr>';
 }
@@ -66,12 +66,12 @@ $('ordersBody').addEventListener('click',async e=>{
  if(review){
   const action=review.dataset.action,orderId=Number(review.dataset.id);
   if(!adminCode){$('orderStatus').textContent='Please unlock the private order list again.';return;}
-  if(!confirm(action==='approve'?'Have you personally confirmed that this bKash payment was received?':'Reject this bKash payment?'))return;
+  if(!confirm(action==='approve'?'Have you personally confirmed that this bKash payment was received?':action==='complete'?'Have you sent the diamonds to the customer?':'Reject this bKash payment?'))return;
   review.disabled=true;
   try{
-   const response=await fetch(privateEndpoint,{method:'POST',headers:{'Content-Type':'application/json','x-ws-admin-code':adminCode,Accept:'application/json'},body:JSON.stringify({action,order_id:orderId,note:action==='approve'?'Manually checked and received by admin.':'Rejected after manual review.'})});
+   const response=await fetch(privateEndpoint,{method:'POST',headers:{'Content-Type':'application/json','x-ws-admin-code':adminCode,Accept:'application/json'},body:JSON.stringify({action,order_id:orderId,note:action==='approve'?'Manually checked and received by admin.':action==='complete'?'Diamonds sent manually by admin.':'Rejected after manual review.'})});
    const result=await response.json();if(!response.ok)throw new Error(result.error||'Could not update payment review.');
-   $('orderStatus').textContent=action==='approve'?'Payment marked Paid. You can now send the diamonds manually.':'Payment rejected.';
+   $('orderStatus').textContent=action==='approve'?'Payment marked Paid. You can now send the diamonds manually.':action==='complete'?'Order marked Delivered.':'Payment rejected.';
    await unlockOrders();
   }catch(error){$('orderStatus').textContent=error.message;review.disabled=false;}
   return;
