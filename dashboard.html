@@ -18,7 +18,7 @@
 <div id="orderStatus" class="status">Enter the Access Code to view orders. / অর্ডার তালিকা দেখতে Access Code দিন।</div>
 <div id="orderArea" class="private-hidden">
 <div class="order-tools"><input id="orderSearch" placeholder="Search Order ID / Product / UID / Country"><button id="orderCsv" class="secondary">Download Orders CSV ↓ / অর্ডার CSV ↓</button></div>
-<div class="tablewrap"><table class="orders-table"><thead><tr><th>Order / অর্ডার</th><th>Product / প্রোডাক্ট</th><th>Package / প্যাকেজ</th><th>UID / Account</th><th>Country / দেশ</th><th>Amount / পরিমাণ</th><th>Payment / পেমেন্ট</th><th>bKash Payment Details / bKash তথ্য</th><th>Review / যাচাই</th><th>Order Status / অর্ডারের অবস্থা</th><th>Date / তারিখ</th></tr></thead><tbody id="ordersBody"><tr><td colspan="11">Loading… / লোড হচ্ছে…</td></tr></tbody></table></div>
+<div class="tablewrap"><table class="orders-table"><thead><tr><th>Order / অর্ডার</th><th>Product / প্রোডাক্ট</th><th>Package / প্যাকেজ</th><th>UID / Account</th><th>Country / দেশ</th><th>Amount / পরিমাণ</th><th>Payment / পেমেন্ট</th><th>Manual Payment Details / পেমেন্ট তথ্য</th><th>Review / যাচাই</th><th>Order Status / অর্ডারের অবস্থা</th><th>Date / তারিখ</th></tr></thead><tbody id="ordersBody"><tr><td colspan="11">Loading… / লোড হচ্ছে…</td></tr></tbody></table></div>
 </div>
 </section>
 <section class="panel orders-panel" id="walletTopupsPanel">
@@ -46,8 +46,8 @@ function renderOrders(){
  const q=$('orderSearch').value.trim().toLowerCase();
  const rows=privateOrders.filter(o=>[o.id,o.product_name,o.package_name,o.account_id,o.country,o.payment_status,o.order_status,o.manual_sender_number,o.manual_transaction_id].join(' ').toLowerCase().includes(q));
  $('ordersBody').innerHTML=rows.map(o=>{
-  const manual=o.manual_payment_method==='bkash';
-  const details=manual?('Sender: '+safe(o.manual_sender_number)+'<br>Transaction ID: <b>'+safe(o.manual_transaction_id)+'</b><br>Expected: ৳'+safe(o.manual_payment_amount)+'<br>'+safe(o.manual_payment_note||'')):'—';
+  const manual=['bkash','usdt_tron'].includes(o.manual_payment_method);
+  const details=manual?(o.manual_payment_method==='usdt_tron'?('Network: TRON (TRC20)<br>Sender wallet: '+safe(o.manual_sender_number)+'<br>Transaction hash: <b>'+safe(o.manual_transaction_id)+'</b><br>Expected: '+safe(o.manual_payment_amount)+' USDT<br>'+safe(o.manual_payment_note||'')):('Method: bKash<br>Sender: '+safe(o.manual_sender_number)+'<br>Transaction ID: <b>'+safe(o.manual_transaction_id)+'</b><br>Expected: ৳'+safe(o.manual_payment_amount)+'<br>'+safe(o.manual_payment_note||''))):'—';
   const review=manual&&o.payment_status==='unpaid'?('<button class="review-payment" data-action="approve" data-id="'+safe(o.id)+'">Approve / Paid</button> <button class="review-payment secondary" data-action="reject" data-id="'+safe(o.id)+'">Reject</button>'):manual&&o.payment_status==='paid'&&o.order_status==='processing'?('<button class="review-payment" data-action="complete" data-id="'+safe(o.id)+'">Mark Delivered / ডায়মন্ড পাঠানো হয়েছে</button>'):manual?safe(o.manual_payment_reviewed_at?'Reviewed':'No action'):'—';
   return '<tr><td>#'+safe(o.id)+'</td><td>'+safe(o.product_name)+'</td><td>'+safe(o.package_name)+'</td><td><b>'+safe(o.account_label)+'</b><br>'+safe(o.account_id)+'</td><td>'+safe(o.country)+'</td><td>'+money(o.amount_paise)+'</td><td><span class="pill">'+safe(statusText(o.payment_status))+'</span></td><td>'+details+'</td><td>'+review+'</td><td><span class="pill">'+safe(statusText(o.order_status))+'</span></td><td>'+safe(new Date(o.created_at).toLocaleString('en-IN'))+'</td></tr>';
  }).join('')||'<tr><td colspan="11">No orders found / কোনো অর্ডার পাওয়া যায়নি</td></tr>';
@@ -72,7 +72,7 @@ $('ordersBody').addEventListener('click',async e=>{
  if(review){
   const action=review.dataset.action,orderId=Number(review.dataset.id);
   if(!adminCode){$('orderStatus').textContent='Please unlock the private order list again.';return;}
-  if(!confirm(action==='approve'?'Have you personally confirmed that this bKash payment was received?':action==='complete'?'Have you sent the diamonds to the customer?':'Reject this bKash payment?'))return;
+  const methodLabel=privateOrders.find(o=>Number(o.id)===orderId)?.manual_payment_method==='usdt_tron'?'USDT on TRON (TRC20)':'bKash';if(!confirm(action==='approve'?'Have you personally verified the exact '+methodLabel+' payment, recipient, amount and successful transaction?':action==='complete'?'Have you sent the diamonds to the customer?':'Reject this '+methodLabel+' payment?'))return;
   review.disabled=true;
   try{
    const response=await fetch(privateEndpoint,{method:'POST',headers:{'Content-Type':'application/json','x-ws-admin-code':adminCode,Accept:'application/json'},body:JSON.stringify({action,order_id:orderId,note:action==='approve'?'Manually checked and received by admin.':action==='complete'?'Diamonds sent manually by admin.':'Rejected after manual review.'})});
@@ -83,7 +83,7 @@ $('ordersBody').addEventListener('click',async e=>{
   return;
  }
 });
-$('orderCsv').onclick=()=>{const rows=[['Order ID','Product','Package','Account Label','UID / Account','Country','Amount INR','Payment Status','bKash Sender','bKash Transaction ID','bKash Amount BDT','Order Status','Created At'],...privateOrders.map(o=>[o.id,o.product_name,o.package_name,o.account_label,o.account_id,o.country,(Number(o.amount_paise||0)/100).toFixed(2),o.payment_status,o.manual_sender_number,o.manual_transaction_id,o.manual_payment_amount,o.order_status,o.created_at])];const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n'),a=document.createElement('a'),u=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.href=u;a.download='ws-top-up-orders.csv';a.click();URL.revokeObjectURL(u)};
+$('orderCsv').onclick=()=>{const rows=[['Order ID','Product','Package','Account Label','UID / Account','Country','Amount INR','Payment Status','Manual Payment Sender','Manual Transaction ID','Manual Payment Amount','Order Status','Created At'],...privateOrders.map(o=>[o.id,o.product_name,o.package_name,o.account_label,o.account_id,o.country,(Number(o.amount_paise||0)/100).toFixed(2),o.payment_status,o.manual_sender_number,o.manual_transaction_id,o.manual_payment_amount,o.order_status,o.created_at])];const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n'),a=document.createElement('a'),u=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.href=u;a.download='ws-top-up-orders.csv';a.click();URL.revokeObjectURL(u)};
 
 load();
 </script>
