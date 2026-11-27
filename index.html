@@ -420,7 +420,7 @@ function fetchJubalyProduct(id){
  const key=String(id),cached=jubalyDetailCache.get(key);
  if(cached&&Date.now()-cached.savedAt<JUBALY_DETAIL_TTL)return Promise.resolve(cached.product);
  if(jubalyDetailRequests.has(key))return jubalyDetailRequests.get(key);
- const request=fetch(JUBALY_API+"?action=product&id="+encodeURIComponent(key),{cache:"default"})
+ const request=fetch(JUBALY_API+"?action=product&id="+encodeURIComponent(key),{cache:"no-store",signal:AbortSignal.timeout(25000)})
   .then(async response=>{const data=await response.json();if(!response.ok||!data.ok)throw new Error(data.error||"Product details unavailable");if(!data.data?.product)throw new Error("Product details are incomplete");jubalyDetailCache.set(key,{savedAt:Date.now(),product:data.data.product});return data.data.product;})
   .finally(()=>jubalyDetailRequests.delete(key));
  jubalyDetailRequests.set(key,request);return request;
@@ -437,7 +437,7 @@ function applyJubalyProduct(product){
 }
 function openJubalyProduct(id,displayImage=""){
  jubalyDisplayImage=displayImage||"";jubalyChosen=null;jubalyCurrent=null;current=null;catalogView.classList.add("hidden");document.getElementById("hero").classList.add("hidden");detailView.classList.remove("hidden");document.getElementById("detailContent").innerHTML='<p class="note">Loading packages and prices… / প্যাকেজ ও দাম লোড হচ্ছে…</p>';window.scrollTo(0,0);
- fetchJubalyProduct(id).then(applyJubalyProduct).catch(error=>{document.getElementById("detailContent").innerHTML='<div class="detail-panel">Product details are unavailable right now. Please try again later. / এই প্রোডাক্টের তথ্য এখন পাওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।</div>';});
+ fetchJubalyProduct(id).then(applyJubalyProduct).catch(error=>{const box=document.getElementById("detailContent");box.innerHTML='<div class="detail-panel"><h2>Packages could not be loaded / প্যাকেজ লোড হয়নি</h2><p class="note">The supplier connection timed out or returned an error. Please check your internet and try again. / সার্ভার থেকে প্যাকেজ আনা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।</p><button class="order-btn" type="button" id="retryJubalyProduct">Retry / আবার চেষ্টা করুন</button></div>';document.getElementById("retryJubalyProduct").addEventListener("click",()=>openJubalyProduct(id,displayImage));});
 }
 function renderJubalyDetail(){
  const p=jubalyCurrent;if(!p)return;const variations=Array.isArray(p.variations)?p.variations:[];const hasVariationPackages=String(p.type||"").toLowerCase()==="variable"&&variations.length>0;if(!hasVariationPackages&&(unavailableStock(p)||p.purchasable===false||p.api_orderable===false)){document.getElementById("detailContent").innerHTML='<div class="detail-panel"><h2>Currently unavailable / আপাতত অর্ডার বন্ধ</h2><p>This product cannot currently be ordered through Jubaly. / এই প্রোডাক্টটি এখন অর্ডার করা যাচ্ছে না।</p></div>';return;}const fields=Array.isArray(p.required_fields)?p.required_fields:[];let chosen=jubalyChosen;
