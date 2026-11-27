@@ -4,7 +4,7 @@
 :root{color-scheme:dark;--bg:#07111f;--panel:#102039;--line:#29415f;--muted:#9fb2c9;--txt:#f5f8ff;--blue:#55b9ff;--green:#48d5a1}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top,#183656,transparent 48%),var(--bg);color:var(--txt);font:14px system-ui,Arial}.wrap{max-width:1000px;margin:auto;padding:20px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px}.logo{font-weight:950;font-size:23px;color:var(--blue)}h1{font-size:19px;margin:4px 0}.muted,small{color:var(--muted);font-size:12px}.actions{display:flex;gap:8px}button{border:0;border-radius:10px;padding:12px 16px;font-weight:800;background:#2699ee;color:#061321}.secondary{background:#1b3450;color:#eaf5ff;border:1px solid var(--line)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.stat,.panel{background:linear-gradient(145deg,#142a44,#0e1c30);border:1px solid var(--line);border-radius:15px;padding:16px}.stat{min-height:95px}.stat span{color:var(--muted);font-size:12px}.stat b{display:block;font-size:24px;margin-top:8px}.money b{color:var(--green)}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.panel h2{font-size:15px;margin:0 0 12px}.bars{height:145px;display:flex;align-items:end;gap:8px}.barcol{flex:1;text-align:center;display:flex;height:100%;flex-direction:column;justify-content:end;gap:5px}.bar{width:100%;max-width:36px;margin:0 auto;background:linear-gradient(#55b9ff,#2876d2);border-radius:6px 6px 0 0;min-height:3px}.barcol em{font-style:normal;font-size:10px}.barcol small{font-size:10px}table{width:100%;border-collapse:collapse;min-width:340px}th,td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}th{color:var(--muted)}.right{text-align:right}.tablewrap{overflow:auto}.status{min-height:20px;margin:13px 0;color:var(--muted);font-size:12px}.error{color:#ffadb3}.foot{margin-top:14px;padding:13px;border:1px solid var(--line);border-radius:12px;color:var(--muted);font-size:12px;line-height:1.6}@media(max-width:620px){.wrap{padding:14px}.grid{grid-template-columns:repeat(2,1fr)}.stat{padding:13px}.stat b{font-size:21px}.twocol{grid-template-columns:1fr}.actions{width:100%}.actions button{flex:1}}
 
 .orders-panel{margin-top:14px}.admin-login{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.admin-login input{flex:1;min-width:190px;background:#091a2d;color:#fff;border:1px solid var(--line);border-radius:10px;padding:12px}.order-tools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.order-tools input{flex:1;min-width:180px;background:#091a2d;color:#fff;border:1px solid var(--line);border-radius:10px;padding:10px}.orders-table{min-width:850px}.orders-table td{vertical-align:top;max-width:220px;overflow-wrap:anywhere}.review-payment{padding:7px 9px;margin:2px;font-size:11px}.pill{display:inline-block;padding:4px 7px;border-radius:20px;background:#1b3450;color:#d9ecff;font-size:11px}.private-hidden{display:none!important}
-.profile-wrap{width:100%;display:flex;justify-content:center;align-items:center;margin:2px 0 16px}.profile-photo{display:block;width:116px;height:116px;max-width:28vw;max-height:28vw;object-fit:cover;object-position:center;border-radius:50%;background:transparent;border:0;outline:0;box-shadow:none}</style></head><body><main class="wrap">
+.profile-wrap{width:100%;display:flex;justify-content:center;align-items:center;margin:2px 0 16px}.profile-photo{display:block;width:116px;height:116px;max-width:28vw;max-height:28vw;object-fit:cover;object-position:center;border-radius:50%;background:transparent;border:0;outline:0;box-shadow:none}.wallet-review-btn{padding:7px 9px;margin:2px;font-size:11px;white-space:nowrap}.wallet-review-btn.reject{background:#51303a;color:#ffe4e8;border:1px solid #854b58}.wallet-topup-pending{color:#ffd58a}.wallet-topup-approved{color:#86efac}.wallet-topup-rejected{color:#ffadb3}</style></head><body><main class="wrap">
 <div class="profile-wrap"><img class="profile-photo" src="https://raw.githubusercontent.com/mr4933396-arch/Dihan/main/dihan-profile.jpg" alt="DIHAN profile photo"></div>
 <header class="top"><div><div class="logo">WS TOP UP</div><h1>Dashboard · DIHAN</h1><div class="muted">Orders & Sales Summary / অর্ডার ও বিক্রির সারসংক্ষেপ</div></div><div class="actions"><button id="refresh">Refresh / রিফ্রেশ ↻</button><button id="csv" class="secondary">Download Report ↓ / রিপোর্ট ডাউনলোড ↓</button></div></header>
 <section class="grid">
@@ -21,7 +21,13 @@
 <div class="tablewrap"><table class="orders-table"><thead><tr><th>Order / অর্ডার</th><th>Product / প্রোডাক্ট</th><th>Package / প্যাকেজ</th><th>UID / Account</th><th>Country / দেশ</th><th>Amount / পরিমাণ</th><th>Payment / পেমেন্ট</th><th>bKash Payment Details / bKash তথ্য</th><th>Review / যাচাই</th><th>Order Status / অর্ডারের অবস্থা</th><th>Date / তারিখ</th></tr></thead><tbody id="ordersBody"><tr><td colspan="11">Loading… / লোড হচ্ছে…</td></tr></tbody></table></div>
 </div>
 </section>
-<div id="status" class="status">Loading Dashboard… / ড্যাশবোর্ড লোড হচ্ছে…</div><div class="foot">Overall sales summary is public. An Admin Access Code is required to view private order details. / সামগ্রিক বিক্রির হিসাব সবার জন্য। ব্যক্তিগত অর্ডার তালিকা দেখতে Admin Access Code লাগবে।</div>
+<section class="panel orders-panel" id="walletTopupsPanel">
+<h2>💳 Customer Wallet Top-up Requests / কাস্টমার Wallet টাকা জমার অনুরোধ</h2>
+<p class="muted">শুধু নিজের অ্যাকাউন্টে আসা পেমেন্ট যাচাই করার পর Approve করবে। Approve করলে কাস্টমারের Wallet-এ টাকা যোগ হবে।</p>
+<div class="order-tools"><button id="walletTopupsRefresh" class="secondary" type="button">Load / Refresh Wallet Requests</button></div>
+<div id="walletTopupsStatus" class="status">Admin Access Code দিয়ে আগে Private Order List unlock করো, তারপর Load চাপো।</div>
+<div class="tablewrap"><table class="orders-table"><thead><tr><th>Request</th><th>Customer</th><th>Wallet Credit (INR)</th><th>Paid Amount</th><th>Method</th><th>Sender</th><th>Transaction ID</th><th>Status</th><th>Date</th><th>Review</th></tr></thead><tbody id="walletTopupsBody"><tr><td colspan="10">Not loaded / এখনো লোড হয়নি</td></tr></tbody></table></div>
+</section><div id="status" class="status">Loading Dashboard… / ড্যাশবোর্ড লোড হচ্ছে…</div><div class="foot">Overall sales summary is public. An Admin Access Code is required to view private order details. / সামগ্রিক বিক্রির হিসাব সবার জন্য। ব্যক্তিগত অর্ডার তালিকা দেখতে Admin Access Code লাগবে।</div>
 </main><script>
 const endpoint='https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/ws-public-dashboard', $=id=>document.getElementById(id);let data=null;
 const money=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format((Number(n)||0)/100);
@@ -81,7 +87,47 @@ $('orderCsv').onclick=()=>{const rows=[['Order ID','Product','Package','Account 
 
 load();
 </script>
-<script id="WS_DASHBOARD_RECOVERY_V1">
+<script id="WS_CUSTOMER_WALLET_ADMIN">
+(function(){
+ const endpoint='https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/ws-admin-wallet';
+ const body=document.getElementById('walletTopupsBody');
+ const status=document.getElementById('walletTopupsStatus');
+ let requests=[];
+ const esc=s=>String(s??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const inr=n=>'₹'+(Number(n||0)/100).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+ async function load(){
+  if(typeof adminCode==='undefined'||!adminCode){status.textContent='আগে Admin Access Code দিয়ে Private Order List unlock করো।';return;}
+  status.textContent='Wallet requests লোড হচ্ছে…';
+  try{
+   const r=await fetch(endpoint,{headers:{'x-ws-admin-code':adminCode,Accept:'application/json'},cache:'no-store'});
+   const d=await r.json();if(!r.ok)throw new Error(d.error||'Wallet requests লোড হয়নি।');
+   requests=d.topups||[];
+   body.innerHTML=requests.map(x=>{
+    const state=String(x.status||'pending').toLowerCase();
+    const action=state==='pending'?'<button class="wallet-review-btn" data-action="approve" data-id="'+esc(x.id)+'">Approve / Add Balance</button><button class="wallet-review-btn reject" data-action="reject" data-id="'+esc(x.id)+'">Reject</button>':'—';
+    return '<tr><td>#'+esc(x.id)+'</td><td><b>'+esc(x.display_name)+'</b><br><small>'+esc(x.user_id)+'</small></td><td>'+inr(x.amount_paise)+'</td><td>'+esc(x.payment_currency)+' '+Number(x.payment_amount||0).toFixed(2)+'</td><td>'+esc(String(x.payment_method||'').toUpperCase())+'</td><td>'+esc(x.sender_number)+'</td><td><b>'+esc(x.transaction_id)+'</b></td><td class="wallet-topup-'+esc(state)+'">'+esc(state.toUpperCase())+'</td><td>'+esc(x.created_at?new Date(x.created_at).toLocaleString('en-IN'):'')+'</td><td>'+action+'</td></tr>';
+   }).join('')||'<tr><td colspan="10">No wallet top-up requests / কোনো অনুরোধ নেই</td></tr>';
+   status.textContent='Updated: '+new Date(d.updatedAt||Date.now()).toLocaleString('en-IN')+' · '+requests.length+' requests';
+  }catch(e){status.textContent=e.message;}
+ }
+ document.getElementById('walletTopupsRefresh').addEventListener('click',load);
+ body.addEventListener('click',async e=>{
+  const button=e.target.closest('button[data-action]');if(!button)return;
+  const action=button.dataset.action,id=Number(button.dataset.id);
+  const row=requests.find(x=>Number(x.id)===id);
+  if(!row)return;
+  if(action==='approve'&&!confirm('তুমি কি নিজের UPI/bKash অ্যাকাউন্টে এই পেমেন্ট সত্যিই পেয়েছ এবং Transaction ID মিলিয়ে দেখেছ? Approve করলে '+inr(row.amount_paise)+' কাস্টমারের Wallet-এ যোগ হবে।'))return;
+  if(action==='reject'&&!confirm('এই Wallet top-up request Reject করবে?'))return;
+  button.disabled=true;
+  try{
+   const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','x-ws-admin-code':adminCode,Accept:'application/json'},body:JSON.stringify({action,topup_id:id,note:action==='approve'?'Payment manually verified by admin.':'Payment rejected after manual review.'})});
+   const d=await r.json();if(!r.ok)throw new Error(d.error||'Update failed');
+   status.textContent=action==='approve'?'Wallet balance যোগ হয়েছে।':'Top-up request Reject করা হয়েছে।';
+   await load();
+  }catch(err){status.textContent=err.message;button.disabled=false;}
+ });
+})();
+</script><script id="WS_DASHBOARD_RECOVERY_V1">
 /* Independent dashboard loader: runs even if the legacy dashboard script has a syntax error. */
 (async function(){
  const $=id=>document.getElementById(id);
