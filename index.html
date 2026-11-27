@@ -248,7 +248,7 @@ function safeText(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<
 function normCatalogName(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();}
 function resolveProductImage(p){
  const first=value=>{
-  if(typeof value==="string"&&/^https?:\\/\\//i.test(value.trim()))return value.trim();
+  if(typeof value==="string"&&/^https?:\/\//i.test(value.trim()))return value.trim();
   if(Array.isArray(value))return first(value[0]);
   if(value&&typeof value==="object")return first(value.src||value.url||value.image||value.thumbnail||value.full||value.large);
   return "";
@@ -257,15 +257,15 @@ function resolveProductImage(p){
  if(remote)return remote;
  const name=normCatalogName(p?.name);
  const aliases=[
-  [/\\b(pubg|pubg mobile|bgmi)\\b/,"pubg.png"],[/\\bfree fire\\b/,"freefire.png"],
-  [/mobile legends|\\bmlbb\\b/,"mlbb.png"],[/\\bimo\\b/,"imo.png"],[/\\bbigo\\b/,"bigo.png"],
-  [/\\bpoppo\\b/,"poppo.png"],[/\\bchamet\\b/,"chamet.png"],[/\\btiktok\\b/,"tiktok-coins.png"],
-  [/\\blikee\\b/,"likee.png"],[/\\btango\\b/,"tango.png"],[/\\byoho\\b/,"yoho.png"],
-  [/\\bstarmaker\\b/,"starmaker.png"],[/\\btelegram\\b/,"telegram.png"],[/\\btruecaller\\b/,"truecaller.png"],
-  [/\\bspotify\\b/,"spotify.png"],[/\\bnetflix\\b/,"youtube-premium.png"],[/\\byoutube\\b/,"youtube-premium.png"],
-  [/\\bchatgpt\\b/,"chatgpt-plus.png"],[/\\bcanva\\b/,"canva-pro.png"],[/google play/,"googleplay.png"],
-  [/itunes|apple gift/,"itunes.png"],[/\\bsteam\\b/,"steam.png"],[/razer gold/,"razer-gold.png"],
-  [/\\bgenshin\\b/,"genshin.png"],[/\\befootball\\b/,"efootball.png"],[/fc mobile/,"fc-mobile.png"],
+  [/\b(pubg|pubg mobile|bgmi)\b/,"pubg.png"],[/\bfree fire\b/,"freefire.png"],
+  [/mobile legends|\bmlbb\b/,"mlbb.png"],[/\bimo\b/,"imo.png"],[/\bbigo\b/,"bigo.png"],
+  [/\bpoppo\b/,"poppo.png"],[/\bchamet\b/,"chamet.png"],[/\btiktok\b/,"tiktok-coins.png"],
+  [/\blikee\b/,"likee.png"],[/\btango\b/,"tango.png"],[/\byoho\b/,"yoho.png"],
+  [/\bstarmaker\b/,"starmaker.png"],[/\btelegram\b/,"telegram.png"],[/\btruecaller\b/,"truecaller.png"],
+  [/\bspotify\b/,"spotify.png"],[/\bnetflix\b/,"youtube-premium.png"],[/\byoutube\b/,"youtube-premium.png"],
+  [/\bchatgpt\b/,"chatgpt-plus.png"],[/\bcanva\b/,"canva-pro.png"],[/google play/,"googleplay.png"],
+  [/itunes|apple gift/,"itunes.png"],[/\bsteam\b/,"steam.png"],[/razer gold/,"razer-gold.png"],
+  [/\bgenshin\b/,"genshin.png"],[/\befootball\b/,"efootball.png"],[/fc mobile/,"fc-mobile.png"],
   [/blood strike/,"blood-strike.png"],[/honor of kings/,"honor-kings.png"],[/super sus/,"super-sus.png"],[/clash of clans/,"clash-of-clans.png"]
  ];
  const found=aliases.find(([rx])=>rx.test(name));
