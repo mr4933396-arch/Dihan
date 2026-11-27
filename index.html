@@ -318,7 +318,7 @@ async function loadJubalyCatalog(){
  jubalyLoading=false;jubalyFinished=true;jubalyProducts=[];jubalySourceProducts=[];draw();
 }
 
-function saleINR(v){const cost=Number(v.reseller_price);const accountCurrency=String(jubalyCurrent?.reseller_account_currency||"").toUpperCase();const fx=accountCurrency==="USD"?0.010757:accountCurrency==="BDT"?1.33876:NaN;if(!Number.isFinite(cost)||cost<=0||!Number.isFinite(fx))return null;const price=Math.ceil((cost/fx)*1.15);return Number.isFinite(price)&&price>0?price:null;}
+function saleINR(v){const price=Number(v.customer_price_inr);return Number.isFinite(price)&&price>0?price:null;}
 document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
 document.querySelectorAll(".chip").forEach(z=>z.classList.remove("active"));
 b.classList.add("active");
