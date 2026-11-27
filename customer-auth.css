@@ -14,3 +14,12 @@ button,.auth-button{display:flex;justify-content:center;align-items:center;width
 .customer-order strong{display:block;color:var(--cyan);font-size:14px}
 .customer-order p{margin:7px 0;color:#dce8f5;font-size:13px;line-height:1.45}
 .customer-order small{display:block;color:var(--muted);font-size:11px;margin-top:9px}
+
+.wallet-panel{margin-top:16px}
+.wallet-balance{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px;margin:12px 0;background:#091a2d;border:1px solid #365371;border-radius:12px}
+.wallet-balance span{color:var(--muted);font-size:12px}.wallet-balance b{font-size:24px;color:#86efac}
+.wallet-note{margin:8px 0 12px;font-size:12px}
+.wallet-panel select{width:100%;padding:12px;border:1px solid #365371;border-radius:10px;background:#091a2d;color:#fff;font:inherit}
+.wallet-panel label{margin-top:13px}.wallet-receiver{padding:12px;background:#0d2035;border:1px solid var(--line);border-radius:10px;color:var(--cyan);font-weight:800;overflow-wrap:anywhere}
+.wallet-panel .auth-button[hidden]{display:none}
+.wallet-subsection{margin-top:17px}.wallet-subsection>strong{display:block;margin-bottom:8px}
