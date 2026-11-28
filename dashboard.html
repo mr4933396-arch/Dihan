@@ -116,7 +116,7 @@ load();
   const action=button.dataset.action,id=Number(button.dataset.id);
   const row=requests.find(x=>Number(x.id)===id);
   if(!row)return;
-  if(action==='approve'&&!confirm('তুমি কি নিজের UPI/bKash অ্যাকাউন্টে এই পেমেন্ট সত্যিই পেয়েছ এবং Transaction ID মিলিয়ে দেখেছ? Approve করলে '+inr(row.amount_paise)+' কাস্টমারের Wallet-এ যোগ হবে।'))return;
+  if(action==='approve'&&!confirm('তুমি কি নিজের UPI/bKash/Binance অ্যাকাউন্টে পেমেন্ট পেয়েছ এবং সঠিক Transaction ID/USDT TxID, Network ও Amount মিলিয়ে দেখেছ? Approve করলে '+inr(row.amount_paise)+' কাস্টমারের Wallet-এ যোগ হবে।'))return;
   if(action==='reject'&&!confirm('এই Wallet top-up request Reject করবে?'))return;
   button.disabled=true;
   try{
