@@ -23,3 +23,9 @@ button,.auth-button{display:flex;justify-content:center;align-items:center;width
 .wallet-panel label{margin-top:13px}.wallet-receiver{padding:12px;background:#0d2035;border:1px solid var(--line);border-radius:10px;color:var(--cyan);font-weight:800;overflow-wrap:anywhere}
 .wallet-panel .auth-button[hidden]{display:none}
 .wallet-subsection{margin-top:17px}.wallet-subsection>strong{display:block;margin-bottom:8px}
+
+.wallet-methods{margin-top:14px}
+.wallet-method-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.wallet-panel .wallet-method{margin:0;padding:14px 10px;min-height:54px;border:1px solid #365371;border-radius:12px;background:#091a2d;color:#f5f8ff;font-weight:800;cursor:pointer}
+.wallet-panel .wallet-method.selected{border:2px solid var(--cyan);background:#12324a;color:var(--cyan);box-shadow:0 0 0 3px #45d8ff18}
+.wallet-panel button[hidden]{display:none}
