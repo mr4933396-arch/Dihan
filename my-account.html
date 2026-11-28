@@ -5,7 +5,7 @@
 <div class="wallet-balance"><span>Available Balance / বর্তমান ব্যালেন্স</span><b id="wallet-balance">₹0.00</b></div>
 <p class="sub wallet-note">Wallet balance INR-এ হিসাব করা হয়। টাকা Add Money করলে পেমেন্ট যাচাইয়ের পর ব্যালেন্স যোগ হবে।</p>
 <form id="wallet-form">
-<label for="wallet-amount">Amount / টাকার পরিমাণ</label>
+<label for="wallet-amount" id="wallet-amount-label">Amount / টাকার পরিমাণ (Binance-এ USD)</label>
 <input id="wallet-amount" type="number" min="10" max="50000" step="0.01" required placeholder="যেমন 100">
 <button type="button" id="wallet-add-money">Add Money</button>
 <div id="wallet-methods" class="wallet-methods" hidden>
@@ -21,8 +21,15 @@
 <input type="hidden" id="wallet-method" value="">
 <div id="wallet-manual-fields" hidden>
   <p class="wallet-receiver" id="wallet-receiver">bKash নম্বর: 01618896284</p>
-  <label for="wallet-sender">Sender Number</label><input id="wallet-sender" maxlength="100" placeholder="bKash sender mobile">
-  <label for="wallet-transaction">Transaction ID</label><input id="wallet-transaction" maxlength="80" placeholder="bKash Transaction ID">
+  <div id="wallet-binance-panel" hidden>
+    <p><b>Send exactly the entered amount in USDT</b> on <b>TRON (TRC20)</b>.</p>
+    <img id="wallet-binance-qr" alt="USDT TRON receiving QR code" style="display:block;width:210px;max-width:75%;height:auto;margin:12px auto;background:#fff;padding:8px;border-radius:12px">
+    <p id="wallet-binance-address" style="font-size:13px;overflow-wrap:anywhere;color:#45d8ff"></p>
+    <button type="button" id="wallet-copy-binance">Copy Wallet Address</button>
+    <p class="sub">শুধু USDT পাঠাবে। Network অবশ্যই TRON (TRC20) হবে।</p>
+  </div>
+  <label for="wallet-sender" id="wallet-sender-label">Sender Number</label><input id="wallet-sender" maxlength="100" placeholder="bKash sender mobile">
+  <label for="wallet-transaction" id="wallet-transaction-label">Transaction ID</label><input id="wallet-transaction" maxlength="80" placeholder="bKash Transaction ID">
 </div>
 <button type="submit" id="wallet-submit" hidden>Continue</button>
 </form>
