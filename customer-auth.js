@@ -199,6 +199,13 @@ if (page === "account") {
     const updateWalletPaymentInfo = async () => {
       const currency = $("wallet-currency").value;
       $("wallet-method").textContent = currency === "BDT" ? "bKash" : "UPI";
+      const logo = $("wallet-payment-logo");
+      const logoName = $("wallet-payment-logo-name");
+      if (logo) {
+        logo.src = currency === "BDT" ? "./bkash-logo.svg" : "./upi-logo.svg";
+        logo.alt = currency === "BDT" ? "bKash logo" : "UPI logo";
+      }
+      if (logoName) logoName.textContent = currency === "BDT" ? "bKash" : "UPI";
       $("wallet-receiver").textContent = currency === "BDT" ? "bKash নম্বর: 01618896284" : "UPI ID: 7479314460@ybl";
       const amount = Number($("wallet-amount").value);
       const pay = $("wallet-pay");
