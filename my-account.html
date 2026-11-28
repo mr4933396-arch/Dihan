@@ -5,21 +5,26 @@
 <div class="wallet-balance"><span>Available Balance / বর্তমান ব্যালেন্স</span><b id="wallet-balance">₹0.00</b></div>
 <p class="sub wallet-note">Wallet balance INR-এ হিসাব করা হয়। টাকা Add Money করলে পেমেন্ট যাচাইয়ের পর ব্যালেন্স যোগ হবে।</p>
 <form id="wallet-form">
-<label for="wallet-currency">Payment Currency / পেমেন্টের মুদ্রা</label>
-<select id="wallet-currency"><option value="INR">INR ₹ · FamGateway UPI</option><option value="BDT">BDT ৳ · bKash Manual</option></select>
-<div id="wallet-upi-options">
-<p class="sub">PhonePe, Google Pay, Paytm অথবা Other UPI দিয়ে FamGateway-এর Dynamic UPI Checkout-এ পেমেন্ট করতে পারবে।
-<div class="wallet-payment-brand"><img src="./upi-logo.svg" alt="UPI logo"><strong>FamGateway Secure UPI Checkout</strong></div>
-<p class="sub">FamGateway পেমেন্ট যাচাই করলে Wallet-এ টাকা অটোমেটিক যোগ হবে।</p>
+<label for="wallet-amount">Amount / টাকার পরিমাণ</label>
+<input id="wallet-amount" type="number" min="10" max="50000" step="0.01" required placeholder="যেমন 100">
+<button type="button" id="wallet-add-money">Add Money</button>
+<div id="wallet-methods" class="wallet-methods" hidden>
+  <div class="wallet-method-grid">
+    <button type="button" class="wallet-method" data-method="bkash">বিকাশ</button>
+    <button type="button" class="wallet-method" data-method="binance">Binance</button>
+    <button type="button" class="wallet-method" data-method="gpay">Google Pay</button>
+    <button type="button" class="wallet-method" data-method="phonepe">PhonePe</button>
+    <button type="button" class="wallet-method" data-method="upi">UPI</button>
+    <button type="button" class="wallet-method" data-method="paytm">Paytm</button>
+  </div>
 </div>
+<input type="hidden" id="wallet-method" value="">
 <div id="wallet-manual-fields" hidden>
-<div class="wallet-payment-brand"><img src="./bkash-logo.svg" alt="bKash logo"><strong>bKash Manual Verification</strong></div>
-<p class="wallet-receiver" id="wallet-receiver">bKash নম্বর: 01618896284</p>
-<label for="wallet-sender">Sender Number / যে নম্বর থেকে পাঠিয়েছ</label><input id="wallet-sender" maxlength="100" placeholder="bKash sender mobile">
-<label for="wallet-transaction">Transaction ID / ট্রানজেকশন আইডি</label><input id="wallet-transaction" maxlength="80" placeholder="bKash Transaction ID">
+  <p class="wallet-receiver" id="wallet-receiver">bKash নম্বর: 01618896284</p>
+  <label for="wallet-sender">Sender Number</label><input id="wallet-sender" maxlength="100" placeholder="bKash sender mobile">
+  <label for="wallet-transaction">Transaction ID</label><input id="wallet-transaction" maxlength="80" placeholder="bKash Transaction ID">
 </div>
-<label for="wallet-amount">Amount / টাকার পরিমাণ</label><input id="wallet-amount" type="number" min="10" max="50000" step="0.01" required placeholder="যেমন 100">
-<button type="submit" id="wallet-submit">Continue to Razorpay / পেমেন্ট করো</button>
+<button type="submit" id="wallet-submit" hidden>Continue</button>
 </form>
 <div id="wallet-message" class="message" role="status" aria-live="polite"></div>
 <div class="wallet-subsection"><strong>Top-up Requests / টাকা জমার অনুরোধ</strong><div id="wallet-topups" class="customer-orders">লোড হচ্ছে…</div></div>
