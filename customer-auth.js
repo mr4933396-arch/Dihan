@@ -186,7 +186,7 @@ if (page === "account") {
         const date = document.createElement("small"); date.textContent = item.created_at ? new Date(item.created_at).toLocaleString() : "";
         row.append(title, detail, date); tx.append(row);
       });
-      $("wallet-receiver").textContent = $("wallet-currency").value === "BDT" ? "bKash: " + data.bkash_number : "UPI: " + data.upi_id;
+      $("wallet-receiver").textContent = "bKash নম্বর: " + (data.bkash_number || "01618896284");
     };
     const loadWallet = async () => {
       try {
@@ -197,41 +197,62 @@ if (page === "account") {
       } catch (error) { walletStatus(error.message || "Wallet লোড হয়নি।", true); }
     };
     const famgatewayApi = "https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/ws-wallet-famgateway";
-    const updateWalletPaymentInfo = () => {
-      const isBdt=$("wallet-currency").value==="BDT";
-      $("wallet-upi-options").hidden=isBdt;
-      $("wallet-manual-fields").hidden=!isBdt;
-      $("wallet-receiver").textContent="bKash নম্বর: 01618896284";
-      $("wallet-submit").textContent=isBdt?"Submit bKash Request / অনুরোধ জমা দাও":"Continue to FamGateway / পেমেন্ট করো";
-      $("wallet-sender").required=isBdt;
-      $("wallet-transaction").required=isBdt;
-    };
-    $("wallet-currency").addEventListener("change",updateWalletPaymentInfo);
-    $("wallet-form").addEventListener("submit",async(event)=>{
+    const addMoneyButton = $("wallet-add-money");
+    const methodsWrap = $("wallet-methods");
+    const methodInput = $("wallet-method");
+    const manualFields = $("wallet-manual-fields");
+    const payButton = $("wallet-submit");
+    const methodButtons = [...document.querySelectorAll(".wallet-method")];
+    addMoneyButton.addEventListener("click", () => {
+      const amount = Number($("wallet-amount").value);
+      if (!Number.isFinite(amount) || amount < 10 || amount > 50000) {
+        walletStatus("১০ থেকে ৫০,০০০-এর মধ্যে টাকার পরিমাণ দাও।", true);
+        return;
+      }
+      methodsWrap.hidden = false;
+      walletStatus("");
+    });
+    methodButtons.forEach(button => button.addEventListener("click", () => {
+      const method = button.dataset.method;
+      methodInput.value = method;
+      methodButtons.forEach(item => item.classList.toggle("selected", item === button));
+      const isBkash = method === "bkash";
+      manualFields.hidden = !isBkash;
+      $("wallet-sender").required = isBkash;
+      $("wallet-transaction").required = isBkash;
+      payButton.hidden = false;
+      payButton.disabled = method === "binance";
+      payButton.textContent = method === "binance" ? "Binance setup needed" : isBkash ? "Submit" : "Continue";
+      if (method === "binance") walletStatus("Binance চালু করতে receiving wallet address ও network সেট করতে হবে।", true);
+      else walletStatus("");
+    }));
+    $("wallet-form").addEventListener("submit", async(event)=>{
       event.preventDefault();
       const form=event.currentTarget,submit=$("wallet-submit");
-      const currency=$("wallet-currency").value,amount=Number($("wallet-amount").value);
+      const method=methodInput.value,amount=Number($("wallet-amount").value);
+      if (!method) { walletStatus("আগে একটি পেমেন্ট অপশন বেছে নাও।", true); return; }
+      if (method === "binance") { walletStatus("Binance চালু করতে receiving wallet address ও network সেট করতে হবে।", true); return; }
       submit.disabled=true;submit.textContent="প্রসেস হচ্ছে…";
       try{
         if(!Number.isFinite(amount)||amount<10||amount>50000)throw new Error("১০ থেকে ৫০,০০০-এর মধ্যে টাকার পরিমাণ দাও।");
         const headers=await walletHeaders();
-        if(currency==="BDT"){
+        if(method==="bkash"){
           const payload={action:"topup-request",currency:"BDT",method:"bkash",amount,sender:$("wallet-sender").value.trim(),transaction_id:$("wallet-transaction").value.trim()};
           const response=await fetch(walletApi,{method:"POST",headers,body:JSON.stringify(payload)});
           const data=await response.json();
           if(!response.ok)throw new Error(data.error||"Request জমা হয়নি।");
-          form.reset();updateWalletPaymentInfo();
-          walletStatus("bKash Top-up #"+data.topup.id+" Pending আছে। Admin Approve করলে টাকা যোগ হবে।");
+          form.reset();methodsWrap.hidden=true;manualFields.hidden=true;payButton.hidden=true;methodButtons.forEach(item=>item.classList.remove("selected"));
+          walletStatus("bKash অনুরোধ জমা হয়েছে। যাচাইয়ের পর Wallet-এ টাকা যোগ হবে।");
           await loadWallet();
           return;
         }
-        const createResponse=await fetch(famgatewayApi,{method:"POST",headers,body:JSON.stringify({action:"create",amount})});
+        const createResponse=await fetch(famgatewayApi,{method:"POST",headers,body:JSON.stringify({action:"create",amount,method:"upi"})});
         const created=await createResponse.json();
-        if(!createResponse.ok||!created.checkout_url)throw new Error(created.error||"FamGateway payment তৈরি হয়নি।");
-        walletStatus("FamGateway Checkout খুলছে… Top-up #"+created.topup_id);
+        if(!createResponse.ok||!created.checkout_url)throw new Error(created.error||"পেমেন্ট শুরু হয়নি।");
+        walletStatus("পেমেন্ট পেজ খুলছে…");
         window.location.assign(created.checkout_url);
       }catch(error){walletStatus(error.message||"পেমেন্ট শুরু হয়নি।",true);}
-      finally{submit.disabled=false;updateWalletPaymentInfo();}
+      finally{submit.disabled=false;submit.textContent=method==="bkash"?"Submit":"Continue";}
     });
     const verifyFamGatewayReturn = async () => {
       const params=new URLSearchParams(window.location.search);
