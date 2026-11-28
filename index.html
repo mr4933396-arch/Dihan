@@ -121,6 +121,50 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 .quick-support .quick-tg svg{color:#2AABEE}
 @media(max-width:580px){.quick-support{top:80px;right:8px;gap:7px}.quick-support a{width:42px;height:42px}}
 
+
+/* Customer storefront navigation and Jubaly-inspired promotional carousel */
+.customer-more{position:relative;flex:0 0 auto}
+.customer-more summary{list-style:none;width:38px;height:38px;border:1px solid #365371;border-radius:10px;background:#10243a;display:flex;align-items:center;justify-content:center;gap:3px;cursor:pointer}
+.customer-more summary::-webkit-details-marker{display:none}
+.customer-more summary span{width:4px;height:4px;border-radius:50%;background:#eaf6ff}
+.customer-more[open] summary{border-color:var(--cyan)}
+.customer-more-menu{position:absolute;right:0;top:46px;min-width:220px;padding:7px;background:#0d1d30;border:1px solid #365371;border-radius:13px;box-shadow:0 12px 32px #000b;z-index:30}
+.customer-more-menu a{display:block;padding:11px 12px;border-radius:8px;color:#eaf6ff;font-size:13px;font-weight:650}
+.customer-more-menu a:hover{background:#173b58;color:var(--cyan)}
+.store-carousel{position:relative;overflow:hidden;border:1px solid #24527a;border-radius:18px;background:#0b1c30;box-shadow:0 18px 55px #0008;isolation:isolate}
+.store-slides{position:relative;min-height:clamp(250px,36vw,430px)}
+.store-slide{position:absolute;inset:0;display:flex;align-items:center;min-height:inherit;padding:clamp(22px,5vw,58px);opacity:0;visibility:hidden;transition:opacity .65s ease,visibility .65s ease;overflow:hidden}
+.store-slide.active{position:relative;opacity:1;visibility:visible}
+.store-slide-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.store-slide-art{position:absolute;right:7%;top:50%;transform:translateY(-50%);width:min(34%,300px);height:78%;object-fit:contain;filter:drop-shadow(0 16px 24px #0009);z-index:-1}
+.store-slide-shade{position:absolute;inset:0;background:linear-gradient(90deg,#061321f5 0%,#07172ae8 44%,#07172a80 100%);z-index:-1}
+.store-slide-copy{max-width:620px;text-align:left}
+.store-kicker{display:inline-block;color:#8ceaff;font-size:11px;font-weight:900;letter-spacing:.15em;margin-bottom:12px}
+.store-slide-copy h1,.store-slide-copy h2{font-size:clamp(26px,4.6vw,48px);line-height:1.1;margin:0 0 12px;font-weight:950;max-width:600px}
+.store-slide-copy p{color:#d0deee;max-width:500px;line-height:1.65;margin:0 0 20px;font-size:clamp(13px,1.6vw,16px)}
+.store-slide-cta{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(90deg,var(--cyan),#69a8ff);color:#061321;padding:12px 18px;border-radius:10px;font-weight:900;font-size:13px}
+.store-arrow{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:1px solid #ffffff66;background:#071321b8;color:white;font-size:26px;line-height:1;cursor:pointer;z-index:3}
+.store-arrow.prev{left:12px}.store-arrow.next{right:12px}
+.store-dots{position:absolute;left:50%;bottom:13px;transform:translateX(-50%);display:flex;gap:7px;z-index:4}
+.store-dots button{width:8px;height:8px;padding:0;border:0;border-radius:20px;background:#ffffff80;cursor:pointer;transition:width .2s,background .2s}
+.store-dots button.active{width:24px;background:var(--cyan)}
+@media(max-width:580px){
+.customer-more summary{width:32px;height:34px}
+.customer-more-menu{right:-3px;min-width:205px}
+.store-carousel{border-radius:13px}
+.store-slides{min-height:280px}
+.store-slide{padding:24px 20px 40px}
+.store-slide-copy{max-width:78%}
+.store-slide-copy h1,.store-slide-copy h2{font-size:27px}
+.store-slide-copy p{font-size:12px;line-height:1.5}
+.store-slide-art{right:2%;width:38%;height:55%;opacity:.88}
+.store-slide-shade{background:linear-gradient(90deg,#061321f5 0%,#07172ae8 56%,#07172a70 100%)}
+.store-arrow{width:30px;height:30px;font-size:21px}
+.store-arrow.prev{left:6px}.store-arrow.next{right:6px}
+.store-dots{bottom:10px}
+}
+@media(prefers-reduced-motion:reduce){.store-slide{transition:none}.store-dots button{transition:none}}
+
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"WS TOP UP","url":"https://top-up-pozn.onrender.com/","logo":"https://top-up-pozn.onrender.com/ws-top-up-logo.png","description":"Online store for game top-ups, diamonds, social app coins, gift cards and digital subscriptions.","contactPoint":{"@type":"ContactPoint","telephone":"+91-7814003979","contactType":"customer support","availableLanguage":["English","Bengali"]},"sameAs":["https://t.me/WSTopUpOfficial"]}
@@ -154,7 +198,16 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 <select id="currency" class="select" aria-label="Choose currency">
 <option value="INR">INR ₹</option><option value="USD">USD $</option><option value="BDT">BDT ৳</option>
 </select>
-
+<details class="customer-more">
+<summary aria-label="More customer options" title="More options"><span></span><span></span><span></span></summary>
+<div class="customer-more-menu">
+<a href="./order.html">Track Order / অর্ডার ট্র্যাক</a>
+<a href="./new-products.html">More Products / আরও প্রোডাক্ট</a>
+<a href="#faq">FAQs / প্রশ্নোত্তর</a>
+<a href="#support">Customer Support / সহায়তা</a>
+<a href="./my-account.html">My Account / আমার অ্যাকাউন্ট</a>
+</div>
+</details>
 </div>
 </nav>
 </header>
@@ -165,13 +218,37 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 </div>
 
 
-<section class="hero" id="hero">
-<img class="hero-banner" src="ws-top-up-banner.png" alt="WS TOP UP gaming top-up banner">
-<div class="hero-seo"><h1>WS TOP UP – Game Top Up, Diamonds & Digital Products</h1><p>Explore game top-ups, diamonds, UC, social app coins, gift cards and digital subscriptions. Browse available packages, check prices and place your order online with WS TOP UP.</p></div>
-<div class="hero-actions"><a class="cta" href="#products">EXPLORE PRODUCTS ↓ / পণ্য দেখুন</a><a class="cta" href="new-products.html">MORE GAMES & DIGITAL PRODUCTS / আরও প্রোডাক্ট</a></div>
-<div class="trust">
-<span>🌍 Global Customers / বিশ্বজুড়ে গ্রাহক</span><span>🛡️ Manual Order Verification / অর্ডার যাচাই</span><span>💬 Human Support / সরাসরি সহায়তা</span>
+<section class="hero" id="hero" aria-label="WS TOP UP featured offers">
+<div class="store-carousel" id="storeCarousel" aria-roledescription="carousel">
+<div class="store-slides">
+<article class="store-slide active" data-slide="0">
+<img class="store-slide-bg" src="ws-top-up-banner.png" alt="" fetchpriority="high">
+<div class="store-slide-shade"></div><div class="store-slide-copy"><span class="store-kicker">WELCOME TO WS TOP UP</span><h1>Game Top Up & Digital Store</h1><p>Explore diamonds, UC, social app coins, gift cards and subscriptions.</p><a class="store-slide-cta" href="#products">Explore Products / পণ্য দেখুন</a></div>
+</article>
+<article class="store-slide" data-slide="1">
+<img class="store-slide-art" src="freefire.png" alt="Free Fire top up" loading="lazy">
+<div class="store-slide-shade"></div><div class="store-slide-copy"><span class="store-kicker">GAMING TOP UP</span><h2>Power Up Your Game</h2><p>Find available game credits and packages in one place.</p><a class="store-slide-cta" href="#products" data-category="games">Explore Games / গেম দেখুন</a></div>
+</article>
+<article class="store-slide" data-slide="2">
+<img class="store-slide-art" src="pubg.png" alt="PUBG Mobile UC" loading="lazy">
+<div class="store-slide-shade"></div><div class="store-slide-copy"><span class="store-kicker">POPULAR GAME CREDITS</span><h2>Your Next Match Starts Here</h2><p>Choose your product, check the package and enter your player ID carefully.</p><a class="store-slide-cta" href="#products" data-category="games">Browse Packages / প্যাকেজ দেখুন</a></div>
+</article>
+<article class="store-slide" data-slide="3">
+<img class="store-slide-art" src="imo.png" alt="Social app top up" loading="lazy">
+<div class="store-slide-shade"></div><div class="store-slide-copy"><span class="store-kicker">SOCIAL TOP UP</span><h2>More Ways to Connect</h2><p>Browse social app credits and supported digital services.</p><a class="store-slide-cta" href="#products" data-category="social">Social Products / সোশ্যাল প্রোডাক্ট</a></div>
+</article>
+<article class="store-slide" data-slide="4">
+<img class="store-slide-art" src="steam.png" alt="Digital gift cards" loading="lazy">
+<div class="store-slide-shade"></div><div class="store-slide-copy"><span class="store-kicker">GIFT CARDS & SUBSCRIPTIONS</span><h2>Digital Essentials in One Store</h2><p>Discover gift cards and subscriptions with clear package details.</p><a class="store-slide-cta" href="new-products.html">Explore Digital Products / আরও দেখুন</a></div>
+</article>
 </div>
+<button class="store-arrow prev" type="button" aria-label="Previous banner">‹</button><button class="store-arrow next" type="button" aria-label="Next banner">›</button>
+<div class="store-dots" role="group" aria-label="Choose banner">
+<button class="active" type="button" aria-label="Banner 1" aria-current="true"></button><button type="button" aria-label="Banner 2"></button><button type="button" aria-label="Banner 3"></button><button type="button" aria-label="Banner 4"></button><button type="button" aria-label="Banner 5"></button>
+</div>
+</div>
+<div class="hero-seo"><p>Explore game top-ups, diamonds, UC, social app coins, gift cards and digital subscriptions. Browse available packages, check prices and place your order online with WS TOP UP.</p></div>
+<div class="trust"><span>🌍 Global Customers / বিশ্বজুড়ে গ্রাহক</span><span>🛡️ Order Verification / অর্ডার যাচাই</span><span>💬 Customer Support / কাস্টমার সাপোর্ট</span></div>
 </section>
 
 <main class="wrap" id="catalogView">
@@ -783,6 +860,38 @@ document.getElementById("back").addEventListener("click",()=>{
  catalogView.classList.remove("hidden");
  document.getElementById("hero").classList.remove("hidden");
  window.scrollTo(0,0);
+});
+
+
+// Customer-facing banner carousel: five rotating slides, manual controls, and pause on hover/focus.
+(function initStoreCarousel(){
+ const root=document.getElementById("storeCarousel");
+ if(!root)return;
+ const slides=[...root.querySelectorAll(".store-slide")],dots=[...root.querySelectorAll(".store-dots button")];
+ const reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ let active=0,timer=null;
+ function show(index){
+  active=(index+slides.length)%slides.length;
+  slides.forEach((slide,i)=>{const on=i===active;slide.classList.toggle("active",on);slide.setAttribute("aria-hidden",String(!on));});
+  dots.forEach((dot,i)=>{const on=i===active;dot.classList.toggle("active",on);if(on)dot.setAttribute("aria-current","true");else dot.removeAttribute("aria-current");});
+ }
+ function stop(){if(timer){clearInterval(timer);timer=null;}}
+ function start(){stop();if(!reduced)timer=setInterval(()=>show(active+1),5200);}
+ root.querySelector(".store-arrow.prev").addEventListener("click",()=>{show(active-1);start();});
+ root.querySelector(".store-arrow.next").addEventListener("click",()=>{show(active+1);start();});
+ dots.forEach((dot,i)=>dot.addEventListener("click",()=>{show(i);start();}));
+ root.addEventListener("mouseenter",stop);root.addEventListener("mouseleave",start);
+ root.addEventListener("focusin",stop);root.addEventListener("focusout",start);
+ root.querySelectorAll("[data-category]").forEach(link=>link.addEventListener("click",()=>{
+  const category=link.dataset.category;
+  const chip=document.querySelector('.chip[data-cat="'+category+'"]');
+  if(chip)chip.click();
+ }));
+ show(0);start();
+})();
+document.addEventListener("click",event=>{
+ const menu=document.querySelector(".customer-more");
+ if(menu&&menu.open&&!menu.contains(event.target))menu.open=false;
 });
 
 draw();
