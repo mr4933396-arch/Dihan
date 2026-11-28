@@ -196,24 +196,13 @@ if (page === "account") {
         renderWallet(data);
       } catch (error) { walletStatus(error.message || "Wallet লোড হয়নি।", true); }
     };
-    const razorpayApi = "https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/ws-wallet-razorpay";
-    let razorpayScriptPromise;
-    const loadRazorpay = () => {
-      if (window.Razorpay) return Promise.resolve();
-      if (!razorpayScriptPromise) razorpayScriptPromise = new Promise((resolve,reject) => {
-        const script=document.createElement("script");
-        script.src="https://checkout.razorpay.com/v1/checkout.js";
-        script.onload=resolve; script.onerror=()=>reject(new Error("Razorpay Checkout লোড হয়নি।"));
-        document.head.appendChild(script);
-      });
-      return razorpayScriptPromise;
-    };
+    const famgatewayApi = "https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/ws-wallet-famgateway";
     const updateWalletPaymentInfo = () => {
       const isBdt=$("wallet-currency").value==="BDT";
       $("wallet-upi-options").hidden=isBdt;
       $("wallet-manual-fields").hidden=!isBdt;
       $("wallet-receiver").textContent="bKash নম্বর: 01618896284";
-      $("wallet-submit").textContent=isBdt?"Submit bKash Request / অনুরোধ জমা দাও":"Continue to Razorpay / পেমেন্ট করো";
+      $("wallet-submit").textContent=isBdt?"Submit bKash Request / অনুরোধ জমা দাও":"Continue to FamGateway / পেমেন্ট করো";
       $("wallet-sender").required=isBdt;
       $("wallet-transaction").required=isBdt;
     };
@@ -236,36 +225,36 @@ if (page === "account") {
           await loadWallet();
           return;
         }
-        await loadRazorpay();
-        const createResponse=await fetch(razorpayApi,{method:"POST",headers,body:JSON.stringify({action:"create",amount})});
+        const createResponse=await fetch(famgatewayApi,{method:"POST",headers,body:JSON.stringify({action:"create",amount})});
         const created=await createResponse.json();
-        if(!createResponse.ok)throw new Error(created.error||"Razorpay payment তৈরি হয়নি।");
-        const options={
-          key:created.key_id,amount:created.amount,currency:created.currency,
-          name:"WS TOP UP",description:"Wallet Add Money · Top-up #"+created.topup_id,
-          order_id:created.razorpay_order_id,
-          method:{upi:true,card:false,netbanking:false,wallet:false,emi:false,paylater:false},
-          prefill:{name:user.user_metadata?.display_name||"",email:user.email||""},
-          notes:{wallet_topup_id:String(created.topup_id)},theme:{color:"#45d8ff"},
-          handler:async(payment)=>{
-            try{
-              const vr=await fetch(razorpayApi,{method:"POST",headers,body:JSON.stringify({action:"verify",topup_id:created.topup_id,razorpay_payment_id:payment.razorpay_payment_id,razorpay_order_id:payment.razorpay_order_id,razorpay_signature:payment.razorpay_signature})});
-              const verified=await vr.json();
-              if(!vr.ok||!verified.verified)throw new Error(verified.error||"Payment verification pending.");
-              form.reset();walletStatus("Razorpay পেমেন্ট যাচাই সফল। Wallet-এ টাকা যোগ হয়েছে।");
-              await loadWallet();
-            }catch(error){walletStatus((error.message||"Verification pending.")+" Top-up #"+created.topup_id+" — Wallet History দেখো।",true);await loadWallet();}
-          },
-          modal:{ondismiss:()=>{walletStatus("Checkout বন্ধ হয়েছে। পেমেন্ট সম্পন্ন হলে Wallet refresh করো।",true);loadWallet();}}
-        };
-        const checkout=new window.Razorpay(options);
-        checkout.on("payment.failed",failure=>walletStatus("পেমেন্ট সফল হয়নি: "+(failure.error?.description||"আবার চেষ্টা করো।"),true));
-        checkout.open();
+        if(!createResponse.ok||!created.checkout_url)throw new Error(created.error||"FamGateway payment তৈরি হয়নি।");
+        walletStatus("FamGateway Checkout খুলছে… Top-up #"+created.topup_id);
+        window.location.assign(created.checkout_url);
       }catch(error){walletStatus(error.message||"পেমেন্ট শুরু হয়নি।",true);}
       finally{submit.disabled=false;updateWalletPaymentInfo();}
     });
+    const verifyFamGatewayReturn = async () => {
+      const params=new URLSearchParams(window.location.search);
+      const topupId=params.get("wallet_topup");
+      if(!topupId)return;
+      walletStatus("FamGateway পেমেন্ট যাচাই হচ্ছে…");
+      try{
+        const headers=await walletHeaders();
+        const response=await fetch(famgatewayApi,{method:"POST",headers,body:JSON.stringify({action:"verify",topup_id:Number(topupId)})});
+        const data=await response.json();
+        if(!response.ok||!data.verified)throw new Error(data.message||data.error||"পেমেন্ট এখনো নিশ্চিত হয়নি। কিছুক্ষণ পরে Wallet refresh করো।");
+        walletStatus("FamGateway পেমেন্ট সফলভাবে যাচাই হয়েছে। Wallet-এ টাকা যোগ হয়েছে।");
+      }catch(error){walletStatus(error.message||"পেমেন্ট যাচাই করা যায়নি।",true);}
+      finally{
+        params.delete("wallet_topup");
+        const clean=window.location.pathname+(params.toString()?"?"+params.toString():"");
+        window.history.replaceState({},document.title,clean);
+        await loadWallet();
+      }
+    };
     updateWalletPaymentInfo();
     loadWallet();
+    verifyFamGatewayReturn();
 
     const history = $("order-history");
     if (history) {
