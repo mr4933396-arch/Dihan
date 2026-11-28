@@ -273,7 +273,6 @@ if (page === "account") {
         await loadWallet();
       }
     };
-    updateWalletPaymentInfo();
     loadWallet();
     verifyFamGatewayReturn();
 
