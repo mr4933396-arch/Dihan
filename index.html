@@ -373,7 +373,7 @@ function money(n,cur=currency){
 }
 function safeText(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function normCatalogName(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();}
-function resolveProductImage(p){
+function resolveProductImage(p,ignoreRemote=false){
  const first=value=>{
   if(typeof value==="string"&&/^https?:\/\//i.test(value.trim()))return value.trim();
   if(Array.isArray(value))return first(value[0]);
