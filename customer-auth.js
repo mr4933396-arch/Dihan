@@ -196,42 +196,73 @@ if (page === "account") {
         renderWallet(data);
       } catch (error) { walletStatus(error.message || "Wallet লোড হয়নি।", true); }
     };
-    const updateWalletPaymentInfo = async () => {
-      const currency = $("wallet-currency").value;
-      $("wallet-method").textContent = currency === "BDT" ? "bKash" : "UPI";
-      const logo = $("wallet-payment-logo");
-      const logoName = $("wallet-payment-logo-name");
-      if (logo) {
-        logo.src = currency === "BDT" ? "./bkash-logo.svg" : "./upi-logo.svg";
-        logo.alt = currency === "BDT" ? "bKash logo" : "UPI logo";
-      }
-      if (logoName) logoName.textContent = currency === "BDT" ? "bKash" : "UPI";
-      $("wallet-receiver").textContent = currency === "BDT" ? "bKash নম্বর: 01618896284" : "UPI ID: 7479314460@ybl";
-      const amount = Number($("wallet-amount").value);
-      const pay = $("wallet-pay");
-      if (currency === "INR" && Number.isFinite(amount) && amount >= 10) {
-        const params = new URLSearchParams({pa:"7479314460@ybl",pn:"WS TOP UP",am:amount.toFixed(2),cu:"INR",tn:"WS TOP UP Wallet"});
-        pay.href = "upi://pay?" + params.toString(); pay.hidden = false;
-      } else { pay.hidden = true; pay.removeAttribute("href"); }
+    const razorpayApi = "https://ghjzqytxqushxvjlvkls.supabase.co/functions/v1/ws-wallet-razorpay";
+    let razorpayScriptPromise;
+    const loadRazorpay = () => {
+      if (window.Razorpay) return Promise.resolve();
+      if (!razorpayScriptPromise) razorpayScriptPromise = new Promise((resolve,reject) => {
+        const script=document.createElement("script");
+        script.src="https://checkout.razorpay.com/v1/checkout.js";
+        script.onload=resolve; script.onerror=()=>reject(new Error("Razorpay Checkout লোড হয়নি।"));
+        document.head.appendChild(script);
+      });
+      return razorpayScriptPromise;
     };
-    $("wallet-currency").addEventListener("change", updateWalletPaymentInfo);
-    $("wallet-amount").addEventListener("input", updateWalletPaymentInfo);
-    $("wallet-form").addEventListener("submit", async (event) => {
+    const updateWalletPaymentInfo = () => {
+      const isBdt=$("wallet-currency").value==="BDT";
+      $("wallet-upi-options").hidden=isBdt;
+      $("wallet-manual-fields").hidden=!isBdt;
+      $("wallet-receiver").textContent="bKash নম্বর: 01618896284";
+      $("wallet-submit").textContent=isBdt?"Submit bKash Request / অনুরোধ জমা দাও":"Continue to Razorpay / পেমেন্ট করো";
+      $("wallet-sender").required=isBdt;
+      $("wallet-transaction").required=isBdt;
+    };
+    $("wallet-currency").addEventListener("change",updateWalletPaymentInfo);
+    $("wallet-form").addEventListener("submit",async(event)=>{
       event.preventDefault();
-      const form = event.currentTarget;
-      const submit = form.querySelector('button[type="submit"]');
-      submit.disabled = true; submit.textContent = "জমা হচ্ছে…";
-      try {
-        const currency = $("wallet-currency").value;
-        const payload = {action:"topup-request",currency,method:currency==="BDT"?"bkash":"upi",amount:Number($("wallet-amount").value),sender:$("wallet-sender").value.trim(),transaction_id:$("wallet-transaction").value.trim()};
-        const response = await fetch(walletApi,{method:"POST",headers:await walletHeaders(),body:JSON.stringify(payload)});
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Request জমা হয়নি।");
-        form.reset(); updateWalletPaymentInfo();
-        walletStatus("Top-up request #" + data.topup.id + " জমা হয়েছে। Admin পেমেন্ট যাচাই করলে ব্যালেন্স যোগ হবে।");
-        await loadWallet();
-      } catch (error) { walletStatus(error.message || "Request জমা হয়নি।", true); }
-      finally { submit.disabled = false; submit.textContent = "Submit Add Money Request / টাকা জমার অনুরোধ পাঠাও"; }
+      const form=event.currentTarget,submit=$("wallet-submit");
+      const currency=$("wallet-currency").value,amount=Number($("wallet-amount").value);
+      submit.disabled=true;submit.textContent="প্রসেস হচ্ছে…";
+      try{
+        if(!Number.isFinite(amount)||amount<10||amount>50000)throw new Error("১০ থেকে ৫০,০০০-এর মধ্যে টাকার পরিমাণ দাও।");
+        const headers=await walletHeaders();
+        if(currency==="BDT"){
+          const payload={action:"topup-request",currency:"BDT",method:"bkash",amount,sender:$("wallet-sender").value.trim(),transaction_id:$("wallet-transaction").value.trim()};
+          const response=await fetch(walletApi,{method:"POST",headers,body:JSON.stringify(payload)});
+          const data=await response.json();
+          if(!response.ok)throw new Error(data.error||"Request জমা হয়নি।");
+          form.reset();updateWalletPaymentInfo();
+          walletStatus("bKash Top-up #"+data.topup.id+" Pending আছে। Admin Approve করলে টাকা যোগ হবে।");
+          await loadWallet();
+          return;
+        }
+        await loadRazorpay();
+        const createResponse=await fetch(razorpayApi,{method:"POST",headers,body:JSON.stringify({action:"create",amount})});
+        const created=await createResponse.json();
+        if(!createResponse.ok)throw new Error(created.error||"Razorpay payment তৈরি হয়নি।");
+        const options={
+          key:created.key_id,amount:created.amount,currency:created.currency,
+          name:"WS TOP UP",description:"Wallet Add Money · Top-up #"+created.topup_id,
+          order_id:created.razorpay_order_id,
+          method:{upi:true,card:false,netbanking:false,wallet:false,emi:false,paylater:false},
+          prefill:{name:user.user_metadata?.display_name||"",email:user.email||""},
+          notes:{wallet_topup_id:String(created.topup_id)},theme:{color:"#45d8ff"},
+          handler:async(payment)=>{
+            try{
+              const vr=await fetch(razorpayApi,{method:"POST",headers,body:JSON.stringify({action:"verify",topup_id:created.topup_id,razorpay_payment_id:payment.razorpay_payment_id,razorpay_order_id:payment.razorpay_order_id,razorpay_signature:payment.razorpay_signature})});
+              const verified=await vr.json();
+              if(!vr.ok||!verified.verified)throw new Error(verified.error||"Payment verification pending.");
+              form.reset();walletStatus("Razorpay পেমেন্ট যাচাই সফল। Wallet-এ টাকা যোগ হয়েছে।");
+              await loadWallet();
+            }catch(error){walletStatus((error.message||"Verification pending.")+" Top-up #"+created.topup_id+" — Wallet History দেখো।",true);await loadWallet();}
+          },
+          modal:{ondismiss:()=>{walletStatus("Checkout বন্ধ হয়েছে। পেমেন্ট সম্পন্ন হলে Wallet refresh করো।",true);loadWallet();}}
+        };
+        const checkout=new window.Razorpay(options);
+        checkout.on("payment.failed",failure=>walletStatus("পেমেন্ট সফল হয়নি: "+(failure.error?.description||"আবার চেষ্টা করো।"),true));
+        checkout.open();
+      }catch(error){walletStatus(error.message||"পেমেন্ট শুরু হয়নি।",true);}
+      finally{submit.disabled=false;updateWalletPaymentInfo();}
     });
     updateWalletPaymentInfo();
     loadWallet();
