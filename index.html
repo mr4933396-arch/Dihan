@@ -476,7 +476,7 @@ function draw(){
  if(cat==="all"&&!q){
   const featuredRank=(entry)=>{
    const name=String(entry.item.name||entry.item[1]||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
-   const featured=[/\\bimo\\b/,/\\bfree\\s*fire\\b/,/\\bchamet\\b|\\bchat\\s*meet\\b/,/\\bpubg\\b/];
+   const featured=[/\\bimo\\b/,/\\bpubg\\b/,/\\bfree\\s*fire\\b/,/\\bchamet\\b|\\bchat\\s*meet\\b/,/\\bstarmaker\\b|\\bstar\\s*maker\\b/];
    const rank=featured.findIndex(rx=>rx.test(name));
    return rank<0?10000:rank;
   };
