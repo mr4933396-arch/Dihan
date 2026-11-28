@@ -683,17 +683,55 @@ function renderJubalyDetail(){
  });
  function buildJubalyFields(){
   const holder=document.getElementById("jubalyFields");holder.innerHTML="";
-  if(!fields.length){const p=document.createElement("p");p.className="note";p.textContent="No extra details are required for this package. / এই প্যাকেজে অতিরিক্ত তথ্য প্রয়োজন নেই।";holder.appendChild(p);}
-  fields.forEach((f,i)=>{
-   const key=String(f.key||f.name||f.slug||("field_"+i)),label=String(f.label||f.name||f.title||key),wrap=document.createElement("label"),title=document.createElement("span");
-   title.textContent=label+(f.required===false?"":" *");wrap.appendChild(title);
+  const isIMO=/\\bimo\\b/i.test(String(p.name||""));
+  const fieldInfo=f=>({key:String(f.key||f.name||f.slug||""),label:String(f.label||f.name||f.title||f.key||"")});
+  const role=(f)=>{
+   const x=fieldInfo(f),s=(x.key+" "+x.label).toLowerCase().replace(/[_-]+/g," ");
+   if(/delivery\\s*type/.test(s))return "delivery";
+   if(/country\\s*iso|iso\\s*country/.test(s))return "iso";
+   if(/dial\\s*code|country\\s*code|calling\\s*code/.test(s))return "dial";
+   if(/phone|mobile|imo\\s*number|number/.test(s))return "phone";
+   if(/imo\\s*id|account\\s*id|user\\s*id/.test(s))return "imoid";
+   return "";
+  };
+  const roles={};fields.forEach(f=>{const r=role(f);if(r&&!roles[r])roles[r]=f;});
+  const canUseSimpleIMO=isIMO&&roles.delivery&&roles.imoid&&roles.phone&&roles.iso&&roles.dial&&
+   (Array.isArray(roles.delivery.options)||Array.isArray(roles.delivery.choices));
+  const makeField=(f,hidden=false)=>{
+   const info=fieldInfo(f),wrap=document.createElement("label"),title=document.createElement("span");
+   title.textContent=info.label+(f.required===false?"":" *");wrap.appendChild(title);
    const kind=String(f.type||f.input_type||"text").toLowerCase(),choices=Array.isArray(f.options)?f.options:Array.isArray(f.choices)?f.choices:[];let input;
    if(["select","dropdown","choice"].includes(kind)&&choices.length){
-    input=document.createElement("select");const first=document.createElement("option");first.value="";first.textContent=String(f.placeholder||("Select "+label));input.appendChild(first);
+    input=document.createElement("select");const first=document.createElement("option");first.value="";first.textContent=String(f.placeholder||("Select "+info.label));input.appendChild(first);
     choices.forEach(option=>{const item=document.createElement("option");if(option&&typeof option==="object"){item.value=String(option.value??option.id??option.name??option.label??"");item.textContent=String(option.label??option.name??option.value??option.id??"");}else{item.value=String(option);item.textContent=String(option);}input.appendChild(item);});
-   }else{input=document.createElement("input");input.type=kind==="email"?"email":kind==="number"?"number":"text";input.placeholder=String(f.placeholder||("Enter "+label));}
-   input.dataset.key=key;input.dataset.required=f.required===false?"false":"true";wrap.appendChild(input);holder.appendChild(wrap);
-  });
+   }else{input=document.createElement("input");input.type=kind==="email"?"email":kind==="number"?"number":"text";input.placeholder=String(f.placeholder||("Enter "+info.label));}
+   input.dataset.key=info.key;input.dataset.required=f.required===false?"false":"true";
+   if(hidden){wrap.classList.add("hidden");input.dataset.required="false";}
+   wrap.appendChild(input);holder.appendChild(wrap);return {wrap,input};
+  };
+  if(canUseSimpleIMO){
+   const delivery=makeField(roles.delivery),imoid=makeField(roles.imoid),phone=makeField(roles.phone),iso=makeField(roles.iso,true),dial=makeField(roles.dial,true);
+   const syncMode=()=>{
+    const option=delivery.input.selectedOptions?.[0],choice=((option?.textContent||"")+" "+delivery.input.value).toLowerCase();
+    const usePhone=/number|mobile|phone/.test(choice);
+    imoid.wrap.classList.toggle("hidden",usePhone);phone.wrap.classList.toggle("hidden",!usePhone);
+    imoid.input.dataset.required=usePhone?"false":(roles.imoid.required===false?"false":"true");
+    phone.input.dataset.required=usePhone?(roles.phone.required===false?"false":"true"):"false";
+   };
+   const syncCountry=()=>{
+    const country=document.getElementById("jubalyCountry")?.value||"";
+    const map={India:{iso:"IN",dial:"+91"},Bangladesh:{iso:"BD",dial:"+880"},Other:{iso:"OTHER",dial:""}};
+    const selected=map[country]||{iso:"",dial:""};
+    iso.input.value=selected.iso;dial.input.value=selected.dial;
+   };
+   delivery.input.addEventListener("change",syncMode);
+   document.getElementById("jubalyCountry")?.addEventListener("change",syncCountry);
+   syncMode();syncCountry();
+   fields.forEach(f=>{if(![roles.delivery,roles.imoid,roles.phone,roles.iso,roles.dial].includes(f))makeField(f);});
+  }else{
+   if(!fields.length){const note=document.createElement("p");note.className="note";note.textContent="No extra details are required for this package. / এই প্যাকেজে অতিরিক্ত তথ্য প্রয়োজন নেই।";holder.appendChild(note);}
+   fields.forEach(f=>makeField(f));
+  }
  }
  async function submitOrder(country,values,manual,paymentMethod,requestId){
   const price=saleINR(chosen);if(price===null)throw new Error("A reliable price is unavailable for this package.");
