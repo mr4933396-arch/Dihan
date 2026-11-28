@@ -578,21 +578,19 @@ function renderJubalyDetail(){
   }
   if(method==="binance"){document.getElementById("jubalyUsdtBtn").click();return;}
   if(country!=="India"){msg.textContent="Google Pay, PhonePe and UPI are configured for India orders. / UPI পেমেন্টের জন্য India নির্বাচন করুন।";paymentMenu.classList.remove("hidden");return;}
-  const amount=saleINR(chosen).toFixed(2),provider=method==="google_pay"?"Google Pay":method==="phonepe"?"PhonePe":"UPI",upiId="7479314460@ybl",panel=document.getElementById("bkashPanel");
-  panel.classList.remove("hidden");
-  panel.innerHTML='<div class="detail-panel"><h2>4. Pay with '+provider+' / '+provider+' দিয়ে পেমেন্ট</h2><p>Send <b style="color:var(--gold);font-size:22px">₹'+amount+'</b> to this UPI ID:</p><p style="font-size:21px;font-weight:900;color:var(--cyan);overflow-wrap:anywhere">'+upiId+'</p><button class="order-btn" id="copyWsUpi" type="button">Copy UPI ID</button><button class="order-btn" id="openWsUpi" type="button" style="margin-top:8px">Open UPI App / UPI অ্যাপ খুলুন</button><p class="note">পেমেন্টের পর Sender UPI ID এবং UTR/Transaction ID দিন। অ্যাডমিন যাচাই না করা পর্যন্ত অর্ডার Pending থাকবে।</p><label>Sender UPI ID<input id="upiSender" placeholder="yourname@upi" maxlength="100"></label><label>UPI UTR / Transaction ID<input id="upiTransaction" placeholder="Enter UTR / Transaction ID" maxlength="80"></label><button class="order-btn" id="upiSubmit" type="button">Submit Payment Details / পেমেন্ট তথ্য জমা দিন</button><p class="note" id="upiSubmitMessage"></p></div>';
-  document.getElementById("copyWsUpi").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(upiId);document.getElementById("copyWsUpi").textContent="Copied / কপি হয়েছে";}catch{document.getElementById("copyWsUpi").textContent=upiId;}});
-  document.getElementById("openWsUpi").addEventListener("click",()=>{window.location.href="upi://pay?pa="+encodeURIComponent(upiId)+"&pn="+encodeURIComponent("WS TOP UP")+"&am="+encodeURIComponent(amount)+"&cu=INR";});
-  document.getElementById("upiSubmit").addEventListener("click",async()=>{
-   const sender=document.getElementById("upiSender").value.trim(),transaction=document.getElementById("upiTransaction").value.trim(),submit=document.getElementById("upiSubmit"),status=document.getElementById("upiSubmitMessage");
-   if(!sender||!transaction){status.textContent="Sender UPI ID এবং UTR দুটোই দিন।";return;}
-   submit.disabled=true;submit.textContent="Submitting… / জমা হচ্ছে…";status.textContent="";
-   try{
-    const order=await submitOrder("India",values,{sender:provider+" | "+sender,transaction},"upi_manual");
-    status.innerHTML="Payment details submitted. / পেমেন্ট তথ্য জমা হয়েছে।<br><b>Order ID: #"+safeText(order.id)+"</b><br>Payment status: Pending / অ্যাডমিন যাচাই করবেন।";
-    submit.textContent="Submitted / জমা হয়েছে";
-   }catch(error){status.textContent=error.message||"Could not submit. Try again.";submit.disabled=false;submit.textContent="Submit Payment Details / পেমেন্ট তথ্য জমা দিন";}
-  });
+  const provider=method==="google_pay"?"Google Pay":method==="phonepe"?"PhonePe":"UPI",button=document.getElementById("jubalyOrderBtn");
+  msg.textContent=provider+" selected. Creating secure payment checkout… / নিরাপদ পেমেন্ট চেকআউট তৈরি হচ্ছে…";
+  button.disabled=true;button.textContent="Creating payment… / পেমেন্ট তৈরি হচ্ছে…";
+  try{
+   const order=await submitOrder("India",values,null);
+   if(!order.checkout_url)throw new Error(order.error||"Automatic payment checkout is unavailable. Please try again.");
+   msg.textContent="Secure checkout ready for "+provider+". Redirecting… / পেমেন্ট পেজে নেওয়া হচ্ছে…";
+   window.location.href=order.checkout_url;
+  }catch(error){
+   msg.textContent=error.message||"Could not create payment checkout.";
+   button.disabled=false;button.textContent="Choose Payment Method / পেমেন্ট পদ্ধতি বেছে নিন";
+   paymentMenu.classList.remove("hidden");
+  }
  }));
  const walletButton=document.getElementById("jubalyWalletBtn");
  walletButton.addEventListener("click",async()=>{
