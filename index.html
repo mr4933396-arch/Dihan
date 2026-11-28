@@ -381,7 +381,7 @@ function resolveProductImage(p,ignoreRemote=false){
   return "";
  };
  const remote=first(p?.image)||first(p?.image_url)||first(p?.thumbnail)||first(p?.featured_image)||first(p?.images);
- if(remote)return remote;
+ if(remote&&!ignoreRemote)return remote;
  const name=normCatalogName(p?.name);
  const aliases=[
   [/\b(pubg|pubg mobile|bgmi)\b/,"pubg.png"],[/\bfree fire\b/,"freefire.png"],
@@ -480,7 +480,7 @@ function draw(){
  if(cat==="all"&&!q){
   const featuredRank=(entry)=>{
    const name=String(entry.item.name||entry.item[1]||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
-   const featured=[/\bimo\b/,/\bpubg\b/,/\bfree\s*fire\b/,/\bchamet\b|\bchat\s*meet\b/,/\bstarmaker\b|\bstar\s*maker\b/]
+   const featured=[/\bimo\b/,/\bpubg\b/,/\bfree\s*fire\b/,/\bchamet\b|\bchat\s*meet\b/,/\bstarmaker\b|\bstar\s*maker\b/];
    const rank=featured.findIndex(rx=>rx.test(name));
    return rank<0?10000:rank;
   };
