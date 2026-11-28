@@ -683,15 +683,15 @@ function renderJubalyDetail(){
  });
  function buildJubalyFields(){
   const holder=document.getElementById("jubalyFields");holder.innerHTML="";
-  const isIMO=/\\bimo\\b/i.test(String(p.name||""));
+  const isIMO=/\bimo\b/i.test(String(p.name||""));
   const fieldInfo=f=>({key:String(f.key||f.name||f.slug||""),label:String(f.label||f.name||f.title||f.key||"")});
   const role=(f)=>{
    const x=fieldInfo(f),s=(x.key+" "+x.label).toLowerCase().replace(/[_-]+/g," ");
-   if(/delivery\\s*type/.test(s))return "delivery";
-   if(/country\\s*iso|iso\\s*country/.test(s))return "iso";
-   if(/dial\\s*code|country\\s*code|calling\\s*code/.test(s))return "dial";
-   if(/phone|mobile|imo\\s*number|number/.test(s))return "phone";
-   if(/imo\\s*id|account\\s*id|user\\s*id/.test(s))return "imoid";
+   if(/delivery\s*type/.test(s))return "delivery";
+   if(/country\s*iso|iso\s*country/.test(s))return "iso";
+   if(/dial\s*code|country\s*code|calling\s*code/.test(s))return "dial";
+   if(/phone|mobile|imo\s*number|number/.test(s))return "phone";
+   if(/imo\s*id|account\s*id|user\s*id/.test(s))return "imoid";
    return "";
   };
   const roles={};fields.forEach(f=>{const r=role(f);if(r&&!roles[r])roles[r]=f;});
