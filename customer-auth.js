@@ -217,32 +217,48 @@ if (page === "account") {
       methodInput.value = method;
       methodButtons.forEach(item => item.classList.toggle("selected", item === button));
       const isBkash = method === "bkash";
-      manualFields.hidden = !isBkash;
-      $("wallet-sender").required = isBkash;
-      $("wallet-transaction").required = isBkash;
+      const isBinance = method === "binance";
+      const isManual = isBkash || isBinance;
+      manualFields.hidden = !isManual;
+      $("wallet-binance-panel").hidden = !isBinance;
+      $("wallet-sender").required = isManual;
+      $("wallet-transaction").required = isManual;
+      $("wallet-amount-label").textContent = isBinance ? "Amount / USDT পরিমাণ (USD)" : "Amount / টাকার পরিমাণ";
+      $("wallet-sender-label").textContent = isBinance ? "Sender Wallet Address" : "Sender Number";
+      $("wallet-transaction-label").textContent = isBinance ? "Transaction Hash / TxID" : "Transaction ID";
+      $("wallet-sender").placeholder = isBinance ? "Your TRON sender wallet address" : "bKash sender mobile";
+      $("wallet-transaction").placeholder = isBinance ? "64-character TRON transaction hash" : "bKash Transaction ID";
+      if (isBinance) {
+        const address = "TUiVtSyyeSwYTcUDmwD4NuCb9JEo2NhiZX";
+        $("wallet-binance-address").textContent = address;
+        $("wallet-binance-qr").src = "https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=" + encodeURIComponent(address);
+        $("wallet-receiver").textContent = "USDT · TRON (TRC20)";
+      } else {
+        $("wallet-receiver").textContent = "bKash নম্বর: 01618896284";
+      }
       payButton.hidden = false;
-      payButton.disabled = method === "binance";
-      payButton.textContent = method === "binance" ? "Binance setup needed" : isBkash ? "Submit" : "Continue";
-      if (method === "binance") walletStatus("Binance চালু করতে receiving wallet address ও network সেট করতে হবে।", true);
-      else walletStatus("");
+      payButton.disabled = false;
+      payButton.textContent = isManual ? "Submit Payment Details" : "Continue";
+      walletStatus("");
     }));
     $("wallet-form").addEventListener("submit", async(event)=>{
       event.preventDefault();
       const form=event.currentTarget,submit=$("wallet-submit");
       const method=methodInput.value,amount=Number($("wallet-amount").value);
       if (!method) { walletStatus("আগে একটি পেমেন্ট অপশন বেছে নাও।", true); return; }
-      if (method === "binance") { walletStatus("Binance চালু করতে receiving wallet address ও network সেট করতে হবে।", true); return; }
       submit.disabled=true;submit.textContent="প্রসেস হচ্ছে…";
       try{
         if(!Number.isFinite(amount)||amount<10||amount>50000)throw new Error("১০ থেকে ৫০,০০০-এর মধ্যে টাকার পরিমাণ দাও।");
         const headers=await walletHeaders();
-        if(method==="bkash"){
-          const payload={action:"topup-request",currency:"BDT",method:"bkash",amount,sender:$("wallet-sender").value.trim(),transaction_id:$("wallet-transaction").value.trim()};
+        if(method==="bkash" || method==="binance"){
+          const payload=method==="binance"
+            ? {action:"topup-request",currency:"USD",method:"usdt_tron",amount,sender:$("wallet-sender").value.trim(),transaction_id:$("wallet-transaction").value.trim()}
+            : {action:"topup-request",currency:"BDT",method:"bkash",amount,sender:$("wallet-sender").value.trim(),transaction_id:$("wallet-transaction").value.trim()};
           const response=await fetch(walletApi,{method:"POST",headers,body:JSON.stringify(payload)});
           const data=await response.json();
           if(!response.ok)throw new Error(data.error||"Request জমা হয়নি।");
           form.reset();methodsWrap.hidden=true;manualFields.hidden=true;payButton.hidden=true;methodButtons.forEach(item=>item.classList.remove("selected"));
-          walletStatus("bKash অনুরোধ জমা হয়েছে। যাচাইয়ের পর Wallet-এ টাকা যোগ হবে।");
+          walletStatus(method==="binance"?"USDT request জমা হয়েছে। Binance-এ পেমেন্ট মিলিয়ে Admin Approve করলে INR Wallet-এ টাকা যোগ হবে।":"bKash অনুরোধ জমা হয়েছে। যাচাইয়ের পর Wallet-এ টাকা যোগ হবে।");
           await loadWallet();
           return;
         }
