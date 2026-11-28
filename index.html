@@ -172,6 +172,43 @@ footer{border-top:1px solid var(--line);background:#081523;color:#8ea3bb;text-al
 }
 @media(prefers-reduced-motion:reduce){.store-slide{transition:none}.store-dots button{transition:none}}
 
+
+/* Mobile layout refinement: keep the storefront within the device viewport. */
+html{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{width:100%;max-width:100%;overflow-x:hidden}
+img,video,iframe{max-width:100%}
+@media(max-width:580px){
+  .nav{width:100%;min-width:0;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding:9px 12px}
+  .brand{min-width:0;flex:1 1 100%;gap:8px}
+  .brand img{width:44px;height:44px;flex:0 0 44px}
+  .navright{width:100%;min-width:0;display:flex;flex-wrap:wrap;justify-content:flex-start;align-items:center;gap:7px}
+  .wallet-nav{flex:0 0 auto;max-width:100%}
+  .auth-nav{flex:1 1 auto;min-width:0;display:flex;flex-wrap:wrap;gap:5px}
+  .auth-nav a{padding:7px 8px;font-size:11px}
+  .select{flex:0 0 auto;max-width:100%;padding:7px 8px;font-size:11px}
+  .quick-support{top:138px;right:8px}
+  .categories{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+  .section-grid,.discovery-section .section-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .card{min-width:0}
+  .art{height:112px;padding:7px}
+  .art img{width:100%;height:100%;object-fit:contain;transform:none!important}
+  .card:hover .art img{transform:none!important}
+  .info{min-width:0;padding:9px}
+  .info strong{font-size:12px;line-height:1.35;overflow-wrap:anywhere}
+  .info small{font-size:10px}
+  .toolbar,.filters{min-width:0;width:100%}
+  .search{width:100%;min-width:0}
+}
+@media(max-width:360px){
+  .navright{gap:5px}
+  .wallet-nav{font-size:10px;padding:6px 7px}
+  .auth-nav a{font-size:10px;padding:6px}
+  .section-grid,.discovery-section .section-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .art{height:100px}
+  .info{padding:8px}
+  .info strong{font-size:11px}
+}
+
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"WS TOP UP","url":"https://top-up-pozn.onrender.com/","logo":"https://top-up-pozn.onrender.com/ws-top-up-logo.png","description":"Online store for game top-ups, diamonds, social app coins, gift cards and digital subscriptions.","contactPoint":{"@type":"ContactPoint","telephone":"+91-7814003979","contactType":"customer support","availableLanguage":["English","Bengali"]},"sameAs":["https://t.me/WSTopUpOfficial"]}
